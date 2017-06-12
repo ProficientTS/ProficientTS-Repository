@@ -1,0 +1,7 @@
+<div id="div-user-img" class='ptsHoriz'>
+    <img src="../src/userpic.png">
+</div>
+<div id="div-user-title" class='ptsHoriz' (click)="logout = !logout">
+    {{email}}
+</div>
+<div *ngIf="logout" id="div-logout" (click)="fnlogout()">Logout</div>

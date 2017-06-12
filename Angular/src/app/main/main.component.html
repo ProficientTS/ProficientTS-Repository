@@ -1,0 +1,15 @@
+<div *ngIf='head' id="div-main-header" class='ptsMainTitle'>
+    <div class='ptsHoriz'>{{title}}</div>
+    <div class='ptsHoriz'>Search</div>
+    <input class='ptsHoriz'>
+    <div *ngIf='userpic' class='ptsHoriz ptsFloatR ptsMargin0'>
+        <pts-user [email]="email"></pts-user>
+    </div>
+</div>
+<div id="div-main-body">
+    <router-outlet></router-outlet>
+</div>
+<div id="div-main-footer">
+    ProficientTS
+</div>
+<div id="div-main-popup"></div>

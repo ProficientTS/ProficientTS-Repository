@@ -1,0 +1,22 @@
+<div id="div-frgt-pwd">
+    <div *ngIf="chkemail" class="ptsPadTB30p">Enter emailID <input type="email" placeholder="Email ID" [(ngModel)]="email" /><button (click)="fnCheckFPUser()" class="ptsMarginL15p">Next</button></div>
+
+    <div *ngIf="verified">
+        <p>{{msg1}}</p>
+    </div>
+    <div *ngIf="verifiedbymail">
+        <p>Enter a new password</p>
+        <ul>
+            <li class="ptsPadTB10p">
+                <input type="password" placeholder="New Password" [(ngModel)]="pwd" />
+            </li>
+            <li class="ptsPadTB10p">
+                <input type="password" placeholder="Confirm Password" [(ngModel)]="cpwd" />
+            </li>
+            <li class="ptsPadTB10p">
+                <button (click)="fnResetPwd()" class="ptsMarginL15p">Reset Password</button>
+            </li>
+        </ul>
+    </div>
+    <div *ngIf="login"><button (click)="fnBackTologin()">Login</button></div>
+</div>

@@ -1,0 +1,55 @@
+<div id='div-login'>
+    <div id='div-login-logo' class='ptsTextCenter'>
+        Applications
+    </div>
+    <div id='div-login-content' class='ptsTextCenter'>
+        <ul *ngIf='login; else signup'>
+            <li class="ptsPadTB10p">
+                <input type="email" #email placeholder="Email ID" (keyup)='fnchkUserbyKey($event, email.value, pwd.value)' />
+            </li>
+            <li class="ptsPadTB10p">
+                <input type="password" #pwd placeholder="Password" (keyup)='fnchkUserbyKey($event, email.value, pwd.value)' />
+            </li>
+            <li class="ptsPadTB10p">
+                <button (click)="fnsignin(email.value, pwd.value)">Login</button>
+            </li>
+            <li class="ptsPadTB10p ptsFontWhite">
+                {{msg}}
+            </li>
+            <li class="ptsFontWhite">
+                <button (click)="fnfrgtPwd()">Forgot Password?</button>
+            </li>
+            <li class="ptsFontWhite">
+                <p>
+                    Don't have an account?
+                    <button (click)="login = false">Sign Up</button>
+                </p>
+            </li>
+        </ul>
+        <ng-template #signup>
+            <ul>
+                <li class="ptsPadTB10p">
+                    <input [disabled]="inp" type="email" #emailid placeholder="Email ID" [(ngModel)]="email" />
+                </li>
+                <li class="ptsPadTB10p">
+                    <input [disabled]="inp" type="password" placeholder="Password" [(ngModel)]="pwd" />
+                </li>
+                <li class="ptsPadTB10p">
+                    <input [disabled]="inp" type="password" placeholder="Confirm Password" [(ngModel)]="cpwd" />
+                </li>
+                <li class="ptsPadTB10p">
+                    <button [disabled]="inp" (click)="fnSignUp()">Sign Up</button>
+                </li>
+                <li class="ptsFontWhite">
+                    {{signupmsg}}
+                </li>
+                <li class="ptsPadTB10p ptsFontWhite">
+                    <p>
+                        Already have an account?
+                    </p>
+                    <button (click)="fnBackTologinPage()">Back to Login</button>
+                </li>
+            </ul>
+        </ng-template>
+    </div>
+</div>

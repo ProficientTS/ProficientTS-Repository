@@ -1,0 +1,16 @@
+{
+    "name": "nodejs-test-app",
+    "version": "1.0.0",
+    "description": "NodeJS Test App",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"This is a TEST\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.16.0",
+        "express": "^4.14.1",
+        "jsonwebtoken": "^7.3.0"
+    }
+}

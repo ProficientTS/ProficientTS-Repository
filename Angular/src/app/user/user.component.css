@@ -1,0 +1,15 @@
+#div-user-img img {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+}
+
+#div-user-title {
+    vertical-align: text-top;
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+#div-logout {
+    background-color: #352f2f;
+}

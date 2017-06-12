@@ -1,0 +1,84 @@
+/* You can add global styles to this file, and also import other style files */
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #174877;
+    height: 100%;
+    font: 12px/1.4 "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Garuda, Verdana, Tahoma, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+ul {
+    margin: 0;
+    padding-left: 0;
+}
+
+.ptsTextCenter {
+    text-align: center;
+}
+
+.ptsPadTB10p {
+    padding: 10px 0 10px 0;
+}
+
+.ptsPadTB30p {
+    padding: 30px 0 30px 0;
+}
+
+.ptsFontWhite {
+    color: white;
+}
+
+.ptsMainTitle {
+    color: white;
+    text-align: center;
+    font-size: 30px;
+    padding: 10px 0 10px 0;
+    background-color: #352f2f;
+}
+
+.ptsCursorPointer {
+    cursor: pointer;
+}
+
+.ptsActiveTab {
+    color: white;
+    background-color: grey;
+}
+
+.ptsHoriz {
+    display: inline-block;
+}
+
+.ptsVertical {
+    display: block;
+}
+
+.ptsFloatR {
+    float: right;
+}
+
+.ptsMargin0 {
+    margin: 0;
+}
+
+.hide {
+    display: none;
+}
+
+.ptsMarginL15p {
+    margin-left: 15px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
