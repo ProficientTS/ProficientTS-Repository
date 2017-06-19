@@ -12,7 +12,7 @@ import { GlobalService } from '../global.service';
   providers: []
 })
 export class MainComponent implements OnInit, OnChanges, DoCheck, AfterViewInit, AfterContentChecked, AfterContentInit, AfterViewChecked {
-temptoken: string;
+token: string;
 head: boolean;
 view = false;
 userpic = true;
@@ -24,7 +24,6 @@ email = '';
     private router: Router,
     private ms: MainService,
     private gs: GlobalService) {
-      // alert("constructor")
       this.ms.header.subscribe(
         (val: any) => this.setUp(val)
       );
@@ -38,19 +37,21 @@ email = '';
       //     // }
       // }
       // });
-      this.temptoken = this.route.snapshot.params['temptoken'];
-          console.log(this.temptoken);
+      this.token = this.route.snapshot.params['token'];
+          console.log('Token from MailMail' + this.token);
           // if(this.temptoken != undefined) {
           //   this.chkUser(this.temptoken);
           // }
           // else
-          //  if(localStorage.getItem('token') != null){
-          //   this.fnUserChk(localStorage.getItem('token'));
-          // }
+           if(this.token){
+            // this.fnUserChk(localStorage.getItem('token'));
+            localStorage.setItem('token', this.token);
+            this.router.navigate(['/home']);
+          }
      }
 
   ngOnInit() {
-    console.log('Temp Token from Mail' + this.route.snapshot.params['temptoken']);
+    console.log('Token from Mail' + this.route.snapshot.params['token']);
     // alert("ngOnInit")
   }
 

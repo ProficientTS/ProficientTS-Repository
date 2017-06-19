@@ -21,7 +21,7 @@ const mainRoutes: Routes = [
         component: HomeComponent
     },
     {
-        path: 'activation/:temptoken',
+        path: 'activation/:token',
         component: MainComponent
     },
     {

@@ -13,13 +13,10 @@ export class ListComponent implements OnInit {
   type = this.route.snapshot.params['type'];
   type1 = this.route.snapshot.params['type1'];
   type2 = this.route.snapshot.params['type2'];
-  
   headConfig = {};
 
-  constructor(private ms: MainService,private route: ActivatedRoute,
-    private router: Router, private rs: ResourceService) { 
-      
-   }
+  constructor(private ms: MainService, private route: ActivatedRoute,
+    private router: Router, private rs: ResourceService) {   }
 
   ngOnInit() {
     console.log(this.type)

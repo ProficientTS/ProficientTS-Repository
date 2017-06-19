@@ -55,7 +55,6 @@ signupmail = '';
     console.log(data.success);
     if (data.success) {
       localStorage.setItem('token', data.token);
-      // localStorage.setItem(, data.token);
       this.router.navigate(['/home']);
     }
     else{
@@ -87,8 +86,7 @@ signupmail = '';
     if (data.success) {
       this.resend = true; this.inp = true; this.signupmsg = '';
       this.signupmail = data.msg;
-      this.gs.data = data.temptoken;
-      // localStorage.setItem('token', data.token);
+      this.gs.data.token = data.token;
       this.router.navigate(['/loginconfirmation']);
     } else {
       if(data.success == false){

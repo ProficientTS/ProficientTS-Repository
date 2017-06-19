@@ -28,7 +28,8 @@ login = false;
     private rs: ResourceService,
     private route: ActivatedRoute,
     private router: Router) {
-      this.fptoken = this.route.snapshot.params['fptoken']!=null ? this.route.snapshot.params['fptoken'] : '';
+      this.fptoken = this.route.snapshot.params['fptoken'];
+      console.log("fptokenfptoken" + this.fptoken)
      }
 
   ngOnInit() {

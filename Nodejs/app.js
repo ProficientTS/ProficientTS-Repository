@@ -1,5 +1,96 @@
-var express = require('express');
+var express = require('express'),
+    bodyParser = require('body-parser'),
+    MongoClient = require('mongodb').MongoClient,
+    assert = require('assert'),
+    UserDAO = require('./users').UserDAO,
+    jwt = require('jsonwebtoken');
+
 var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+process.env.SECRET_KEY = "cj777key";
+
+MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
+    "use strict";
+
+    assert.equal(null, err);
+    console.log("Successfully connected to MongoDB.");
+
+    var users = new UserDAO(db);
+
+    var router = express.Router();
+
+    router.post("/auth", function(req, res) {
+        "use strict";
+        var userInfo = req.body;
+        users.checkUser(userInfo, function(user) {
+            if (user.length) {
+                var token = jwt.sign(userInfo, process.env.SECRET_KEY, {
+                    expiresIn: 3600
+                })
+                users.updateUserToken(userInfo, token, function(userTokenUpdate) {
+                    res.json({
+                        success: true,
+                        msg: 'Valid Account!',
+                        data: user,
+                        token: token
+                    });
+                })
+
+            } else {
+                res.json({
+                    success: false,
+                    msg: 'Invalid Account!'
+                });
+            }
+        });
+    });
+    // secureRoutes.post('/saveUserSignUp', apiController.activateUser);
+    router.post("/signup", function(req, res) {
+        "use strict";
+        var userInfo = req.body;
+        users.checkUser(userInfo, function(user) {
+            console.log(user.length)
+            if (user.length) {
+                res.json({
+                    success: false,
+                    msg: 'Account Already Exist. Provide a different Account!'
+                });
+
+            } else {
+                var token = jwt.sign(userInfo, process.env.SECRET_KEY, {
+                    expiresIn: 3600
+                })
+                var userData = users.createDummyUser(userInfo, token);
+                console.log(userData)
+                users.createUser(userData, function(createUser) {
+                    if (createUser.result.ok == 1) {
+                        users.sendConfirmMail(userInfo, function() {
+                            res.json({
+                                success: true,
+                                msg: 'Account Activated',
+                                data: createUser,
+                                token: token
+                            });
+                        })
+                    }
+                })
+            }
+        });
+    });
+
+    // Use the router routes in our application
+    app.use('/', router);
+
+    // Start the server listening
+    var server = app.listen(777, function() {
+        var port = server.address().port;
+        console.log('Mongomart server listening on port %s.', port);
+    });
+
+});
+
 // var mongoose = require('mongoose');
 // var jwt = require('jsonwebtoken');
 // var config = require('./config');
@@ -57,6 +148,6 @@ var app = express();
 // app.post('/checkfpuser', apiController.checkfpuser);
 // secureRoutes.post('/resetpwd', apiController.resetpwd);
 // secureRoutes.post('/uservalidation', apiController.uservalidation);
-app.listen(port, function() {
-    console.log("Server is Up, Yeah !!!");
-});
+// app.listen(port, function() {
+//     console.log("Server is Up, Yeah !!!");
+// });

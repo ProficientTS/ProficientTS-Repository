@@ -7,11 +7,11 @@ import { GlobalService } from '../global.service';
   styleUrls: ['./resend.component.css']
 })
 export class ResendComponent implements OnInit {
-temptoken = "";
+token = "";
   constructor(private gs: GlobalService) { }
 
   ngOnInit() {
-    this.temptoken = this.gs.data;
+    this.token = this.gs.data;
   }
 
 }

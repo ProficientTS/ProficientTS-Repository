@@ -1,5 +1,5 @@
 export class GlobalService {
-data = "";
+data: any;
   constructor(){
       console.log('Global Service');
   }

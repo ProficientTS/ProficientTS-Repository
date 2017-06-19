@@ -10,16 +10,16 @@ export class ResourceService {
   }
 
   fnemailVerification(obj: any) {
-    console.log('chkUser' + obj.email + ' ' + obj.password);    
-      return this.http.post('http://localhost:777/checkuser/signup', {
-          email: obj.email, 
+    console.log('chkUser' + obj.email + ' ' + obj.password);
+      return this.http.post('http://localhost:777/signup', {
+          email: obj.email,
           password: obj.password
       })
       .map(res => res.json())
   }
 
   fnemailFPVerification(obj: any) {
-    console.log('chkUser' + obj.email );    
+    console.log('chkUser' + obj.email );
       return this.http.post('http://localhost:777/checkfpuser', {
           email: obj.email
       })
