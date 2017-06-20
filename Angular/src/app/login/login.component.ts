@@ -52,9 +52,11 @@ signupmail = '';
   }
 
   fnhandlesignin(data) {
-    console.log(data.success);
+    console.log(data);
     if (data.success) {
       localStorage.setItem('token', data.token);
+      console.log(data.data.email)
+      localStorage.setItem('email', data.data[0].email);
       this.router.navigate(['/home']);
     }
     else{
@@ -83,10 +85,13 @@ signupmail = '';
   }
 
   fnemailVerify(data, resend) {
+    console.log(data.data.email);
     if (data.success) {
       this.resend = true; this.inp = true; this.signupmsg = '';
       this.signupmail = data.msg;
+      console.log(this.gs.data);
       this.gs.data.token = data.token;
+      this.gs.data.email = data.data.email;
       this.router.navigate(['/loginconfirmation']);
     } else {
       if(data.success == false){

@@ -46,7 +46,7 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
             }
         });
     });
-    // secureRoutes.post('/saveUserSignUp', apiController.activateUser);
+
     router.post("/signup", function(req, res) {
         "use strict";
         var userInfo = req.body;
@@ -66,11 +66,18 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
                 console.log(userData)
                 users.createUser(userData, function(createUser) {
                     if (createUser.result.ok == 1) {
-                        users.sendConfirmMail(userInfo, function() {
+                        var email = {
+                            from: 'christson@proficientts.com',
+                            to: userInfo.email,
+                            subject: 'Hello ' + userInfo.email + ', Thank Jesus',
+                            text: 'Hello ' + userInfo.email + ', thank you for registering for ProficientTS Applications.',
+                            html: 'Hello <strong>' + userInfo.email + '</strong>, <br><br>Thank you for registering for ProficientTS Applications.'
+                        };
+                        users.sendMail(email, function() {
                             res.json({
                                 success: true,
                                 msg: 'Account Activated',
-                                data: createUser,
+                                data: userData,
                                 token: token
                             });
                         })
@@ -78,6 +85,64 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
                 })
             }
         });
+    });
+
+
+    router.post("/forgotpwd", function(req, res) {
+        "use strict";
+        var userInfo = req.body;
+        users.checkUser(userInfo, function(user) {
+            if (user.length) {
+                var token = jwt.sign(userInfo, process.env.SECRET_KEY, {
+                    expiresIn: 3600
+                })
+                var temptoken = jwt.sign({ email: userInfo.email }, process.env.SECRET_KEY, {
+                    expiresIn: '24h'
+                });
+                var email = {
+                    from: 'christson@proficientts.com',
+                    to: userInfo.email,
+                    subject: 'Hello ' + userInfo.email + ', Thank Jesus',
+                    text: 'Hello ' + userInfo.email + ', click this link to reset your password.',
+                    html: 'Hello <strong>' + userInfo.email + '</strong>, <br><br>click this link to reset your password.<div> <a href = "http://localhost:4200/forgotpwd/' + temptoken + '"> Reset Pwd </a></div>'
+                };
+                users.sendMail(email, function() {
+                    res.json({
+                        success: true,
+                        msg: 'Please check your email for Resetting your Password!'
+                    });
+                })
+
+            } else {
+                res.json({
+                    success: false,
+                    msg: 'Invalid Account!'
+                });
+            }
+        });
+    });
+
+    router.post("/resetpwd", function(req, res) {
+        "use strict";
+        var userInfo = req.body;
+        jwt.verify(userInfo.token, process.env.SECRET_KEY, function(err, decode) {
+            console.log("Decode")
+            console.log(decode);
+            if (err) {
+                res.json({
+                    success: false,
+                    msg: 'Password Reset Failed. Invalid Credentials!'
+                });
+            } else {
+                users.resetpwd(decode.email, userInfo.pwd, function(user) {
+                    res.json({
+                        success: true,
+                        msg: 'Password Reset Successful!'
+                    });
+                });
+            }
+        })
+
     });
 
     // Use the router routes in our application

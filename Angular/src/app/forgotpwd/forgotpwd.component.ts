@@ -15,7 +15,7 @@ headConfig = {
                 userpic: false
              };
 verified = false;
-msg1 = 'Loading..........';
+msg1 = 'Verifying..........';
 email = '';
 verifiedbymail = false;
 fptoken= '';
@@ -34,9 +34,9 @@ login = false;
 
   ngOnInit() {
     this.ms.header.emit(this.headConfig);
-    if(this.fptoken!=''){
+    if(this.fptoken && this.fptoken != ''){
       this.verifiedbymail = true;
-      this.chkemail= false;
+      this.chkemail = false;
     }
   }
 

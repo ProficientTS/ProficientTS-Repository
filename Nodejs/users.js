@@ -1,6 +1,7 @@
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
-    nodemailer = require('nodemailer');
+    nodemailer = require('nodemailer'),
+    jwt = require('jsonwebtoken');
 
 var client = nodemailer.createTransport({
     service: 'Godaddy',
@@ -18,7 +19,7 @@ function UserDAO(database) {
     this.checkUser = function(userInfo, callback) {
         "use strict";
 
-        var query = { email: userInfo.email, password: userInfo.password, active: true };
+        var query = (userInfo.password) ? { email: userInfo.email, password: userInfo.password, active: true } : { email: userInfo.email, active: true };
         var cursor = this.db.collection('user').find(query);
 
         cursor.toArray(
@@ -32,10 +33,23 @@ function UserDAO(database) {
         );
     }
 
+    this.resetpwd = function(email, pwd, callback) {
+        "use strict";
+        this.db.collection('user').update({ email: email }, { $set: { password: pwd } },
+            function(err, doc) {
+                assert.equal(err, null);
+                console.log("resetpwd Result")
+                console.log(doc)
+
+                callback(doc);
+            }
+        );
+    }
+
     this.updateUserToken = function(userInfo, token, callback) {
         "use strict";
 
-        var cursor = this.db.collection('user').update({ email: userInfo.email }, { $set: { token: token } },
+        this.db.collection('user').update({ email: userInfo.email }, { $set: { token: token } },
             function(err, doc) {
                 assert.equal(err, null);
                 console.log("checkUser Result")
@@ -62,21 +76,13 @@ function UserDAO(database) {
         );
     }
 
-    this.sendConfirmMail = function(userInfo, callback) {
+    this.sendMail = function(email, callback) {
         "use strict";
-        var email = {
-            from: 'christson@proficientts.com',
-            to: userInfo.email,
-            subject: 'Hello ' + userInfo.email + ', Thank Jesus',
-            text: 'Hello ' + userInfo.email + ', thank you for registering for ProficientTS Applications.',
-            html: 'Hello <strong>' + userInfo.email + '</strong>, <br><br>Thank you for registering for ProficientTS Applications.'
-        };
+
         client.sendMail(email, function(err, info) {
             if (err) {
-                console.log(11111)
                 console.log(err);
             } else {
-                console.log(222222)
                 callback();
             }
         });

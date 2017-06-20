@@ -20,7 +20,7 @@ export class ResourceService {
 
   fnemailFPVerification(obj: any) {
     console.log('chkUser' + obj.email );
-      return this.http.post('http://localhost:777/checkfpuser', {
+      return this.http.post('http://localhost:777/forgotpwd', {
           email: obj.email
       })
       .map(res => res.json())
@@ -48,7 +48,7 @@ export class ResourceService {
     }
 
     fnresetpwd(obj: any) {
-        return this.http.post('http://localhost:777/secure-api/resetpwd', {
+        return this.http.post('http://localhost:777/resetpwd', {
           token: obj.token,
           pwd: obj.pwd
       })

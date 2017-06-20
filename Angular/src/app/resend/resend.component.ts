@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalService } from '../global.service';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'pts-resend',
   templateUrl: './resend.component.html',
@@ -8,10 +8,16 @@ import { GlobalService } from '../global.service';
 })
 export class ResendComponent implements OnInit {
 token = "";
-  constructor(private gs: GlobalService) { }
+  constructor(private gs: GlobalService, private router: Router) { }
 
   ngOnInit() {
-    this.token = this.gs.data;
+    this.token = this.gs.data.token;
+  }
+
+  fnLogMeIn(){
+    console.log(this.gs.data.email)
+    localStorage.setItem('email', this.gs.data.email);
+    this.router.navigate(['/activation/'+ this.token]);
   }
 
 }
