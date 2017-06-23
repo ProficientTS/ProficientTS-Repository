@@ -11,7 +11,7 @@ export class ResourceService {
 
   fnemailVerification(obj: any) {
     console.log('chkUser' + obj.email + ' ' + obj.password);
-      return this.http.post('http://localhost:777/signup', {
+      return this.http.post('http://192.169.169.6:3000/signup', {
           email: obj.email,
           password: obj.password
       })
@@ -20,19 +20,19 @@ export class ResourceService {
 
   fnemailFPVerification(obj: any) {
     console.log('chkUser' + obj.email );
-      return this.http.post('http://localhost:777/forgotpwd', {
+      return this.http.post('http://192.169.169.6:3000/forgotpwd', {
           email: obj.email
       })
       .map(res => res.json())
   }
 
   getPosts() {
-        return this.http.get('http://localhost:777/')
+        return this.http.get('http://192.169.169.6:3000/')
         .map(res => res.json())
     }
 
     saveUserSignUp (obj: any) {
-        return this.http.post('http://localhost:777/secure-api/saveUserSignUp', {
+        return this.http.post('http://192.169.169.6:3000/secure-api/saveUserSignUp', {
           token: obj.token
       })
 
@@ -40,7 +40,7 @@ export class ResourceService {
     }
 
     signin(email: any, pwd: any) {
-        return this.http.post('http://localhost:777/auth', {
+        return this.http.post('http://192.169.169.6:3000/auth', {
           email: email,
           password: pwd
       })
@@ -48,7 +48,7 @@ export class ResourceService {
     }
 
     fnresetpwd(obj: any) {
-        return this.http.post('http://localhost:777/resetpwd', {
+        return this.http.post('http://192.169.169.6:3000/resetpwd', {
           token: obj.token,
           pwd: obj.pwd
       })
@@ -56,7 +56,7 @@ export class ResourceService {
       .map(res => res.json())
     }
     uservalidation(obj: any) {
-        return this.http.post('http://localhost:777/secure-api/uservalidation', {
+        return this.http.post('http://192.169.169.6:3000/secure-api/uservalidation', {
           token: obj.token
       })
 
@@ -65,7 +65,7 @@ export class ResourceService {
 
     getList(obj: any) {
         console.log(obj)
-        return this.http.post('http://localhost:777/list', obj)
+        return this.http.post('http://192.169.169.6:3000/list', obj)
 
       .map(res => res.json())
     }
