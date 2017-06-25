@@ -15,6 +15,8 @@ import { ResendComponent } from './resend/resend.component';
 import { ForgotpwdComponent } from './forgotpwd/forgotpwd.component';
 import { UserinfoComponent } from './userinfo/userinfo.component';
 import { ListComponent } from './list/list.component';
+import { ResetpwdComponent } from './resetpwd/resetpwd.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   imports: [
@@ -32,7 +34,9 @@ import { ListComponent } from './list/list.component';
                   ResendComponent,
                   ForgotpwdComponent,
                   UserinfoComponent,
-                  ListComponent
+                  ListComponent,
+                  ResetpwdComponent,
+                  SettingsComponent
                 ],
   providers: [
                 ResourceService,

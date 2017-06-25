@@ -70,6 +70,10 @@ ul {
     margin: 0;
 }
 
+.ptsMarginT15p {
+    margin-top: 15px;
+}
+
 .hide {
     display: none;
 }

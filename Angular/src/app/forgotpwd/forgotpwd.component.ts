@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MainService } from '../main.service';
 import { ResourceService } from '../resource.service';
-import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,8 +16,6 @@ headConfig = {
 verified = false;
 msg1 = 'Verifying..........';
 email = '';
-verifiedbymail = false;
-fptoken= '';
 chkemail = true;
 pwd: string;
 login = false;
@@ -26,18 +23,11 @@ login = false;
   constructor(
     private ms: MainService,
     private rs: ResourceService,
-    private route: ActivatedRoute,
     private router: Router) {
-      this.fptoken = this.route.snapshot.params['fptoken'];
-      console.log("fptokenfptoken" + this.fptoken)
      }
 
   ngOnInit() {
     this.ms.header.emit(this.headConfig);
-    if(this.fptoken && this.fptoken != ''){
-      this.verifiedbymail = true;
-      this.chkemail = false;
-    }
   }
 
   fnCheckFPUser(){
@@ -47,29 +37,13 @@ login = false;
       }).subscribe(user => {
         console.log(user);
         this.msg1 = user.msg;
+        this.login = true;
       },
       err => {
         console.log(err);
       });
   }
-  fnResetPwd(){
-    console.log(this.fptoken);
-    if(this.pwd){
-      this.rs.fnresetpwd({
-        pwd: this.pwd,
-        token: this.fptoken
-      }).subscribe(user => {
-        console.log(user);
-        this.msg1 = user.msg;
-        this.verified = true;
-        this.verifiedbymail = false;
-        this.login = true;
-      },
-      err => {
-        console.log(err);
-      })
-    }
-  }
+  
 
 fnBackTologin(){
   this.router.navigate(['/']);

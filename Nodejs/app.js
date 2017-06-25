@@ -87,29 +87,44 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
         });
     });
 
+    router.post("/resendmail", function(req, res) {
+        "use strict";
+        var userInfo = req.body;
+        var email = {
+            from: 'christson@proficientts.com',
+            to: userInfo.email,
+            subject: 'Hello ' + userInfo.email + ', Thank Jesus',
+            text: 'Hello ' + userInfo.email + ', thank you for registering for ProficientTS Applications.',
+            html: 'Hello <strong>' + userInfo.email + '</strong>, <br><br>Thank you for registering for ProficientTS Applications.'
+        };
+        users.sendMail(email, function() {
+            res.json({
+                success: true,
+                msg: 'Account Activated'
+            });
+        })
+    });
 
     router.post("/forgotpwd", function(req, res) {
         "use strict";
         var userInfo = req.body;
         users.checkUser(userInfo, function(user) {
+            console.log("User JSON ---------")
+            console.log(user)
+
             if (user.length) {
-                var token = jwt.sign(userInfo, process.env.SECRET_KEY, {
-                    expiresIn: 3600
-                })
-                var temptoken = jwt.sign({ email: userInfo.email }, process.env.SECRET_KEY, {
-                    expiresIn: '24h'
-                });
+                var password = user[0].password;
                 var email = {
                     from: 'christson@proficientts.com',
                     to: userInfo.email,
                     subject: 'Hello ' + userInfo.email + ', Thank Jesus',
-                    text: 'Hello ' + userInfo.email + ', click this link to reset your password.',
-                    html: 'Hello <strong>' + userInfo.email + '</strong>, <br><br>click this link to reset your password.<div> <a href = "http://localhost:4200/forgotpwd/' + temptoken + '"> Reset Pwd </a></div>'
+                    text: 'Hello ' + userInfo.email + ', your password is ' + password + '.',
+                    html: 'Hello <strong>' + userInfo.email + '</strong>, <br><br>your password is ' + password + '.'
                 };
                 users.sendMail(email, function() {
                     res.json({
                         success: true,
-                        msg: 'Please check your email for Resetting your Password!'
+                        msg: 'Your password has been sent to your mail. Please Check your mail.'
                     });
                 })
 
@@ -117,6 +132,28 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
                 res.json({
                     success: false,
                     msg: 'Invalid Account!'
+                });
+            }
+        });
+    });
+
+
+    router.post("/resetpwd", function(req, res) {
+        "use strict";
+        var userInfo = req.body;
+        users.checkUser(userInfo, function(user) {
+            if (user.length) {
+                users.resetpwd(userInfo.email, userInfo.pwd, function(user) {
+                    res.json({
+                        success: true,
+                        msg: 'Password Reset Successful!'
+                    });
+                });
+
+            } else {
+                res.json({
+                    success: false,
+                    msg: 'Password Reset Failed. Invalid Credentials!'
                 });
             }
         });

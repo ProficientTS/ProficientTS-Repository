@@ -1,0 +1,20 @@
+<div id="div-resetpwd">
+    <ul>
+        <li class="ptsPadTB10p">
+            <div class="div-reset-lable">Enter Existing Password</div>
+            <input type="password" placeholder="Existing Password" [(ngModel)]="epwd" />
+        </li>
+        <li class="ptsPadTB10p">
+            <div class="div-reset-lable">Enter New Password</div>
+            <input type="password" placeholder="New Password" [(ngModel)]="pwd" />
+        </li>
+        <li class="ptsPadTB10p">
+            <div class="div-reset-lable">Reenter New Password</div>
+            <input type="password" placeholder="Confirm Password" [(ngModel)]="cpwd" />
+        </li>
+        <li class="ptsPadTB10p">
+            <button (click)="fnResetPwd()" class="ptsMarginL15p">Reset Password</button>
+        </li>
+    </ul>
+    <div class="ptsTextCenter">{{msg}}</div>
+</div>

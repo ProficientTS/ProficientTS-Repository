@@ -1,7 +1,16 @@
-<div id="div-user-img" class='ptsHoriz'>
-    <img src="../src/userpic.png">
+<div id="div-user">
+    <div id="div-user-img" class='ptsHoriz'>
+        <img src="../src/userpic.png">
+    </div>
+    <div id="div-user-title" class='ptsHoriz' (click)="options = !options">
+        {{user}}
+    </div>
+    <div *ngIf="options" id="div-options">
+        <ul>
+            <li (click)="fnHome()">Home</li>
+            <li (click)="fnUser()">Profile</li>
+            <li (click)="fnSettings()">Settings</li>
+            <li (click)="fnlogout()">Logout</li>
+        </ul>
+    </div>
 </div>
-<div id="div-user-title" class='ptsHoriz' (click)="logout = !logout">
-    {{email}}
-</div>
-<div *ngIf="logout" id="div-logout" (click)="fnlogout()">Logout</div>

@@ -6,6 +6,9 @@ import { ResendComponent } from '../resend/resend.component';
 import { ForgotpwdComponent } from '../forgotpwd/forgotpwd.component';
 import { MainComponent } from './main.component';
 import { ListComponent } from '../list/list.component';
+import { SettingsComponent } from '../settings/settings.component';
+import { ResetpwdComponent } from '../resetpwd/resetpwd.component';
+import { UserinfoComponent } from '../userinfo/userinfo.component';
 
 const mainRoutes: Routes = [
     {
@@ -25,7 +28,7 @@ const mainRoutes: Routes = [
         component: MainComponent
     },
     {
-        path: 'loginconfirmation',
+        path: 'loginconfirmation/:email/:token',
         component: ResendComponent
     },
     {
@@ -33,8 +36,8 @@ const mainRoutes: Routes = [
         component: ForgotpwdComponent
     },
     {
-        path: 'forgotpwd/:fptoken',
-        component: ForgotpwdComponent
+        path: 'resetpwd',
+        component: ResetpwdComponent
     },
     {
         path: 'list/:type',
@@ -43,6 +46,14 @@ const mainRoutes: Routes = [
     {
         path: 'list/:type1/:type2/:id',
         component: ListComponent
+    },
+    {
+        path: 'settings',
+        component: SettingsComponent
+    },
+    {
+        path: 'user',
+        component: UserinfoComponent
     }
 ];
 

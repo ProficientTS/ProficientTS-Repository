@@ -50,7 +50,6 @@ export class ListComponent implements OnInit {
 
   fnSelectList(data){
     console.log(data)
-    
   }
 
 }

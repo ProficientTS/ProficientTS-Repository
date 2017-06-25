@@ -18,7 +18,6 @@ auth: string;
 login = true;
 email = ''; pwd = ''; cpwd = '';
 inp = false;
-resend = false;
 msg = '';
 signupmsg = '';
 signupmail = '';
@@ -55,8 +54,9 @@ signupmail = '';
     console.log(data);
     if (data.success) {
       localStorage.setItem('token', data.token);
-      console.log(data.data.email)
+      console.log(data.data[0].email.split('@')[0])
       localStorage.setItem('email', data.data[0].email);
+      localStorage.setItem('user', data.data[0].email.split('@')[0]);
       this.router.navigate(['/home']);
     }
     else{
@@ -71,33 +71,40 @@ signupmail = '';
     }
   }
 
-  fnSignUp(resend) {
-      this.rs.fnemailVerification({
-        email: this.email,
-        password: this.pwd
-      }).subscribe(user => {
-        console.log(user);
-        this.fnemailVerify(user, resend);
-      },
-      err => {
-        console.log(err);
-      })
+  fnSignUp() {
+    if(this.email != '' && this.pwd != '' && this.cpwd != ''){
+      if(this.pwd == this.cpwd){
+        this.rs.fnemailVerification({
+          email: this.email,
+          password: this.pwd
+        }).subscribe(user => {
+          console.log(user);
+          this.fnemailVerify(user);
+        },
+        err => {
+          console.log(err);
+        })
+    }
+    else{
+      this.signupmsg = 'Password and Confirm Password must match!';
+    }
+  }
+  else{
+    this.signupmsg = 'Please provide all Requisites!';
+  }
+      
   }
 
-  fnemailVerify(data, resend) {
-    console.log(data.data.email);
+  fnemailVerify(data) {
+    console.log(data)
     if (data.success) {
-      this.resend = true; this.inp = true; this.signupmsg = '';
+      this.inp = true; this.signupmsg = '';
       this.signupmail = data.msg;
       console.log(this.gs.data);
       this.gs.data.token = data.token;
       this.gs.data.email = data.data.email;
-      this.router.navigate(['/loginconfirmation']);
+      this.router.navigate(['/loginconfirmation/' + data.data.email + '/' + data.token]);
     } else {
-      if(data.success == false){
-        if(resend)
-          this.router.navigate(['/home']);
-      }
       this.email = ''; this.pwd = ''; this.cpwd = '';
       this.signupmsg = data.msg;
     }
@@ -106,7 +113,6 @@ signupmail = '';
   fnBackTologinPage(){
 
     this.login = true; 
-    this.resend = false;
     this.inp = false; 
     this.email = ''; 
     this.pwd = ''; 
