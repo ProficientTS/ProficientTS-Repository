@@ -1,0 +1,7 @@
+<ion-list class="" *ngIf="listItem.length;else noData">
+    <button ion-item *ngFor="let item of listItem" (click)="itemTapped(item)">
+      {{item.ID}} {{item.Name? item.Name : ''}}
+    </button>
+</ion-list>
+
+<ng-template #noData>No Data Found</ng-template>

@@ -1,19 +1,24 @@
 {
-  "name": "nodejs-test-app",
-  "version": "1.0.0",
-  "private": true,
-  "description": "NodeJS Test App",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"This is a TEST\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.16.0",
-    "express": "^4.14.1",
-    "jsonwebtoken": "^7.3.0",
-    "mongodb": "^2.2.28",
-    "nodemailer": "^4.0.1"
-  }
+    "name": "nodejs-test-app",
+    "version": "1.0.0",
+    "private": true,
+    "description": "NodeJS Test App",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"This is a TEST\" && exit 1",
+        "start": "node app.js"
+    },
+    "author": "cskumar",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.16.0",
+        "express": "^4.14.1",
+        "ionic": "^3.0.0-rc.2",
+        "jsonwebtoken": "^7.3.0",
+        "kerberos": "0.0.23",
+        "mongo-oplog": "^1.0.1",
+        "mongodb": "^2.2.29",
+        "nodemailer": "^4.0.1",
+        "reactnativedeviceinfo": "^0.10.2"
+    }
 }

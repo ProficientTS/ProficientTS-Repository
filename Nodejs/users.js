@@ -18,7 +18,7 @@ function UserDAO(database) {
 
     this.checkUser = function(userInfo, callback) {
         "use strict";
-
+        console.log(userInfo)
         var query = (userInfo.password) ? { email: userInfo.email, password: userInfo.password, active: true } : { email: userInfo.email, active: true };
         var cursor = this.db.collection('user').find(query);
 
@@ -26,7 +26,7 @@ function UserDAO(database) {
             function(err, doc) {
                 assert.equal(err, null);
                 console.log("checkUser Result")
-                console.log(doc)
+                    // console.log(doc)
 
                 callback(doc);
             }
@@ -69,7 +69,7 @@ function UserDAO(database) {
             function(err, doc) {
                 assert.equal(err, null);
                 console.log("Create User Result")
-                console.log(doc)
+                    // console.log(doc)
 
                 callback(doc);
             }

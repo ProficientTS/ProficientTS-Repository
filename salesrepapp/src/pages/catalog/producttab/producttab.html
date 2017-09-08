@@ -1,0 +1,14 @@
+<ion-header>
+    <ion-navbar transparent class="pts-navbar">
+        <ion-title></ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-tabs>
+    <ion-tab [root]="ProductDetailPage" tabTitle="Overview" tabIcon="eye" [rootParams]="info"></ion-tab>
+    <ion-tab [root]="ProductDocumentPage" tabTitle="Document" tabIcon="book" [rootParams]="info"></ion-tab>
+    <ion-tab [root]="ProductImagePage" tabTitle="Image" tabIcon="image" [rootParams]="info"></ion-tab>
+    <ion-tab [root]="ProductVideoPage" tabTitle="Video" tabIcon="videocam" [rootParams]="info"></ion-tab>
+    <ion-tab [root]="ProductSetPage" tabTitle="Set" tabIcon="medkit" [rootParams]="info"></ion-tab>
+    <ion-tab [root]="ProductPartPage" tabTitle="Part" tabIcon="construct" [rootParams]="info"></ion-tab>
+</ion-tabs>

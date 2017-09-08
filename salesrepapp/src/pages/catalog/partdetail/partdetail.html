@@ -1,0 +1,22 @@
+<ion-header>
+    <ion-navbar transparent class="pts-navbar">
+        <ion-title></ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="productpage">
+    <div class="modulepage">
+        <div class="product-title">{{title}}</div>
+        <div class="product-image">
+            <ion-slides class="image-slider" slidesPerView="2">
+                <ion-slide *ngFor="let i of img">
+                    <img src="{{i.url}}" class="thumb-img" imageViewer/>
+                </ion-slide>
+            </ion-slides>
+        </div>
+        <ul *ngFor="let h of header" class="ul-partdetail">
+            <li class="ptsPadTB5p">{{h.c_fn}}</li>
+            <li class="li-partdetail" *ngFor="let v of h.val" (click)="fnDisplay(h.d_fn, v.ID)">{{v.ID}} {{v.Name}} {{v.desc}}</li>
+        </ul>
+    </div>
+</ion-content>

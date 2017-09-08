@@ -1,0 +1,31 @@
+page-catalog {
+
+}
+
+.catalogpage {
+    background-image: url("../assets/image/bg-module1.png");
+}
+
+.productpage {
+    background-image: url("../assets/image/bg-module2.png");
+}
+
+#ul-catalog-selector li input[type="text"] {
+    border: 1px solid #ccc;
+    margin-top: 100px;
+    width: 65%;
+}
+
+#ul-catalog-selector {
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+
+.catalog-search-button {
+    background-color: #036;
+    color: #fff;
+    display: inline-block;
+    margin: 2em 0.25em;
+    width: 150px;
+}

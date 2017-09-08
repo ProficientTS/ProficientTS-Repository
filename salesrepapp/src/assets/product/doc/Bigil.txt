@@ -1,0 +1,52 @@
+{
+        "_id" : ObjectId("595ac5822a723f4e6d6dc2bd"),
+        "system_id" : "207.35",
+        "system_nm" : "Bigil",
+        "desc" : "<p><strong>Designed for simplicity</strong></p><br><p>The Binary Anterior Cervical Plate System was designed for ease of use and reduced operation time. This cervical plate features a state-of-the-art locking mechanism that uses our proprietary Helios Technology.</p><br><p><strong>Hear it, feel it, see it</strong></p><br><p>The Helios lock provides the surgeon with audible, tactile, and visual confirmation that the screw is captured by the lock. The Binary Anterior Cervical Plate has a smooth low-profile design and incorporates lordotic curvature to minimize plate contouring by the surgeon during the procedure.</p><br><p><strong>Helios Technology for Anti-Rotation and Anti-Back-Out</strong></p><br><p>The Helios Technology locking mechanism allows the lock to open as the screw head passes during screw insertion and then return to its original position, capturing the screw head. The interface between the Helios lock and cervical screw resists both counter-rotation and screw back-out.</p>",
+        "img" : [ ],
+        "video" : [ ],
+        "doc" : [ ],
+        "technique" : [
+                {
+                        "technique_nm" : "Freo"
+                }
+        ],
+        "part" : [
+                {
+                        "part_id" : "170.56",
+                        "part_nm" : "Screw 5mm S"
+                },
+                {
+                        "part_id" : "179.46",
+                        "part_nm" : "Bolt 10mm"
+                }
+        ],
+        "set" : [
+                {
+                        "set_id" : "207.35.10",
+                        "set_nm" : "Bigil 207.35 5mm C"
+                },
+                {
+                        "set_id" : "207.35.12",
+                        "set_nm" : "igil 207.35 10mm L"
+                }
+        ],
+        "group" : [
+                {
+                        "group_id" : "107.35.10",
+                        "group_nm" : "Bigil 207.35 IP"
+                },
+                {
+                        "group_id" : "107.35.12",
+                        "group_nm" : "Bigil 207.35 IN"
+                }
+        ]
+}
+
+img 
+
+{url: 'assets/product/image/image-1.png', title : 'Image 1'},
+{url: 'assets/product/image/image-2.png', title : 'Image 2'},
+{url: 'assets/product/image/image-3.png', title : 'Image 3'},
+{url: 'assets/product/image/image-4.png', title : 'Image 4'}
+

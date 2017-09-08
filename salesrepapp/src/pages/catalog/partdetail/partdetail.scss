@@ -1,0 +1,42 @@
+.product-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 1em 0;
+}
+
+.product-image {
+    height: 200px;
+}
+
+#ul-product-image li {
+    display: inline-block;
+    text-align: center;
+    margin: 1.5em 0;
+    padding: 0.125em;
+    width: 225px;
+}
+
+.modulepage {
+    padding: 1.5em 1em;
+}
+
+strong {
+    font-weight: bold !important;
+}
+
+.ul-partdetail{
+    width: 30%;
+    display: inline-block;
+    background-color: grey;
+    border-radius: 5px;
+    padding: 5px;
+    vertical-align: top;
+    margin-right: 3%;
+}
+
+.li-partdetail{
+    padding: 5px 0;
+    border-bottom: 2px solid yellowgreen;
+    background-color: blanchedalmond;
+    border-radius: 5px;
+}

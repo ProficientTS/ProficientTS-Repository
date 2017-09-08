@@ -1,0 +1,51 @@
+page-login {
+
+}
+
+
+#ul-login li input[type="text"],
+#ul-login li input[type="password"] {
+    color: #fff !important;
+    background: transparent !important;
+    border: 0;
+}
+
+.loginpage {
+    background-image: url("../assets/image/bg-login.png");
+}
+
+#div-login {
+    width: 250px;
+    margin: auto;
+}
+
+#div-login li {
+    border-bottom: 1px solid #ccc;
+    margin: 0.25em 0 0.5em 0;
+}
+
+.div-login-item {
+    display: inline-block;
+}
+
+.div-login-item i {
+    color: #999;
+}
+
+#div-logo {
+    text-align: center;
+    padding: 100px 0 200px 0;
+}
+
+#div-company-name {
+    color: #fff;
+    font-size: 30px;
+    padding: 0.5em;
+}
+
+#div-login-msg{
+    padding: 10px 0px 0px 10px;
+    color: white;
+}
+
+    

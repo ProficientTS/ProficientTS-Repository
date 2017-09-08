@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-navbar transparent class="pts-navbar">
+        <ion-title></ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="productpage">
+    <div class="modulepage">
+        <div class="product-title">{{title}}</div>
+        <div class="div-document">
+            <div class="div-document-type">
+                <input type="text" placeholder="Search" class="">
+            </div>
+            <ul class="ul-set-header field-header">
+                <li *ngFor="let h of header" class="{{h.class}}">{{h.c_fn}}</li>
+            </ul>
+            <ul class="ul-set-header" *ngFor="let s of set">
+                <li class="ptsW20pr">{{s.set_id}}</li>
+                <li class="li-set-desc">{{s.desc}}</li>
+                <li class="li-set-stock">{{s.qty}}</li>
+                <li class="li-set-action"><a href="{{s.url}}">View</a></li>
+            </ul>
+        </div>
+
+    </div>
+</ion-content>

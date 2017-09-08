@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-navbar transparent class="pts-navbar">
+        <ion-title></ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="productpage">
+    <div class="modulepage">
+        <div class="product-title">{{title}}</div>
+        <div class="div-document">
+            <div class="div-document-type">
+                <input type="text" placeholder="Search" class="">
+            </div>
+            <ul class="ul-part-header field-header">
+                <li *ngFor="let h of header" class="{{h.class}}">{{h.c_fn}}</li>
+            </ul>
+            <ul class="ul-part-header" *ngFor="let s of part">
+                <li class="li-part-id" (click)="partDetail($event.target.innerHTML)">{{s.part_id}}</li>
+                <!--<li class="li-part-desc">{{s.desc}}</li>
+                <li class="li-part-stock">{{s.qty}}</li>-->
+                <li class="li-part-action"><a href="{{s.url}}">View</a></li>
+            </ul>
+        </div>
+
+    </div>
+</ion-content>

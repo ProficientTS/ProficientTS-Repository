@@ -1,0 +1,48 @@
+<!--
+  Generated template for the CatalogPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+    <ion-title>Catalog</ion-title>
+    <!--<ion-title></ion-title>-->
+</ion-header>
+
+
+<ion-content padding class="catalogpage">
+    <div>
+        <ul id="ul-catalog-selector">
+            <li>
+                <input type="text" placeholder="Search by Criteria" class="search-text" (input)="searchItem($event.target.value, select.value)">
+                <select #select>
+                  <option value = "part">Part</option>
+                  <option value = "set">Set</option>
+                  <option value = "system">System</option>
+                  <option value = "technique">Technique</option>
+                </select>
+            </li>
+            <li>
+                <div id="btn-system" class="pts-button catalog-search-button" (click)="showProduct()">
+                    Product
+                </div>
+                <div id="btn-techinque" class="pts-button catalog-search-button" (click)="showTechniques()">
+                    Approach
+                </div>
+                <div id="btn-fav" class="pts-button catalog-search-button" (click)="showFavs()">
+                    Favorites
+                </div>
+                <div id="btn-recent" class="pts-button catalog-search-button" (click)="showRecents()">
+                    Recent
+                </div>
+            </li>
+        </ul>
+    </div>
+    <ion-list *ngIf="display">
+        <ion-card *ngFor="let item of listItem" (click)="itemTapped(item)">
+            <ion-card-header>{{item.ID}}</ion-card-header>
+            <ion-card-content>{{item?.Name}}</ion-card-content>
+        </ion-card>
+    </ion-list>
+</ion-content>

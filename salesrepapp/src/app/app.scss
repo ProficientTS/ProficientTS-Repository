@@ -1,0 +1,88 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+ion-content {
+    font-size: 16px;
+}
+
+input[type="text"],
+input[type="password"] {
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 0.5em;
+    background-color: #fff;
+}
+
+.pts-button {
+    background-color: #ccc;
+    border-radius: 3px;
+    font-size: 16px;
+    padding: 0.75em 0.25em;
+    text-align: center;
+}
+
+.pts-navbar ion-navbar {
+    border: 0;
+}
+
+.pts-navbar,
+.pts-navbar a,
+.pts-navbar button
+ {
+    color: #fff;
+    font-size: 16px;
+}
+
+.pts-navbar ion-icon {
+    font-size: 1.75em;
+    padding: 0.35em 0.25em 0.25em 0.25em;    
+}
+
+.productpage :-ms-input-placeholder,
+.productpage :-moz-placeholder,
+.productpage ::-moz-placeholder,
+.productpage ::-webkit-input-placeholder {
+    font-weight: normal;
+}
+
+.ptsW20pr{
+    width: 20%;
+}
+
+.ptsW60pr{
+    width: 60%;
+}
+
+.ptsW10pr{
+    width: 10%;
+}
+
+.ptsW8pr{
+    width: 8%;
+}
+
+.ptsW80pr{
+    width: 80%;
+}
+
+.ptsTextCenter{
+    text-align: center;
+}
+
+.ptsPadTB5p{
+    padding: 5px 0;
+}

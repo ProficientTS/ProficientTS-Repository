@@ -1,0 +1,44 @@
+<ion-header>
+    <ion-navbar transparent class="pts-navbar">
+        <ion-title></ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="productpage">
+    <div class="modulepage">
+        <div class="product-title">{{title}}</div>
+        <div class="div-document">
+            <div class="div-document-type">Animation</div>
+            <!--<ul class="ul-document" *ngFor="let v of video">-->
+            <!--<ion-slides class="video-slider" slidesPerView="4">
+                <ion-slide *ngFor="let v of video">
+                    <video width="320" height="240" controls>
+                            <source src="{{v.url}}" type="video/mp4">
+                        </video>
+                </ion-slide>
+            </ion-slides>-->
+
+            <div class="div-outer" *ngFor="let v of video">
+                <div class="dummy"></div>
+                <div class="li-document-view">
+                    <button ion-button (click)="viewVideo(v.url)">{{v.title}}</button>
+                </div>
+            </div>
+
+
+
+            <!--
+                <li class="li-document-title">{{v.title}}</li>
+                <li class="li-document-view">
+                    <div><a href="{{v.url}}">View</a></div>
+                    <div>----</div>
+                </li>
+                <li class="li-document-share">
+                    <div>Share</div>
+                    <div>----</div>
+                </li>
+            </ul>-->
+        </div>
+
+    </div>
+</ion-content>

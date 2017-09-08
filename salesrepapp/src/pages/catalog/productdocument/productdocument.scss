@@ -1,0 +1,45 @@
+.product-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 1em 0;
+}
+
+.div-document-type {
+    font-weight: bold;
+    padding: 0.25em 0;
+}
+
+.li-document-title {
+    font-size: 14px;
+}
+
+.li-document-view,
+.li-document-share {
+    font-size: 12px;
+    text-align: center;
+}
+
+.ul-document {
+    border: 1px solid #eee;
+    border-radius: 3px;
+    margin: 0.25em 0;
+    padding: 0.5em;
+    width: 100%;
+}
+
+.ul-document:nth-child(odd) {
+    background-color: #eee;
+}
+
+.ul-document li {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.ul-document li {
+    width: 8%;
+}
+
+.ul-document li:first-child {
+    width: 82%;
+}

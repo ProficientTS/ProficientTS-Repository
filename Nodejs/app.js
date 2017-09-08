@@ -1,9 +1,48 @@
+"use strict";
 var express = require('express'),
     bodyParser = require('body-parser'),
     MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
     UserDAO = require('./users').UserDAO,
-    jwt = require('jsonwebtoken');
+    ItemDAO = require('./data').ItemDAO,
+    jwt = require('jsonwebtoken'),
+    uuidv5 = require('uuid/v5');
+console.log("UUID DNS -------------------")
+console.log(uuidv5.DNS);
+var MongoOplog = require('mongo-oplog');
+
+const oplog = MongoOplog('mongodb://127.0.0.1:27017/catalog', { ns: 'catalog.*' })
+
+
+
+// oplog.on('insert', doc => {
+//     console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+//     console.log(doc);
+// });
+
+// oplog.on('update', doc => {
+//     console.log(doc);
+// });
+
+// oplog.on('delete', doc => {
+//     console.log(doc.o._id);
+// });
+
+// oplog.on('error', error => {
+//     console.log(error);
+// });
+
+// oplog.on('end', () => {
+//     console.log('Stream ended');
+// });
+
+// oplog.destroy.then(() => {
+//     console.log('destroyed')
+// }).catch(err => console.log('destroyed'))
+
+// oplog.stop(() => {
+//     console.log('server stopped');
+// });
 
 var app = express();
 app.use(bodyParser.json());
@@ -11,17 +50,57 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 process.env.SECRET_KEY = "cj777key";
 
-MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
+MongoClient.connect('mongodb://localhost:27017/catalog', function(err, db) {
     "use strict";
 
     assert.equal(null, err);
     console.log("Successfully connected to MongoDB.");
 
     var users = new UserDAO(db);
+    var data = new ItemDAO(db);
 
     var router = express.Router();
 
+    router.get("/", function(req, res) {
+        "use strict";
+        console.log("Back to code")
+        res.send('Hello and welcome! We are happy to have you here {P}');
+    });
+
+    router.post("/list/:type", fnGetData);
+    router.post("/display/:type/:id", fnGetData);
+    router.post("/list/:type/name/:name", fnGetData);
+    router.post("/list/:type/:id/:type2", fnGetData);
+
+    function fnGetData(req, res) {
+        "use strict";
+        var typeInfo = req.body;
+        var type = req.params.type;
+        var id = req.params.id;
+        var type2 = req.params.type2;
+        var name = req.params.name;
+        var view = "list";
+        if (id && type && type2 === undefined) {
+            view = "display"
+        }
+        console.log('typeInfo')
+        console.log(type)
+        console.log('type2')
+        console.log(type2);
+        console.log("View ---- " + view);
+        console.log(id);
+        console.log(name)
+        data.listItem(id, type, type2, name, view, function(rst) {
+            res.json({
+                success: true,
+                msg: 'List Result!',
+                data: rst
+            });
+        });
+    }
+
     router.post("/auth", function(req, res) {
+        console.log("auth ----------")
         "use strict";
         var userInfo = req.body;
         users.checkUser(userInfo, function(user) {
@@ -45,6 +124,63 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
                 });
             }
         });
+    });
+
+    router.post("/sync", function(req, res) {
+
+        "use strict";
+        var syncInfo = req.body;
+
+        // generate UUID
+        syncInfo.deviceID = uuidv5(syncInfo.email, uuidv5.DNS);
+        console.log(syncInfo.deviceID)
+        if (syncInfo.update == "Y") {
+            //Update logic
+            console.log("Update Sync")
+            data.updateSync(syncInfo, function(rst) {
+
+                console.log(rst)
+                if (Object.keys(rst).length == 0) {
+                    rst = [];
+                }
+                if (rst.full) {
+                    res.json({
+                        success: false,
+                        msg: 'Update Sync Failed - Yet to take Fresh Sync'
+                    });
+                } else if (rst) {
+                    res.json({
+                        success: true,
+                        msg: 'SuccessFull Update Sync',
+                        data: rst
+                    });
+
+                } else {
+                    res.json({
+                        success: false,
+                        msg: 'Update Sync Failed'
+                    });
+                }
+            });
+        } else {
+            // Full Sync
+            data.fnFullSync(syncInfo, function(rst) {
+                if (Object.keys(rst).length) {
+                    res.json({
+                        success: true,
+                        msg: 'SuccessFull Full Sync',
+                        data: rst
+                    });
+
+                } else {
+                    res.json({
+                        success: false,
+                        msg: 'Full Sync Failed'
+                    });
+                }
+            });
+        }
+
     });
 
     router.post("/signup", function(req, res) {
@@ -137,7 +273,6 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
         });
     });
 
-
     router.post("/resetpwd", function(req, res) {
         "use strict";
         var userInfo = req.body;
@@ -159,97 +294,43 @@ MongoClient.connect('mongodb://localhost:27017/cat', function(err, db) {
         });
     });
 
-    router.post("/resetpwd", function(req, res) {
-        "use strict";
-        var userInfo = req.body;
-        jwt.verify(userInfo.token, process.env.SECRET_KEY, function(err, decode) {
-            console.log("Decode")
-            console.log(decode);
-            if (err) {
-                res.json({
-                    success: false,
-                    msg: 'Password Reset Failed. Invalid Credentials!'
-                });
-            } else {
-                users.resetpwd(decode.email, userInfo.pwd, function(user) {
-                    res.json({
-                        success: true,
-                        msg: 'Password Reset Successful!'
-                    });
-                });
-            }
-        })
-
-    });
-
     // Use the router routes in our application
     app.use('/', router);
 
     // Start the server listening
-    var server = app.listen(777, function() {
-        var port = server.address().port;
-        console.log('Mongomart server listening on port %s.', port);
+    var server = app.listen(3000, "0.0.0.0");
+
+    oplog.tail();
+
+    oplog.on('op', data => {
+        console.log("Operations -------------------")
+            // console.log(data);
+        if (data.ns == 'catalog.part' ||
+            data.ns == 'catalog.set' ||
+            data.ns == 'catalog.system' ||
+            data.ns == 'catalog.grp' ||
+            data.ns == 'catalog.technique') {
+            console.log(data);
+            fnTrigger(data.op, (data.o2) ? data.o2 : data.o, data.ns.replace('catalog.', ''));
+        }
     });
 
+    function fnTrigger(op, d, type) {
+        console.log("Catalog Trigger --------------");
+        type = (type == 'grp') ? 'group' : type;
+        console.log(op);
+        console.log(d);
+        console.log(type);
+        var voidfl = '';
+        voidfl = (op == 'd') ? 'Y' : '';
+        var masterSync = data.MasterSyncInfo(d['_id'], type, voidfl);
+        data.updateMaster(masterSync, function(rst) {
+            if (Object.keys(rst).length) {
+                console.log("Master Sync Successful!!!");
+            } else {
+                console.log("Master Sync Failed!!!");
+            }
+        })
+    }
+
 });
-
-// var mongoose = require('mongoose');
-// var jwt = require('jsonwebtoken');
-// var config = require('./config');
-// var bodyParser = require('body-parser');
-// const util = require('util');
-// var setupController = require('./controllers/setupController');
-// var apiController = require('./controllers/apiController');
-// var authController = require('./controllers/authController');
-// global._ = require('underscore');
-// var secureRoutes = express.Router();
-// process.env.SECRET_KEY = "cj777key";
-// var port = process.env.PORT || 777;
-// var model = require('./models/model');
-// var user = model.user;
-// mongoose.connect('mongodb://localhost:27017/user');
-// app.use('/assets', express.static(__dirname + '/public'));
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use('/secure-api', secureRoutes);
-
-// app.set('view engine', 'ejs');
-// secureRoutes.use(function(req, res, next) {
-//     console.log("Secure Routes");
-//     var token = req.body.token || req.headers['token'];
-//     if (token) {
-//         jwt.verify(token, process.env.SECRET_KEY, function(err, decode) {
-//             console.log("Decode")
-//             console.log(decode);
-//             global.tokenDecode = decode;
-//             if (err) {
-//                 res.status(500).send("Invalid Token");
-//             } else {
-//                 console.log("Secure Routes Inner");
-//                 next();
-//             }
-//         })
-//     } else {
-//         res.send(
-//             "please send token"
-//         );
-//     }
-// })
-
-
-// // mongoose.Promise = require('bluebird');
-// setupController(app);
-// // apiController(app);
-// app.post('/auth', apiController.chksignin, apiController.authenticate);
-// app.post('/list', apiController.list);
-// secureRoutes.post('/post-data', apiController.postData);
-// secureRoutes.post('/saveUserSignUp', apiController.activateUser);
-// app.post('/checkuser/signup', apiController.checkuser, apiController.verifymail);
-// secureRoutes.post('/get-data', apiController.getData);
-// app.post('/get-data', apiController.getData);
-// app.post('/checkfpuser', apiController.checkfpuser);
-// secureRoutes.post('/resetpwd', apiController.resetpwd);
-// secureRoutes.post('/uservalidation', apiController.uservalidation);
-// app.listen(port, function() {
-//     console.log("Server is Up, Yeah !!!");
-// });

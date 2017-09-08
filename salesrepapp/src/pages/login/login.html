@@ -1,0 +1,54 @@
+<!--
+  Generated template for the LoginPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+    <ion-navbar transparent no-border>
+        <ion-title></ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding class="loginpage">
+    <div id="div-login">
+        <div id="div-logo">
+
+            <!--Replace this value with dynamic data from the db. Call it {{img-login}}-->
+            <img src="assets/image/logo.png" alt="">
+
+            <!--Replace this value with dynamic data from the db. Call it {{company-name}}-->
+            <!-- <div id="div-company-name">Proficient</div> -->
+            <div id="div-company-name" class="arabic">برفيشيانت</div>
+
+        </div>
+        <ul id="ul-login">
+            <li>
+                <div class="div-login-item">
+                    <i class="fa fa-user-o" aria-hidden="true"></i>
+                </div>
+                <div class="div-login-item">
+                    <!-- <input type="text" placeholder="Username"> -->
+                    <input type="text" placeholder="كيف حالك" class="arabic" [(ngModel)]="email">
+                </div>
+            </li>
+            <li>
+                <div class="div-login-item">
+                    <i class="fa fa-key" aria-hidden="true"></i>
+                </div>
+                <div class="div-login-item">
+                    <input type="password" placeholder="Password" [(ngModel)]="pwd">
+                </div>
+            </li>
+            <div id="btn-login" class="pts-button" (touchend)="clickLogin()">
+                تسجيل الدخول
+            </div>
+            <div id="div-login-msg">
+                {{msg}}
+            </div>
+        </ul>
+    </div>
+</ion-content>
