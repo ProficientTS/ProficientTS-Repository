@@ -19,7 +19,7 @@ export class WebserviceProvider {
 
     return new Promise(resolve => {
       console.log("urlurlurl ------ "+ url);
-      this.http.post('http://localhost:3000/' + url, obj)
+      this.http.post('http://192.169.169.6:3000/' + url, obj)
         .map(res => res.json())
         .subscribe(data => {
 
