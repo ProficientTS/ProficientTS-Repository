@@ -14,7 +14,7 @@
 <ion-content padding class="catalogpage">
     <div>
         <ul id="ul-catalog-selector">
-            <li>
+            <!--<li>
                 <input type="text" placeholder="Search by Criteria" class="search-text" (input)="searchItem($event.target.value, select.value)">
                 <select #select>
                   <option value = "part">Part</option>
@@ -22,8 +22,8 @@
                   <option value = "system">System</option>
                   <option value = "technique">Technique</option>
                 </select>
-            </li>
-            <li>
+            </li>-->
+            <!--<li>
                 <div id="btn-system" class="pts-button catalog-search-button" (click)="showProduct()">
                     Product
                 </div>
@@ -35,6 +35,17 @@
                 </div>
                 <div id="btn-recent" class="pts-button catalog-search-button" (click)="showRecents()">
                     Recent
+                </div>
+            </li>-->
+            <li>
+                <div id="btn-freshsync" class="pts-button catalog-search-button" (click)="freshsync()">
+                    Fresh Sync
+                </div>
+                <div id="btn-getupdates" class="pts-button catalog-search-button" (click)="getupdates()">
+                    Get Updates
+                </div>
+                <div id="btn-resetdata" class="pts-button catalog-search-button" (click)="resetdata()">
+                    Reset Data
                 </div>
             </li>
         </ul>

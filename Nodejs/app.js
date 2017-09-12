@@ -5,13 +5,10 @@ var express = require('express'),
     assert = require('assert'),
     UserDAO = require('./users').UserDAO,
     ItemDAO = require('./data').ItemDAO,
-    jwt = require('jsonwebtoken'),
-    uuidv5 = require('uuid/v5');
-console.log("UUID DNS -------------------")
-console.log(uuidv5.DNS);
+    jwt = require('jsonwebtoken');
 var MongoOplog = require('mongo-oplog');
 
-const oplog = MongoOplog('mongodb://127.0.0.1:27017/catalog', { ns: 'catalog.*' })
+const oplog = MongoOplog('mongodb://localhost:27017/catalog', { ns: 'catalog.*' })
 
 
 
@@ -130,9 +127,6 @@ MongoClient.connect('mongodb://localhost:27017/catalog', function(err, db) {
 
         "use strict";
         var syncInfo = req.body;
-
-        // generate UUID
-        syncInfo.deviceID = uuidv5(syncInfo.email, uuidv5.DNS);
         console.log(syncInfo.deviceID)
         if (syncInfo.update == "Y") {
             //Update logic
@@ -324,6 +318,8 @@ MongoClient.connect('mongodb://localhost:27017/catalog', function(err, db) {
         var voidfl = '';
         voidfl = (op == 'd') ? 'Y' : '';
         var masterSync = data.MasterSyncInfo(d['_id'], type, voidfl);
+        console.log("masterSync on Trigger")
+        console.log(masterSync)
         data.updateMaster(masterSync, function(rst) {
             if (Object.keys(rst).length) {
                 console.log("Master Sync Successful!!!");

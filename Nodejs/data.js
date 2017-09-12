@@ -129,55 +129,56 @@ function ItemDAO(database) {
                         console.log("Set Sync Result")
                         console.log(set)
                         rst.set = set;
-                        that.db.collection('grp').find({}).snapshot().toArray(
-                            function(err, grp) {
+                        // that.db.collection('grp').find({}).snapshot().toArray(
+                        //     function(err, grp) {
+                        //         console.log("new Date -------------------------------------------------------------------");
+                        //         console.log(new Date);
+                        //         assert.equal(err, null);
+                        //         console.log("Group Sync Result")
+                        //         console.log(grp)
+                        //         rst.group = grp;
+                        that.db.collection('system').find({}).snapshot().toArray(
+                            function(err, system) {
                                 console.log("new Date -------------------------------------------------------------------");
                                 console.log(new Date);
                                 assert.equal(err, null);
-                                console.log("Group Sync Result")
-                                console.log(grp)
-                                rst.group = grp;
-                                that.db.collection('system').find({}).snapshot().toArray(
-                                    function(err, system) {
+                                console.log("System Sync Result")
+                                console.log(system)
+                                rst.system = system;
+                                that.db.collection('technique').find({}).snapshot().toArray(
+                                    function(err, technique) {
+                                        endTM = new Date();
+                                        endTM =
+                                            endTM.getDay() + "/" +
+                                            endTM.getMonth() + "/" +
+                                            endTM.getFullYear() + "  " +
+                                            endTM.getHours() + ":" +
+                                            endTM.getMinutes() + ":" +
+                                            endTM.getMilliseconds();
+                                        console.log(endTM);
                                         console.log("new Date -------------------------------------------------------------------");
                                         console.log(new Date);
                                         assert.equal(err, null);
-                                        console.log("System Sync Result")
-                                        console.log(system)
-                                        rst.system = system;
-                                        that.db.collection('technique').find({}).snapshot().toArray(
-                                            function(err, technique) {
-                                                endTM = new Date();
-                                                endTM =
-                                                    endTM.getDay() + "/" +
-                                                    endTM.getMonth() + "/" +
-                                                    endTM.getFullYear() + "  " +
-                                                    endTM.getHours() + ":" +
-                                                    endTM.getMinutes() + ":" +
-                                                    endTM.getMilliseconds();
-                                                console.log(endTM);
-                                                console.log("new Date -------------------------------------------------------------------");
-                                                console.log(new Date);
-                                                assert.equal(err, null);
-                                                console.log("Technique Sync Result")
-                                                console.log(technique)
-                                                rst.technique = technique;
-                                                console.log(rst);
-                                                var devSync = that.DevSyncInfo(syncInfo, startTM, endTM);
-                                                console.log(devSync);
-                                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID }, [
-                                                    ['_id', 'asc']
-                                                ], devSync, { upsert: true }, function(err, uuid) {
-                                                    assert.equal(err, null);
-                                                    console.log("UUID Result")
-                                                    callback(rst);
-                                                });
-                                            }
-                                        );
+                                        console.log("Technique Sync Result")
+                                        console.log(technique)
+                                        rst.technique = technique;
+                                        console.log(rst);
+                                        var devSync = that.DevSyncInfo(syncInfo, startTM, endTM);
+                                        console.log(devSync);
+                                        that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email }, [
+                                            ['deviceID', 'asc']
+                                        ], devSync, { upsert: true }, function(err, final) {
+                                            assert.equal(err, null);
+                                            console.log("final Result")
+                                            console.log(final);
+                                            callback(rst);
+                                        });
                                     }
                                 );
                             }
                         );
+                        //     }
+                        // );
                     }
                 );
             }
@@ -207,6 +208,7 @@ function ItemDAO(database) {
                 if (doc.length) {
                     // callback(doc)
                     console.log(doc[0].startTM);
+                    // gte start time only, since we are taking snapshot! 
                     that.db.collection('mastersync').find({ updateTM: { $gte: doc[0].startTM } }).toArray(
                         function(err, mstrst) {
                             assert.equal(err, null);
@@ -236,17 +238,17 @@ function ItemDAO(database) {
                                         setVd.push({ _id: set [i].refid, voidfl: "Y" })
                                     }
                                 }
-                                var group = mstrst.filter(function(o) {
-                                    return o.reftype == 'group'
-                                })
-                                var groupID = [],
-                                    groupVd = [];
-                                for (var i = 0; i < group.length; i++) {
-                                    groupID.push(ObjectId(group[i].refid));
-                                    if (group[i].action == "Y") {
-                                        groupVd.push({ _id: group[i].refid, voidfl: "Y" })
-                                    }
-                                }
+                                // var group = mstrst.filter(function(o) {
+                                //         return o.reftype == 'group'
+                                //     })
+                                // var groupID = [],
+                                //     groupVd = [];
+                                // for (var i = 0; i < group.length; i++) {
+                                //     groupID.push(ObjectId(group[i].refid));
+                                //     if (group[i].action == "Y") {
+                                //         groupVd.push({ _id: group[i].refid, voidfl: "Y" })
+                                //     }
+                                // }
                                 var system = mstrst.filter(function(o) {
                                     return o.reftype == 'system'
                                 })
@@ -280,47 +282,47 @@ function ItemDAO(database) {
                                                 assert.equal(err, null);
                                                 rst.set = set;
                                                 Array.prototype.push.apply(rst.set, setVd);
-                                                that.db.collection('grp').find({ _id: { $in: groupID } }).snapshot().toArray(
-                                                    function(err, grp) {
+                                                // that.db.collection('grp').find({ _id: { $in: groupID } }).snapshot().toArray(
+                                                //     function(err, grp) {
+                                                //         assert.equal(err, null);
+                                                //         rst.group = grp;
+                                                // Array.prototype.push.apply(rst.group, groupVd);
+                                                that.db.collection('system').find({ _id: { $in: systemID } }).snapshot().toArray(
+                                                    function(err, system) {
                                                         assert.equal(err, null);
-                                                        rst.group = grp;
-                                                        Array.prototype.push.apply(rst.group, groupVd);
-                                                        that.db.collection('system').find({ _id: { $in: systemID } }).snapshot().toArray(
-                                                            function(err, system) {
+                                                        rst.system = system;
+                                                        Array.prototype.push.apply(rst.system, systemVd);
+                                                        that.db.collection('technique').find({ _id: { $in: techniqueID } }).snapshot().toArray(
+                                                            function(err, technique) {
                                                                 assert.equal(err, null);
-                                                                rst.system = system;
-                                                                Array.prototype.push.apply(rst.system, systemVd);
-                                                                that.db.collection('technique').find({ _id: { $in: techniqueID } }).snapshot().toArray(
-                                                                    function(err, technique) {
-                                                                        assert.equal(err, null);
-                                                                        rst.technique = technique;
-                                                                        Array.prototype.push.apply(rst.technique, techniqueVd);
-                                                                        var endTM;
-                                                                        endTM = new Date();
-                                                                        endTM =
-                                                                            endTM.getDay() + "/" +
-                                                                            endTM.getMonth() + "/" +
-                                                                            endTM.getFullYear() + "  " +
-                                                                            endTM.getHours() + ":" +
-                                                                            endTM.getMinutes() + ":" +
-                                                                            endTM.getMilliseconds();
-                                                                        console.log(endTM);
-                                                                        // callback(rst);
-                                                                        var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
-                                                                        console.log(devSync);
-                                                                        console.log(devSync.deviceID + "------------------ deviceID");
-                                                                        that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID }, [
-                                                                            ['_id', 'asc']
-                                                                        ], devSync, { upsert: true }, function(err, data) {
-                                                                            assert.equal(err, null);
-                                                                            callback(rst);
-                                                                        });
-                                                                    }
-                                                                );
+                                                                rst.technique = technique;
+                                                                Array.prototype.push.apply(rst.technique, techniqueVd);
+                                                                var endTM;
+                                                                endTM = new Date();
+                                                                endTM =
+                                                                    endTM.getDay() + "/" +
+                                                                    endTM.getMonth() + "/" +
+                                                                    endTM.getFullYear() + "  " +
+                                                                    endTM.getHours() + ":" +
+                                                                    endTM.getMinutes() + ":" +
+                                                                    endTM.getMilliseconds();
+                                                                console.log(endTM);
+                                                                // callback(rst);
+                                                                var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
+                                                                console.log(devSync);
+                                                                console.log(devSync.deviceID + "------------------ deviceID");
+                                                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email }, [
+                                                                    ['_id', 'asc']
+                                                                ], devSync, { upsert: true }, function(err, data) {
+                                                                    assert.equal(err, null);
+                                                                    callback(rst);
+                                                                });
                                                             }
                                                         );
                                                     }
                                                 );
+                                                //     }
+                                                // );
                                             }
                                         );
                                     }
@@ -340,8 +342,8 @@ function ItemDAO(database) {
                                 var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
                                 console.log(devSync);
                                 console.log(devSync.deviceID + "------------------ deviceID");
-                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID }, [
-                                    ['_id', 'asc']
+                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email }, [
+                                    ['deviceID', 'asc']
                                 ], devSync, { upsert: true }, function(err, data) {
                                     assert.equal(err, null);
                                     callback({});

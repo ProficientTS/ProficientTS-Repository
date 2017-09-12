@@ -8,6 +8,12 @@ import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
 import { ProductTabPage } from '../pages/catalog/producttab/producttab';
+import { Global } from '../providers/global';
+
+
+declare global {
+  var Nedb;
+}
 
 @Component({
   templateUrl: 'app.html'
@@ -18,8 +24,10 @@ export class MyApp {
   rootPage: any;
 
   pages: Array<{title: string, component: any}>;
-
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen,
+  private g: Global) {
+    
     this.initializeApp();
 
     // used for an example of ngFor and navigation

@@ -21,6 +21,7 @@ import { SetDetailPage } from '../pages/catalog/setdetail/setdetail';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { WebserviceProvider } from '../providers/webservice/webservice';
+import { Global } from '../providers/global';
 
 import { Device } from '@ionic-native/device';
 import { Camera } from '@ionic-native/camera';
@@ -31,6 +32,7 @@ import { StreamingMedia } from '@ionic-native/streaming-media';
 import { Media } from '@ionic-native/media';
 import { File } from '@ionic-native/file';
 import { VideoPlayer } from '@ionic-native/video-player';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 
 @NgModule({
   declarations: [
@@ -85,7 +87,9 @@ import { VideoPlayer } from '@ionic-native/video-player';
     StreamingMedia,
     Media,
     File,
-    VideoPlayer
+    VideoPlayer,
+    Global,
+    UniqueDeviceID
   ]
 })
 export class AppModule {}
