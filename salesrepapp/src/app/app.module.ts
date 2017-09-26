@@ -33,6 +33,8 @@ import { Media } from '@ionic-native/media';
 import { File } from '@ionic-native/file';
 import { VideoPlayer } from '@ionic-native/video-player';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+import { Network } from '@ionic-native/network';
+import { EmailComposer } from '@ionic-native/email-composer';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp, {
+      tabsHideOnSubPages:true
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -89,7 +93,9 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
     File,
     VideoPlayer,
     Global,
-    UniqueDeviceID
+    UniqueDeviceID,
+    Network,
+    EmailComposer
   ]
 })
 export class AppModule {}

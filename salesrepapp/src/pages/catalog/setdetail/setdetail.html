@@ -7,6 +7,8 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
+        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
         <div class="product-image">
             <ion-slides class="image-slider" slidesPerView="2">
                 <ion-slide *ngFor="let i of img">

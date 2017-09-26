@@ -9,6 +9,7 @@ import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
 import { ProductTabPage } from '../pages/catalog/producttab/producttab';
 import { Global } from '../providers/global';
+import * as _ from 'underscore';
 
 
 declare global {
@@ -27,7 +28,7 @@ export class MyApp {
   
   constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen,
   private g: Global) {
-    
+    console.log(_);
     this.initializeApp();
 
     // used for an example of ngFor and navigation

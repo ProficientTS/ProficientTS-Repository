@@ -75,6 +75,10 @@ input[type="password"] {
     width: 8%;
 }
 
+.ptsW45pr{
+    width: 45%;
+}
+
 .ptsW80pr{
     width: 80%;
 }
@@ -85,4 +89,29 @@ input[type="password"] {
 
 .ptsPadTB5p{
     padding: 5px 0;
+}
+
+.ptsDipsIB{
+    display: inline-block;
+}
+
+.fav-icon {
+    float: right;
+    display: inline;
+    font-size: 2em;
+    padding: 5px;
+}
+
+.ptsFloatR{
+    float: right;
+}
+
+.ptsDMiddle{
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+
+.ptsMarginT20p {
+    margin-top: 20px;
 }

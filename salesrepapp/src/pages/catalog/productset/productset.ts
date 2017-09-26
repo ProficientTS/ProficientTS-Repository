@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
+import { WebserviceProvider } from '../../../providers/webservice/webservice';
+import { SetDetailPage } from '../setdetail/setdetail';
+
+import { Global } from '../../../providers/global';
+
+import * as _ from 'underscore';
+
 @Component({
   selector: 'page-productset',
   templateUrl: 'productset.html',
@@ -13,7 +20,10 @@ info: any;
 tit: any;
 type: any;
 header: any;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+fnl = [];
+st = {};
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+  private ws: WebserviceProvider, private g: Global) {
     console.log('ProductSetPage ----------------------')
     console.log(navParams.data);
     this.info = navParams.data;
@@ -27,27 +37,71 @@ header: any;
                       f: 1,
                       d_fn: "Set",
                       c_fn: "Set ID",
-                      class: "ptsW20pr"
+                      val: "set_id"
                     },
                     {
                       f: 2,
                       d_fn: "Description",
                       c_fn: "Description",
-                      class: "ptsW60pr"
+                      val: "desc"
                     },
                     {
                       f: 3,
                       d_fn: "Qty",
                       c_fn: "In stock",
-                      class: "ptsW10pr ptsTextCenter"
+                      val: "qty"
                     },
                     {
                       f: 4,
                       d_fn: "Action",
                       c_fn: "Action",
-                      class: "ptsW8pr ptsTextCenter"
+                      val: "View"
                     }
                   ];
+    let hdr = this.header;
+    let len = hdr.length;
+
+    // Dynamic header and data
+    var that = this;
+    _.each(this.set, function(element, i){
+      for(let i = 0; i < len; i++){
+        //if view option is required
+        that.st[hdr[i].val] = (hdr[i].val == "View") ? "View" : element[hdr[i].val];
+      }
+      that.fnl.push(that.st);
+    });
+    console.log(this.fnl);
+
+  }
+
+  setDetail(v: any) {
+    console.log(v);
+    if(v == "View"){
+      if(this.g.Network){
+        this.ws.postCall('display/set/'+ v, {})
+        .then(data => {
+          this.handleData(data);
+        });
+      }
+      else{
+        var that = this;
+        this.g.findQ(this.g.db.set, {voidfl : {$ne : 'Y'}})
+          .then((docs: any) => {
+              console.log(docs);
+              that.handleData({data: docs, success: true})
+              
+            }) // here you will get it
+            .catch((err) => console.error(err));
+      }
+    }
+  }
+
+  handleData(data: any){
+    if(data.success){
+      this.navCtrl.push(SetDetailPage, {
+        data: data.data
+      });
+    }   
   }
 
   ionViewDidLoad() {

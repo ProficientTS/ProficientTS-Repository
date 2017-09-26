@@ -87,13 +87,23 @@ MongoClient.connect('mongodb://localhost:27017/catalog', function(err, db) {
         console.log("View ---- " + view);
         console.log(id);
         console.log(name)
-        data.listItem(id, type, type2, name, view, function(rst) {
-            res.json({
-                success: true,
-                msg: 'List Result!',
-                data: rst
+        if (type == "key") {
+            data.listByKeyword(name, function(status, rst) {
+                res.json({
+                    success: status,
+                    msg: 'List Result!',
+                    data: rst
+                });
             });
-        });
+        } else {
+            data.listItem(id, type, type2, name, view, function(rst) {
+                res.json({
+                    success: true,
+                    msg: 'List Result!',
+                    data: rst
+                });
+            });
+        }
     }
 
     router.post("/auth", function(req, res) {

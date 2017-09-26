@@ -12,15 +12,11 @@
                 <input type="text" placeholder="Search" class="">
             </div>
             <ul class="ul-part-header field-header">
-                <li *ngFor="let h of header" class="{{h.class}}">{{h.c_fn}}</li>
+                <li *ngFor="let h of header" class="ptsPadTB5p ptsW45pr">{{h.c_fn}}</li>
             </ul>
-            <ul class="ul-part-header" *ngFor="let s of part">
-                <li class="li-part-id" (click)="partDetail($event.target.innerHTML)">{{s.part_id}}</li>
-                <!--<li class="li-part-desc">{{s.desc}}</li>
-                <li class="li-part-stock">{{s.qty}}</li>-->
-                <li class="li-part-action"><a href="{{s.url}}">View</a></li>
+            <ul *ngFor="let v of fnl">
+                <li class="ptsPadTB5p ptsDipsIB ptsW45pr" *ngFor="let k of header" (click)="partDetail(v[k.val])">{{v[k.val]}}</li>
             </ul>
         </div>
-
     </div>
 </ion-content>

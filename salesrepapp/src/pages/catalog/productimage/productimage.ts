@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { File } from '@ionic-native/file';
+import { EmailComposer } from '@ionic-native/email-composer';
 
 @Component({
   selector: 'page-productimage',
@@ -15,7 +16,8 @@ info: any;
 tit: any;
 type: any;
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private photoViewer: PhotoViewer, private file: File
+  private photoViewer: PhotoViewer, private file: File,
+  private mail: EmailComposer
   ) {
     console.log('ProductImagePage IN----------------------')
     console.log(navParams.data);
@@ -48,6 +50,29 @@ type: any;
       console.log(dataURL);
       this.photoViewer.show(dataURL)
     })
+  }
+
+  shareDoc(url: string){
+    console.log(url);
+    var that = this;
+    // this.mail.isAvailable().then((available: boolean) =>{
+    //   console.log("Email ---- " + available);
+    //   if(available) {
+        //Now we know we can send
+        that.mail.open({
+        to: 'cjchrist777@gmail.com',
+        cc: 'christson_johnny@yahoo.com',
+        bcc: [],
+        attachments: [
+          this.file.applicationDirectory  + 'www/'+ url
+        ],
+        subject: 'Cordova Icons by {P}',
+        body: 'How are you? Nice greetings from {P}'
+        // ,
+        // isHtml: true
+      });
+    //   }
+    // });
   }
 
 }

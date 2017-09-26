@@ -10,7 +10,7 @@ page-catalog {
     background-image: url("../assets/image/bg-module2.png");
 }
 
-#ul-catalog-selector li input[type="text"] {
+input[type="text"] {
     border: 1px solid #ccc;
     margin-top: 100px;
     width: 65%;
@@ -26,6 +26,35 @@ page-catalog {
     background-color: #036;
     color: #fff;
     display: inline-block;
-    margin: 2em 0.25em;
     width: 150px;
+}
+
+#div-cat-srh-tab-container{
+    margin-top: 20px;
+}
+
+#div-cat-srh-tab-container ul{
+    border-bottom: 1px solid #073869;
+    padding-left: 3%;
+}
+
+#div-cat-srh-tab-container ul li{
+    width: 14%;
+    display: inline-block;
+    // background-color: #073869;
+    background-color: #eeeeee;
+    border-radius: 5px 5px 0px 0px;
+    margin-left: 15px;
+    color: #073869;
+    border: 1px solid #e1e1e1;
+    padding: 12px;
+}
+
+#div-cat-srh-tab-container ul li span {
+    float: right;
+}
+
+.ptsCatSelectedTab{
+    color: #e1e1e1!important;
+    background-color: #073869!important;
 }

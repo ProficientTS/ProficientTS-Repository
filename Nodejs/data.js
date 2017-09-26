@@ -45,15 +45,15 @@ function ItemDAO(database) {
                     aggr = [{ $project: { _id: 0, ID: "$set_id", Name: "$set_nm" } }];
                 }
                 break;
-            case 'grp':
-                if (id) {
-                    query = { group_id: id };
-                } else if (name) {
-                    aggr = [{ $match: { $or: [{ group_nm: { $regex: name, $options: 'i' } }, { group_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$group_id", Name: "$group_nm" } }];
-                } else {
-                    aggr = [{ $project: { _id: 0, ID: "$group_id", Name: "$group_nm" } }];
-                }
-                break;
+                // case 'grp':
+                //     if (id) {
+                //         query = { group_id: id };
+                //     } else if (name) {
+                //         aggr = [{ $match: { $or: [{ group_nm: { $regex: name, $options: 'i' } }, { group_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$group_id", Name: "$group_nm" } }];
+                //     } else {
+                //         aggr = [{ $project: { _id: 0, ID: "$group_id", Name: "$group_nm" } }];
+                //     }
+                //     break;
             case 'system':
                 if (id) {
                     query = { system_id: id };
@@ -99,21 +99,84 @@ function ItemDAO(database) {
         );
     }
 
+    this.listByKeyword = function(name, callback) {
+        "use strict";
+        var that = this;
+        var rst = {};
+        this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }, { "video.title": { $regex: name, $options: 'i' } }, { "img.title": { $regex: name, $options: 'i' } }, { "doc.title": { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: "$img", video: "$video", doc: "$doc" } }]).toArray(
+            function(err, system) {
+                assert.equal(err, null);
+                console.log("System List Result");
+                if (err)
+                    callback(false, err);
+                else {
+                    var img = [],
+                        video = [],
+                        doc = [];
+                    // console.log(system.length)
+                    // console.log(system)
+                    for (var i = 0; i < system.length; i++) {
+                        if (system[i].img.length) {
+                            for (var j = 0; j < system[i].img.length; j++) {
+                                img.push(system[i].img[j]);
+                            }
+                        }
+                        if (system[i].video.length) {
+                            for (var k = 0; k < system[i].video.length; k++) {
+                                video.push(system[i].video[k]);
+                            }
+                        }
+                        if (system[i].doc.length) {
+                            for (var l = 0; l < system[i].doc.length; l++) {
+                                doc.push(system[i].doc[l]);
+                            }
+                        }
+                        delete system[i].img;
+                        delete system[i].video;
+                        delete system[i].doc;
+                    }
+                    console.log("Suriya ====================")
+                    console.log(system);
+                    rst.system = system;
+                    rst.img = img;
+                    rst.video = video;
+                    rst.doc = doc;
+                    that.db.collection('set').aggregate([{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm" } }]).toArray(
+                        function(err, set) {
+                            assert.equal(err, null);
+                            console.log("Set List Result");
+                            if (err)
+                                callback(false, err);
+                            else {
+                                rst.set = set;
+                                that.db.collection('part').aggregate([{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm" } }]).toArray(
+                                    function(err, part) {
+                                        assert.equal(err, null);
+                                        console.log("Part List Result");
+                                        if (err)
+                                            callback(false, err);
+                                        else {
+                                            rst.part = part;
+                                            callback(true, rst)
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    }
+
     this.fnFullSync = function(syncInfo, callback) {
         "use strict";
         var that = this;
         var rst = {};
         var startTM, endTM;
-        startTM = new Date();
-        startTM =
-            startTM.getDay() + "/" +
-            startTM.getMonth() + "/" +
-            startTM.getFullYear() + "  " +
-            startTM.getHours() + ":" +
-            startTM.getMinutes() + ":" +
-            startTM.getMilliseconds();
+        startTM = Number(new Date());
         console.log(startTM);
-        this.db.collection('part').find({}).snapshot().toArray(
+        this.db.collection('part').find({ voidfl: { $ne: 'Y' } }).snapshot().toArray(
             function(err, part) {
                 console.log("new Date -------------------------------------------------------------------");
                 console.log(new Date);
@@ -121,7 +184,7 @@ function ItemDAO(database) {
                 console.log("Part Sync Result")
                 console.log(part)
                 rst.part = part;
-                that.db.collection('set').find({}).snapshot().toArray(
+                that.db.collection('set').find({ voidfl: { $ne: 'Y' } }).snapshot().toArray(
                     function(err, set) {
                         console.log("new Date -------------------------------------------------------------------");
                         console.log(new Date);
@@ -129,7 +192,7 @@ function ItemDAO(database) {
                         console.log("Set Sync Result")
                         console.log(set)
                         rst.set = set;
-                        // that.db.collection('grp').find({}).snapshot().toArray(
+                        // that.db.collection('grp').find({voidfl : {$ne : 'Y'}}).snapshot().toArray(
                         //     function(err, grp) {
                         //         console.log("new Date -------------------------------------------------------------------");
                         //         console.log(new Date);
@@ -137,7 +200,7 @@ function ItemDAO(database) {
                         //         console.log("Group Sync Result")
                         //         console.log(grp)
                         //         rst.group = grp;
-                        that.db.collection('system').find({}).snapshot().toArray(
+                        that.db.collection('system').find({ voidfl: { $ne: 'Y' } }).snapshot().toArray(
                             function(err, system) {
                                 console.log("new Date -------------------------------------------------------------------");
                                 console.log(new Date);
@@ -145,16 +208,9 @@ function ItemDAO(database) {
                                 console.log("System Sync Result")
                                 console.log(system)
                                 rst.system = system;
-                                that.db.collection('technique').find({}).snapshot().toArray(
+                                that.db.collection('technique').find({ voidfl: { $ne: 'Y' } }).snapshot().toArray(
                                     function(err, technique) {
-                                        endTM = new Date();
-                                        endTM =
-                                            endTM.getDay() + "/" +
-                                            endTM.getMonth() + "/" +
-                                            endTM.getFullYear() + "  " +
-                                            endTM.getHours() + ":" +
-                                            endTM.getMinutes() + ":" +
-                                            endTM.getMilliseconds();
+                                        endTM = Number(new Date());
                                         console.log(endTM);
                                         console.log("new Date -------------------------------------------------------------------");
                                         console.log(new Date);
@@ -189,14 +245,7 @@ function ItemDAO(database) {
         "use strict";
         var that = this;
         var rst = {};
-        var updateTM = new Date();
-        updateTM =
-            updateTM.getDay() + "/" +
-            updateTM.getMonth() + "/" +
-            updateTM.getFullYear() + "  " +
-            updateTM.getHours() + ":" +
-            updateTM.getMinutes() + ":" +
-            updateTM.getMilliseconds();
+        var updateTM = Number(new Date());
         console.log("updateTM ----------- updateTM -------------- updateTM");
         console.log(updateTM);
         this.db.collection('devicesync').find({ email: syncInfo.email, deviceID: syncInfo.deviceID }, { _id: 0, startTM: 1 }).toArray(
@@ -298,14 +347,7 @@ function ItemDAO(database) {
                                                                 rst.technique = technique;
                                                                 Array.prototype.push.apply(rst.technique, techniqueVd);
                                                                 var endTM;
-                                                                endTM = new Date();
-                                                                endTM =
-                                                                    endTM.getDay() + "/" +
-                                                                    endTM.getMonth() + "/" +
-                                                                    endTM.getFullYear() + "  " +
-                                                                    endTM.getHours() + ":" +
-                                                                    endTM.getMinutes() + ":" +
-                                                                    endTM.getMilliseconds();
+                                                                endTM = Number(new Date());
                                                                 console.log(endTM);
                                                                 // callback(rst);
                                                                 var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
@@ -329,14 +371,7 @@ function ItemDAO(database) {
                                 );
                             } else {
                                 var endTM;
-                                endTM = new Date();
-                                endTM =
-                                    endTM.getDay() + "/" +
-                                    endTM.getMonth() + "/" +
-                                    endTM.getFullYear() + "  " +
-                                    endTM.getHours() + ":" +
-                                    endTM.getMinutes() + ":" +
-                                    endTM.getMilliseconds();
+                                endTM = Number(new Date());
                                 console.log(endTM);
                                 // callback(rst);
                                 var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
@@ -388,14 +423,7 @@ function ItemDAO(database) {
 
     this.MasterSyncInfo = function(id, typ, afl) {
         "use strict";
-        var updateTM = new Date();
-        updateTM =
-            updateTM.getDay() + "/" +
-            updateTM.getMonth() + "/" +
-            updateTM.getFullYear() + "  " +
-            updateTM.getHours() + ":" +
-            updateTM.getMinutes() + ":" +
-            updateTM.getMilliseconds();
+        var updateTM = Number(new Date());
 
         var MasterSync = {
             refid: id,

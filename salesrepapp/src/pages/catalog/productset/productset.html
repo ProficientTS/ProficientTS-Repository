@@ -12,13 +12,10 @@
                 <input type="text" placeholder="Search" class="">
             </div>
             <ul class="ul-set-header field-header">
-                <li *ngFor="let h of header" class="{{h.class}}">{{h.c_fn}}</li>
+                <li *ngFor="let h of header" class="ptsPadTB5p ptsW45pr">{{h.c_fn}}</li>
             </ul>
-            <ul class="ul-set-header" *ngFor="let s of set">
-                <li class="ptsW20pr">{{s.set_id}}</li>
-                <li class="li-set-desc">{{s.desc}}</li>
-                <li class="li-set-stock">{{s.qty}}</li>
-                <li class="li-set-action"><a href="{{s.url}}">View</a></li>
+            <ul *ngFor="let v of fnl">
+                <li class="ptsPadTB5p ptsDipsIB ptsW45pr" *ngFor="let k of header" (click)="setDetail(v[k.val])">{{v[k.val]}}</li>
             </ul>
         </div>
 
