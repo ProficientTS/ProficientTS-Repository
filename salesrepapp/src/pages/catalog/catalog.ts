@@ -73,7 +73,7 @@ options: DocumentViewerOptions = {
     console.log(this.g.Network)
 
     this.headerOpt = this.navParams.get('header');
-     this.g.Network = true;
+    //  this.g.Network = true;
   }
 
   ionViewWillEnter(){
