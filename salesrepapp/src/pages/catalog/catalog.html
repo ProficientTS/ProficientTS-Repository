@@ -8,25 +8,11 @@
 
     <ion-title>Catalog</ion-title>
     <!--<ion-title></ion-title>-->
+
 </ion-header>
 
 
 <ion-content padding class="catalogpage">
-    <div>
-        <ul id="ul-catalog-selector">
-            <li>
-                <div id="btn-freshsync" class="pts-button catalog-search-button" (click)="freshsync()">
-                    Fresh Sync
-                </div>
-                <div id="btn-getupdates" class="pts-button catalog-search-button" (click)="getupdates()">
-                    Get Updates
-                </div>
-                <div id="btn-resetdata" class="pts-button catalog-search-button" (click)="resetdata()">
-                    Reset Data
-                </div>
-            </li>
-        </ul>
-    </div>
     <div class="ptsDMiddle">
         <select (change)="onChange($event.target.value)" #select>
             <option value = "key">Keyword</option>
@@ -35,7 +21,7 @@
             <option value = "system">System</option>
             <option value = "technique">Technique</option>
         </select>
-        <input type="text" placeholder="Search by {{placeH}}" class="search-text" [(ngModel)]="txt" (input)="searchItem(select.value)">
+        <ion-input id="inp-criteria" #input type="text" placeholder="Search by {{placeH}}" class="search-text" [(ngModel)]="txt" autofocus (input)="searchItem(select.value)"></ion-input>
     </div>
     <div *ngIf="txt.length == 0" class="ptsDMiddle ptsMarginT20p">
         <div id="btn-system" class="pts-button catalog-search-button" (click)="showProduct()">
@@ -78,13 +64,70 @@
             </ion-card-content>
         </ion-card>
     </ion-list>
+
+    <ion-list *ngIf="typList">
+        <ion-list *ngIf="typListSys.length == 0 && typListSet.length == 0 && typListPrt.length == 0">
+            <ion-card>
+                <ion-card-header>No Data Found</ion-card-header>
+            </ion-card>
+        </ion-list>
+        <div *ngIf="typListSys.length">
+            <div>System</div>
+            <ion-card *ngFor="let item of typListSys" (click)="itemTapped(item)">
+                <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                    <ion-card-header>{{item.ID}}</ion-card-header>
+                    <ion-card-content>
+                        {{item?.Name}}
+                    </ion-card-content>
+                </div>
+                <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                    <img src="{{item?.url}}" *ngIf="item.url">
+                </div>
+            </ion-card>
+        </div>
+        <div *ngIf="typListSet.length">
+            <div>Set</div>
+            <ion-card *ngFor="let item of typListSet" (click)="itemTapped(item)">
+                <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                    <ion-card-header>{{item.ID}}</ion-card-header>
+                    <ion-card-content>
+                        {{item?.Name}}
+                    </ion-card-content>
+                </div>
+                <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                    <img src="{{item?.url}}" *ngIf="item.url">
+                </div>
+            </ion-card>
+        </div>
+        <div *ngIf="typListPrt.length">
+            <div>Part</div>
+            <ion-card *ngFor="let item of typListPrt" (click)="itemTapped(item)">
+                <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                    <ion-card-header>{{item.ID}}</ion-card-header>
+                    <ion-card-content>
+                        {{item?.Name}}
+                    </ion-card-content>
+                </div>
+                <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                    <img src="{{item?.url}}" *ngIf="item.url">
+                </div>
+            </ion-card>
+        </div>
+    </ion-list>
 </ion-content>
 
 <ng-template #list>
     <ion-list>
         <ion-card *ngFor="let item of listItem" (click)="itemTapped(item)">
-            <ion-card-header *ngIf="item.ID">{{item.ID}}</ion-card-header>
-            <ion-card-content>{{item?.Name}}</ion-card-content>
+            <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                <ion-card-header *ngIf="item.ID">{{item.ID}}</ion-card-header>
+                <ion-card-content>
+                    {{item?.Name}}
+                </ion-card-content>
+            </div>
+            <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                <img src="{{item?.url}}" *ngIf="item.url">
+            </div>
         </ion-card>
     </ion-list>
 </ng-template>

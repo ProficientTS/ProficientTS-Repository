@@ -2,7 +2,8 @@ var MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
     nodemailer = require('nodemailer'),
     jwt = require('jsonwebtoken'),
-    ObjectId = require('mongodb').ObjectID;
+    ObjectId = require('mongodb').ObjectID,
+    _ = require('underscore');
 
 var client = nodemailer.createTransport({
     service: 'Godaddy',
@@ -30,9 +31,9 @@ function ItemDAO(database) {
                 if (id) {
                     query = { part_id: id };
                 } else if (name) {
-                    aggr = [{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm" } }];
+                    aggr = [{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }];
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$part_id", Name: "$part_nm" } }];
+                    aggr = [{ $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }];
                 }
 
                 break;
@@ -40,9 +41,9 @@ function ItemDAO(database) {
                 if (id) {
                     query = { set_id: id };
                 } else if (name) {
-                    aggr = [{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm" } }];
+                    aggr = [{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }];
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$set_id", Name: "$set_nm" } }];
+                    aggr = [{ $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }];
                 }
                 break;
                 // case 'grp':
@@ -58,25 +59,25 @@ function ItemDAO(database) {
                 if (id) {
                     query = { system_id: id };
                 } else if (name) {
-                    aggr = [{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm" } }];
+                    aggr = [{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }];
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$system_id", Name: "$system_nm" } }];
+                    aggr = [{ $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }];
                 }
                 break;
             case 'technique':
                 if (view === "display") {
                     query = { technique_nm: id };
                 } else if (name) {
-                    aggr = [{ $match: { technique_nm: { $regex: name, $options: 'i' } } }, { $project: { _id: 0, ID: "$technique_nm" } }];
+                    aggr = [{ $match: { technique_nm: { $regex: name, $options: 'i' } } }, { $project: { _id: 0, Name: "$technique_nm" } }];
                 } else if (type2) {
                     type = type2;
                     switch (type2) {
                         case "system":
-                            aggr = [{ $match: { "technique.technique_nm": id } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm" } }];
+                            aggr = [{ $match: { "technique.technique_nm": id } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }];
                             break;
                     }
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$technique_nm" } }];
+                    aggr = [{ $project: { _id: 0, Name: "$technique_nm" } }];
                 }
                 break;
         }
@@ -103,61 +104,94 @@ function ItemDAO(database) {
         "use strict";
         var that = this;
         var rst = {};
-        this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }, { "video.title": { $regex: name, $options: 'i' } }, { "img.title": { $regex: name, $options: 'i' } }, { "doc.title": { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: "$img", video: "$video", doc: "$doc" } }]).toArray(
+        // this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }, { "video.title": { $regex: name, $options: 'i' } }, { "img.title": { $regex: name, $options: 'i' } }, { "doc.title": { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: "$img", video: "$video", doc: "$doc" } }]).toArray(
+        this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }]).toArray(
             function(err, system) {
                 assert.equal(err, null);
                 console.log("System List Result");
                 if (err)
                     callback(false, err);
                 else {
-                    var img = [],
-                        video = [],
-                        doc = [];
-                    // console.log(system.length)
-                    // console.log(system)
-                    for (var i = 0; i < system.length; i++) {
-                        if (system[i].img.length) {
-                            for (var j = 0; j < system[i].img.length; j++) {
-                                img.push(system[i].img[j]);
-                            }
-                        }
-                        if (system[i].video.length) {
-                            for (var k = 0; k < system[i].video.length; k++) {
-                                video.push(system[i].video[k]);
-                            }
-                        }
-                        if (system[i].doc.length) {
-                            for (var l = 0; l < system[i].doc.length; l++) {
-                                doc.push(system[i].doc[l]);
-                            }
-                        }
-                        delete system[i].img;
-                        delete system[i].video;
-                        delete system[i].doc;
-                    }
-                    console.log("Suriya ====================")
                     console.log(system);
                     rst.system = system;
-                    rst.img = img;
-                    rst.video = video;
-                    rst.doc = doc;
-                    that.db.collection('set').aggregate([{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm" } }]).toArray(
-                        function(err, set) {
+
+                    that.db.collection('system').aggregate([{ $match: { "img.title": { $regex: name, $options: 'i' } } }, { $project: { _id: 0, img: "$img" } }]).toArray(
+                        function(err, image) {
                             assert.equal(err, null);
-                            console.log("Set List Result");
+                            console.log("Img List Result");
                             if (err)
                                 callback(false, err);
                             else {
-                                rst.set = set;
-                                that.db.collection('part').aggregate([{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm" } }]).toArray(
-                                    function(err, part) {
+                                var img = [];
+                                for (var i = 0; i < image.length; i++) {
+                                    if (image[i].img.length) {
+                                        for (var j = 0; j < image[i].img.length; j++) {
+                                            img.push(image[i].img[j]);
+                                        }
+                                    }
+                                    // delete image[i].img;
+                                }
+                                rst.img = _.uniq(img);
+                                that.db.collection('system').aggregate([{ $match: { "video.title": { $regex: name, $options: 'i' } } }, { $project: { _id: 0, video: "$video" } }]).toArray(
+                                    function(err, video) {
                                         assert.equal(err, null);
-                                        console.log("Part List Result");
+                                        console.log("Video List Result");
                                         if (err)
                                             callback(false, err);
                                         else {
-                                            rst.part = part;
-                                            callback(true, rst)
+                                            var vid = [];
+                                            for (var i = 0; i < video.length; i++) {
+                                                if (video[i].video.length) {
+                                                    for (var j = 0; j < video[i].video.length; j++) {
+                                                        vid.push(video[i].video[j]);
+                                                    }
+                                                }
+                                                // delete video[i].video;
+                                            }
+                                            rst.video = _.uniq(vid);
+                                            that.db.collection('system').aggregate([{ $match: { "doc.title": { $regex: name, $options: 'i' } } }, { $project: { _id: 0, doc: "$doc" } }]).toArray(
+                                                function(err, doc) {
+                                                    assert.equal(err, null);
+                                                    console.log("Doc List Result");
+                                                    if (err)
+                                                        callback(false, err);
+                                                    else {
+                                                        var docm = [];
+                                                        for (var i = 0; i < doc.length; i++) {
+                                                            if (doc[i].doc.length) {
+                                                                for (var j = 0; j < doc[i].doc.length; j++) {
+                                                                    docm.push(doc[i].doc[j]);
+                                                                }
+                                                            }
+                                                            // delete doc[i].doc;
+                                                        }
+                                                        rst.doc = _.uniq(docm);
+                                                        that.db.collection('set').aggregate([{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }]).toArray(
+                                                            function(err, set) {
+                                                                assert.equal(err, null);
+                                                                console.log("Set List Result");
+                                                                if (err)
+                                                                    callback(false, err);
+                                                                else {
+                                                                    rst.set = set;
+                                                                    that.db.collection('part').aggregate([{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }]).toArray(
+                                                                        function(err, part) {
+                                                                            assert.equal(err, null);
+                                                                            console.log("Part List Result");
+                                                                            if (err)
+                                                                                callback(false, err);
+                                                                            else {
+                                                                                rst.part = part;
+                                                                                callback(true, rst)
+                                                                            }
+                                                                        }
+                                                                    );
+                                                                }
+                                                            }
+                                                        );
+                                                    }
+                                                }
+                                            );
                                         }
                                     }
                                 );
@@ -435,6 +469,16 @@ function ItemDAO(database) {
 
         return MasterSync;
     }
+}
+
+function mergeByProperty(arr1, arr2, prop) {
+    _.each(arr2, function(arr2obj) {
+        var arr1obj = _.find(arr1, function(arr1obj) {
+            return arr1obj[prop] === arr2obj[prop];
+        });
+
+        arr1obj ? _.extend(arr1obj, arr2obj) : arr1.push(arr2obj);
+    });
 }
 
 module.exports.ItemDAO = ItemDAO;

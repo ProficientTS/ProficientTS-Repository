@@ -13,13 +13,11 @@ page-catalog {
 input[type="text"] {
     border: 1px solid #ccc;
     margin-top: 100px;
-    width: 65%;
 }
 
-#ul-catalog-selector {
-    width: 100%;
-    margin: auto;
-    text-align: center;
+#inp-criteria{
+    width: 65%;
+    display: inline-block;
 }
 
 .catalog-search-button {

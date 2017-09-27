@@ -3,6 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { ProductTabPage } from '../producttab/producttab';  
+import { CatalogPage } from '../catalog';
 
 import { Global } from '../../../providers/global';
 import * as _ from 'underscore';
@@ -63,19 +64,21 @@ time: any;
     })
     .catch((err)=> console.log(err));
     this.time = Number(new Date());
-    // this.time =
-    //     this.time.getDay() + "/" +
-    //     this.time.getMonth() + "/" +
-    //     this.time.getFullYear() + "  " +
-    //     this.time.getHours() + ":" +
-    //     this.time.getMinutes() + ":" +
-    //     this.time.getMilliseconds();
-    // this.time = this.time.getFullYear() + this.time.getMonth() + this.time.getDay()
-    //           + this.time.getHours() + this.time.getMinutes() + this.time.getMilliseconds();
-    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set'}, {$set: {time: this.time}}, function(rst){
+    var url = "";
+    if(this.data && this.data.img && this.data.img.length){
+      url = this.data.img[0].url;
+    }
+    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: {time: this.time}}, function(rst){
       console.log(rst);
     });
   }
+
+  goToCatalog(val: any){
+    this.navCtrl.push(CatalogPage, {
+      header: val
+    });
+  }
+
 
   fnDisplay(t: any, v: any){
     console.log(t);
@@ -122,7 +125,11 @@ time: any;
 
   fnFav(fav: boolean){
     var that = this;
-    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set'}, {$set: { fav : fav}}, function(rst){
+    var url = "";
+    if(this.data && this.data.img && this.data.img.length){
+      url = this.data.img[0].url;
+    }
+    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: { fav : fav}}, function(rst){
       console.log(rst);
       if(rst){
         that.fav = !that.fav;

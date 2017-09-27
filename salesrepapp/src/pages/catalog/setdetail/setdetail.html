@@ -2,6 +2,19 @@
     <ion-navbar transparent class="pts-navbar">
         <ion-title></ion-title>
     </ion-navbar>
+    <input placeholder="Search by Criteria" class="search-text" (click)="goToCatalog('search')">
+    <div class="pts-button catalog-search-button" (click)="goToCatalog('product')">
+        Product
+    </div>
+    <div class="pts-button catalog-search-button" (click)="goToCatalog('approach')">
+        Approach
+    </div>
+    <div class="pts-button catalog-search-button" (click)="goToCatalog('favorites')">
+        Favorites
+    </div>
+    <div class="pts-button catalog-search-button" (click)="goToCatalog('recent')">
+        Recent
+    </div>
 </ion-header>
 
 <ion-content padding class="productpage">

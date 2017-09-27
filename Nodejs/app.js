@@ -8,38 +8,7 @@ var express = require('express'),
     jwt = require('jsonwebtoken');
 var MongoOplog = require('mongo-oplog');
 
-const oplog = MongoOplog('mongodb://localhost:27017/catalog', { ns: 'catalog.*' })
-
-
-
-// oplog.on('insert', doc => {
-//     console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-//     console.log(doc);
-// });
-
-// oplog.on('update', doc => {
-//     console.log(doc);
-// });
-
-// oplog.on('delete', doc => {
-//     console.log(doc.o._id);
-// });
-
-// oplog.on('error', error => {
-//     console.log(error);
-// });
-
-// oplog.on('end', () => {
-//     console.log('Stream ended');
-// });
-
-// oplog.destroy.then(() => {
-//     console.log('destroyed')
-// }).catch(err => console.log('destroyed'))
-
-// oplog.stop(() => {
-//     console.log('server stopped');
-// });
+const oplog = MongoOplog('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', { ns: 'cat.*' })
 
 var app = express();
 app.use(bodyParser.json());
@@ -47,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 process.env.SECRET_KEY = "cj777key";
 
-MongoClient.connect('mongodb://localhost:27017/catalog', function(err, db) {
+MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', function(err, db) {
     "use strict";
 
     assert.equal(null, err);
@@ -309,18 +278,17 @@ MongoClient.connect('mongodb://localhost:27017/catalog', function(err, db) {
     oplog.on('op', data => {
         console.log("Operations -------------------")
             // console.log(data);
-        if (data.ns == 'catalog.part' ||
-            data.ns == 'catalog.set' ||
-            data.ns == 'catalog.system' ||
-            data.ns == 'catalog.grp' ||
-            data.ns == 'catalog.technique') {
+        if (data.ns == 'cat.part' ||
+            data.ns == 'cat.set' ||
+            data.ns == 'cat.system' ||
+            data.ns == 'cat.technique') {
             console.log(data);
-            fnTrigger(data.op, (data.o2) ? data.o2 : data.o, data.ns.replace('catalog.', ''));
+            fnTrigger(data.op, (data.o2) ? data.o2 : data.o, data.ns.replace('cat.', ''));
         }
     });
 
     function fnTrigger(op, d, type) {
-        console.log("Catalog Trigger --------------");
+        console.log("cat Trigger --------------");
         type = (type == 'grp') ? 'group' : type;
         console.log(op);
         console.log(d);

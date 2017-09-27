@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { ProductTabPage } from '../catalog/producttab/producttab';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
@@ -20,6 +20,7 @@ import * as _ from 'underscore';
   templateUrl: 'catalog.html',
 })
 export class CatalogPage {
+   @ViewChild('input') myInput;
 listItem = [];
 display: boolean = false;
 type = "key";
@@ -48,6 +49,11 @@ doclen = 0;
 favlen = 0;
 reclen = 0;
 placeH = "Keyword";
+typList = false;
+typListSys = [];
+typListSet = [];
+typListPrt = [];
+headerOpt: any;
 options: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
@@ -60,10 +66,14 @@ options: DocumentViewerOptions = {
   private videoPlayer: VideoPlayer,
   private file: File,
   private mail: EmailComposer) {
-     console.log(Nedb);
-     console.dir(Nedb);
-     console.log(this.g.deviceId)
-     console.log(this.g.Network)
+    
+    console.log(Nedb);
+    console.dir(Nedb);
+    console.log(this.g.deviceId)
+    console.log(this.g.Network)
+
+    this.headerOpt = this.navParams.get('header');
+     this.g.Network = true;
   }
 
   ionViewWillEnter(){
@@ -73,6 +83,10 @@ options: DocumentViewerOptions = {
     this.tab = false;
     this.txt = "";
     this.nomedia = true;
+    this.typList = false;
+    this.typListSys = [];
+    this.typListSet = [];
+    this.typListPrt = [];
   }
 
   ionViewCanEnter(){
@@ -85,23 +99,50 @@ options: DocumentViewerOptions = {
 
   ionViewDidEnter(){
     console.log('ionViewDidEnter CatalogPage');
+    switch(this.headerOpt){
+      case 'default':
+          console.log("Renderer setF")
+          this.myInput.setFocus();
+      break;
+      case 'product':
+        this.showProduct();
+      break;
+      case 'approach':
+        this.showTechniques();
+      break;
+      case 'favorites':
+        this.showFavs();
+      break;
+      case 'recent':
+        this.showRecents();
+      break;
+    }
+    console.log(this.headerOpt);
   }
 
   showProduct() {
+    var that = this;
     this.type = "system";
     this.display = true;
     this.tab = true;
+    this.typList = false;
     console.log(this.g.Network)
     this.setTab('systab');
     if(this.g.Network){
       this.ws.postCall('list/system', {})
       .then((data: any) => {
+        console.log(data)
+        if(data.data.length)
+          _.each(data.data, function(element, i){
+              if(element.img.length){
+                element["url"] = element.img[0].url;
+              }
+          });
         that.listItem = data.data;
         that.syslen = data.data.length;
       });
     }
     else{
-      var that = this;
       this.g.findQ(this.g.db.system, {voidfl : {$ne : 'Y'}})
         .then((docs: any) => {
             console.log(docs);
@@ -110,6 +151,9 @@ options: DocumentViewerOptions = {
               _.each(docs, function(element, i){
                 element["Name"] = element.system_nm;
                 element["ID"] = element.system_id;
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
                 if(i == (len-1)){
                   that.listItem = docs;
                   that.syslen = docs.length;
@@ -136,10 +180,12 @@ options: DocumentViewerOptions = {
   }
 
   showTechniques() {
+    var that = this;
     this.display = true;
     this.type = "technique";
     this.tab = true;
-    this.setTab('techtab')
+    this.setTab('techtab');
+    this.typList = false;
     if(this.g.Network){
       this.ws.postCall('list/technique', {})
       .then((data: any) => {
@@ -148,7 +194,6 @@ options: DocumentViewerOptions = {
       });
     }
     else{
-      var that = this;
       this.g.findQ(this.g.db.technique, {voidfl : {$ne : 'Y'}})
         .then((docs: any) => {
             console.log(docs);
@@ -175,8 +220,22 @@ options: DocumentViewerOptions = {
 
   handleData(data: any){
       console.log(this.type)
+      console.log(data);
     if(data.success){
-      switch(this.type){
+      let typ = this.type;
+      if(typ == "key"){
+        // selected Tab
+        if(this.tabs.systab){
+          typ = 'system';
+        }
+        else if(this.tabs.parttab){
+          typ = 'part';
+        }
+        else if(this.tabs.settab){
+          typ = 'set';
+        }
+      }
+      switch(typ){
         case "part":
           this.navCtrl.push(PartDetailPage, {
             data: data.data
@@ -201,12 +260,14 @@ options: DocumentViewerOptions = {
     console.log(this.txt);
     console.log(this.type)
     var that = this;
+    this.typList = false;
     if(this.txt.length >= 3){
       this.display = true;
       this.tab = true;
       console.log(typ)
       this.type = typ;
       if(this.g.Network){
+        console.log("oo")
         this.ws.postCall('list/' + this.type + '/name/' + this.txt, {})
         .then(data => {
           this.searchData(data);
@@ -219,86 +280,97 @@ options: DocumentViewerOptions = {
         f = new RegExp(f);
         v = new RegExp(v);
         console.log(v)
-        this.g.findQ(this.g.db.system, { $or: [{ system_nm: { $regex: f } }, { system_nm: { $regex: v } }, { system_id: { $regex: v } }, { "video.title": { $regex: f  } }, { "img.title": { $regex: f  } }, { "doc.title": { $regex: f  } }, { "video.title": { $regex: v  } }, { "img.title": { $regex: v  } }, { "doc.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+        // , { "video.title": { $regex: f  } }, { "img.title": { $regex: f  } }, { "doc.title": { $regex: f  } }, { "video.title": { $regex: v  } }, { "img.title": { $regex: v  } }, { "doc.title": { $regex: v  }}
+        this.g.findQ(this.g.db.system, { $or: [{ system_nm: { $regex: f } }, { system_nm: { $regex: v } }, { system_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
         .then((system: any) => {
-            console.log(system);
-            var img = [],
-                video = [],
-                doc = [];
-            if(system.length){
-              for (var i = 0; i < system.length; i++) {
-                if (system[i].img.length) {
-                    for (var j = 0; j < system[i].img.length; j++) {
-                        img.push(system[i].img[j]);
-                    }
-                }
-                if (system[i].video.length) {
-                    for (var k = 0; k < system[i].video.length; k++) {
-                        video.push(system[i].video[k]);
-                    }
-                }
-                if (system[i].doc.length) {
-                    for (var l = 0; l < system[i].doc.length; l++) {
-                        doc.push(system[i].doc[l]);
-                    }
-                }
-                delete system[i].img;
-                delete system[i].video;
-                delete system[i].doc;
-              }
-              
-              _.each(system, function(element, i){
-                element["Name"] = element['system_nm'];
-                element["ID"] = element['system_id'];
-                if(i == (system.length-1)){
-                  rst.system = system;
-                  rst.img = img;
-                  rst.video = video;
-                  rst.doc = doc;
-                }
-              });
-            }
-            else{
-              rst.system = [];
-              rst.img = [];
-              rst.video = [];
-              rst.doc = [];
-            }
-            that.g.findQ(that.g.db.set, { $or: [{ set_nm: { $regex: f } }, { set_nm: { $regex: v } }, { set_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
-            .then((set: any) => {
-                console.log(set);
-                if(set.length){
-                  _.each(set, function(element, i){
-                    element["Name"] = element['set_nm'];
-                    element["ID"] = element['set_id'];
-                    if(i == (set.length-1)){
-                      rst.set = set;
-                    }
-                  });
+          console.log(system);
+            var sys = [];
+            for (var j = 0; j < system.length; j++) {
+                if(system[j].img.length){
+                  sys.push({Name: system[j].system_nm, ID: system[j].system_id, url: system[j].img[0].url});
                 }
                 else{
-                  rst.set = [];
+                  sys.push({Name: system[j].system_nm, ID: system[j].system_id});
                 }
                 
-                that.g.findQ(that.g.db.part, { $or: [{ part_nm: { $regex: f } }, { part_nm: { $regex: v } }, { part_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
-                .then((part: any) => {
-                    console.log(part);
-                    if(part.length){
-                      _.each(part, function(element, i){
-                        element["Name"] = element['part_nm'];
-                        element["ID"] = element['part_id'];
-                        if(i == (part.length-1)){
-                          rst.part = part;
+            }
+            rst.system = sys;
+            that.g.findQ(that.g.db.system, { $or: [{ "img.title": { $regex: f  } }, { "img.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+            .then((image: any) => {
+              console.log(image);
+                var img = [];
+                for (var i = 0; i < image.length; i++) {
+                    if (image[i].img.length) {
+                        for (var j = 0; j < image[i].img.length; j++) {
+                            img.push(image[i].img[j]);
                         }
-                      });
                     }
-                    else{
-                      rst.part = [];
+                }
+                rst.img = _.uniq(img);
+                that.g.findQ(that.g.db.system, { $or: [{ "video.title": { $regex: f  } }, { "video.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+                .then((video: any) => {
+                  console.log(video);
+                    var vid = [];
+                    for (var i = 0; i < video.length; i++) {
+                        if (video[i].video.length) {
+                            for (var j = 0; j < video[i].video.length; j++) {
+                                vid.push(video[i].video[j]);
+                            }
+                        }
                     }
-                    that.searchData({data: rst});
+                    rst.video = _.uniq(vid);
+                    that.g.findQ(that.g.db.system, { $or: [{ "doc.title": { $regex: f  } }, { "doc.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+                    .then((doc: any) => {
+                      console.log(doc);
+                        var docm = [];
+                        for (var i = 0; i < doc.length; i++) {
+                            if (doc[i].doc.length) {
+                                for (var j = 0; j < doc[i].doc.length; j++) {
+                                    docm.push(doc[i].doc[j]);
+                                }
+                            }
+                        }
+                        rst.doc = _.uniq(docm);
+                        that.g.findQ(that.g.db.set, { $or: [{ set_nm: { $regex: f } }, { set_nm: { $regex: v } }, { set_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
+                        .then((set: any) => {
+                            console.log(set);
+                            var setArr = [];
+                            for (var j = 0; j < set.length; j++) {
+                                if(set[j].img.length){
+                                  setArr.push({Name: set[j].set_nm, ID: set[j].set_id, url: set[j].img[0].url});
+                                }
+                                else{
+                                  setArr.push({Name: set[j].set_nm, ID: set[j].set_id});
+                                }
+                            }
+                            rst.set = setArr;
+                            
+                            that.g.findQ(that.g.db.part, { $or: [{ part_nm: { $regex: f } }, { part_nm: { $regex: v } }, { part_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
+                            .then((part: any) => {
+                                console.log(part);
+                                var partArr = [];
+                                for (var j = 0; j < part.length; j++) {
+                                    if(part[j].img.length){
+                                      partArr.push({Name: part[j].part_nm, ID: part[j].part_id, url: part[j].img[0].url});
+                                    }
+                                    else{
+                                      partArr.push({Name: part[j].part_nm, ID: part[j].part_id});
+                                    }
+                                }
+                                rst.part = partArr;
+                                that.searchData({data: rst});
+                              }) // here you will get it
+                              .catch((err) => console.error(err));
+                            
+                          }) // here you will get it
+                          .catch((err) => console.error(err));
+
+                      }) // here you will get it
+                      .catch((err) => console.error(err));
+
                   }) // here you will get it
                   .catch((err) => console.error(err));
-                
+
               }) // here you will get it
               .catch((err) => console.error(err));
             
@@ -338,6 +410,9 @@ options: DocumentViewerOptions = {
                 element["Name"] = element[that.type + '_nm'];
                 if(that.type != 'technique')
                 element["ID"] = element[that.type + '_id'];
+                if(that.type != 'technique' && element.img.length){
+                  element["url"] = element.img[0].url;
+                }
                 if(i == (len-1)){
                   that.searchData(docs);
                 }
@@ -388,6 +463,30 @@ options: DocumentViewerOptions = {
       console.log(0)
       if(this.type == "key"){
         console.log(console.log(data.data))
+        if(this.g.Network){
+          if(data.data.system.length){
+            _.each(data.data.system, function(element, i){
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
+            });
+          }
+          if(data.data.set.length){
+            _.each(data.data.set, function(element, i){
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
+            });
+          }
+          if(data.data.part.length){
+            _.each(data.data.part, function(element, i){
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
+            });
+          }
+        }
+        
         this.keyval = data.data;
         this.keyval.system = data.data.system;
         this.keyval.doc = data.data.doc;
@@ -406,6 +505,12 @@ options: DocumentViewerOptions = {
         this.setTab('systab');
       }
       else{
+        if(data.data.length && this.type != "technique")
+          _.each(data.data, function(element, i){
+              if(element.img.length){
+                element["url"] = element.img[0].url;
+              }
+          });
         this.listItem = data.data;
         switch(this.type){
           case 'part':
@@ -478,21 +583,28 @@ options: DocumentViewerOptions = {
     console.log(item)
     console.log(this.type)
     console.log(item.type);
-    if(item.type){
+    if(item.type){ // Recent and Favorites
       this.type = item.type;
     }
+    var that = this;
     if(this.type === "technique" && item.ID === undefined){
       this.setTab('systab');
       this.type = 'system';
       if(this.g.Network){
         this.ws.postCall('list/technique/'+ item.Name + '/system' , {})
         .then((data: any) => {
+          console.log(data.data)
+          if(data.data.length)
+            _.each(data.data, function(element, i){
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
+            });
           that.listItem = data.data;
           that.syslen = data.data.length;
         });
       }
       else{
-        var that = this;
         this.g.findQ(this.g.db.system, { "technique.technique_nm": {$in: [item.Name]}, voidfl : {$ne : 'Y'} })
           .then((docs: any) => {
               console.log(docs);
@@ -501,6 +613,9 @@ options: DocumentViewerOptions = {
                 _.each(docs, function(element, i){
                   element["Name"] = element.system_nm;
                   element["ID"] = element.system_id;
+                  if(element.img.length){
+                    element["url"] = element.img[0].url;
+                  }
                   if(i == (len-1)){
                     that.listItem = docs;
                     that.syslen = docs.length;
@@ -516,26 +631,6 @@ options: DocumentViewerOptions = {
             .catch((err) => console.error(err));
       }
     }
-    // else if(this.type === "technique" && item.ID !== undefined){
-    //   if(this.g.Network){
-    //     this.ws.postCall('display/system/'+ item.ID, {})
-    //     .then(data => {
-    //       this.handleData(data);
-    //     });
-    //   }
-    //   else{
-    //     var that = this;
-    //     this.g.findQ(this.g.db.system, { system_id: item.ID, voidfl : {$ne : 'Y'} })
-    //       .then((docs: any) => {
-    //         console.log(docs);
-    //         that.navCtrl.push(ProductTabPage, {
-    //           data: docs
-    //         });
-            
-    //       }) // here you will get it
-    //       .catch((err) => console.error(err));
-    //   }
-    // }
     else if(this.type == "key" && (this.tabs.doctab || this.tabs.imgtab || this.tabs.vidtab)){
 
     }
@@ -594,232 +689,29 @@ options: DocumentViewerOptions = {
 
   }
 
-  freshsync(){
-    var that = this;
-    that.g.db.devicesync.find({email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, function(err, doc){
-      console.log(err);
-      console.log(doc);
-      if(doc.length == 0){
-        that.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: that.g.deviceId})
-          .then(data => {
-            that.syncService(data);
-          });
-      }
-      else{
-        console.log("Already Synced!")
-      }
-    });
-    
-  }
-
-  getupdates(){
-    var that = this;
-    that.g.db.devicesync.find({email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, function(err, doc){
-      console.log(err);
-      console.log(doc);
-      if(doc.length){
-        that.ws.postCall('sync', {email: localStorage.getItem('email'), update: 'Y', deviceID: that.g.deviceId})
-        .then(data => {
-          that.updateService(data);
-        });
-      }
-      else{
-        console.log("Full Sync First!")
-      }
-    });
-
-  }
-
-  resetdata(){
-    var db = this.g.db;
-    db.part.remove({}, { multi: true }, function (err, numRemoved) {
-      if(err)
-        console.log("Part Reset Failed");
-      else{
-        console.log("Part Reset Successful");
-        console.log(numRemoved);
-      }
-      db.set.remove({}, { multi: true }, function (err, numRemoved) {
-        if(err)
-          console.log("Set Reset Failed");
-        else{
-          console.log("Set Reset Successful");
-          console.log(numRemoved);
-        }
-        db.system.remove({}, { multi: true }, function (err, numRemoved) {
-          if(err)
-            console.log("System Reset Failed");
-          else{
-            console.log("System Reset Successful");
-            console.log(numRemoved);
-          }
-          db.technique.remove({}, { multi: true }, function (err, numRemoved) {
-            if(err)
-              console.log("Technique Reset Failed");
-            else{
-              console.log("Technique Reset Successful");
-              console.log(numRemoved);
-            }
-            db.devicesync.remove({}, { multi: true }, function (err, numRemoved) {
-              if(err)
-                console.log("Devicesync Reset Failed");
-              else{
-                console.log("Devicesync Reset Successful");
-                console.log(numRemoved);
-              }
-              db.fav.remove({}, { multi: true }, function (err, numRemoved) {
-                if(err)
-                  console.log("Fav Reset Failed");
-                else{
-                  console.log("Fav Reset Successful");
-                  console.log(numRemoved);
-                }
-                db.recent.remove({}, { multi: true }, function (err, numRemoved) {
-                  if(err)
-                    console.log("Recent Reset Failed");
-                  else{
-                    console.log("Recent Reset Successful");
-                    console.log(numRemoved);
-                  }
-                });
-              });
-            });
-          });
-        });
-      });
-    });
-  }
-  // more performance
-  syncService(data: any){
-    console.log(data);
-    if(data.success){
-      var db = this.g.db;
-      if(data.data.part.length){
-        db.part.insert(data.data.part, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("Parts Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      console.log(data.data.set);
-      if(data.data.set.length){
-        db.set.insert(data.data.set, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("Set Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      if(data.data.system.length){
-        db.system.insert(data.data.system, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("System Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      if(data.data.technique.length){
-        db.technique.insert(data.data.technique, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("Technique Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-
-      db.devicesync.insert({fullsync: "Y", email: localStorage.getItem('email'), deviceID: this.g.deviceId}, function(err, newDocs){
-        if(err)
-          console.log("Insert Failed");
-        else{
-          console.log("Devicesync Inserted Successfully");
-          console.log(newDocs);
-        }
-      })
-
-    }
-  }
-
-  updateService(data: any){
-    console.log(data);
-    if(data.success && (data.data.length || Object.keys(data.data).length)){
-      var db = this.g.db;
-      if(data.data.part.length){
-        for(var i = 0; i < data.data.part.length; i++){
-          db.part.update({_id: data.data.part[i]['_id']}, data.data.part[i], {upsert: true}, function(err, numReplaced, upsert){
-            if(err)
-              console.log("Parts Update Failed");
-            else{
-              console.log("Parts Update Successfully");
-              console.log(numReplaced);
-              ////console.log(upsert);
-            }
-          })
-        }
-      }
-      if(data.data.set.length){
-        for(var i = 0; i < data.data.set.length; i++){
-          db.set.update({_id: data.data.set[i]['_id']},data.data.set[i], {upsert: true}, function(err, numReplaced, upsert){
-            if(err)
-              console.log("Set Update Failed");
-            else{
-              console.log("Set Update Successfully");
-              console.log(numReplaced);
-              ////console.log(upsert);
-            }
-          })
-        }
-      }
-      if(data.data.system.length){
-        for(var i = 0; i < data.data.system.length; i++){
-          db.system.update({_id: data.data.system[i]['_id']},data.data.system[i], {upsert: true}, function(err, numReplaced, upsert){
-            if(err)
-              console.log("System Update Failed");
-            else{
-              console.log("System Update Successfully");
-              console.log(numReplaced);
-              ////console.log(upsert);
-            }
-          })
-        }
-      }
-      if(data.data.technique.length){
-        for(var i = 0; i < data.data.technique.length; i++){
-          db.technique.update({_id: data.data.technique[i]['_id']},data.data.technique[i], {upsert: true}, function(err, numReplaced, upsert){
-            if(err)
-              console.log("Technique Update Failed");
-            else{
-              console.log("Technique Update Successfully");
-              console.log(numReplaced);
-              ////console.log(upsert);
-            }
-          })
-        }
-      }
-    }
-    else{
-      console.log("No updates for now!")
-    }
-  }
+  
 
   showFavs(){
     var that = this;
-    this.display = true;
     this.type = "fav";
     this.tab = true;
     this.setTab('favtab');
-    this.g.findQ(this.g.db.fav, {accountID: localStorage.getItem('email'), fav: true})
+    this.g.findQSSL(this.g.db.fav, {accountID: localStorage.getItem('email'), fav: true}, {type: -1}, 0, 0)
       .then((docs: any) => {
         console.log(docs);
-        that.listItem = docs;
+        that.typList = true;
+        that.listItem = [];
+        that.display = false;
+        that.typListSys = _.filter(docs, (v) => {
+          return v.type == "system";
+        });
+        that.typListSet = _.filter(docs, (v) => {
+          return v.type == "set";
+        });
+        that.typListPrt = _.filter(docs, (v) => {
+          return v.type == "part";
+        });
+
         that.favlen = docs.length;
       }) // here you will get it
       .catch((err) => console.error(err));
@@ -827,14 +719,25 @@ options: DocumentViewerOptions = {
   
   showRecents(){
     var that = this;
-    this.display = true;
     this.type = "rec";
     this.tab = true;
     this.setTab('rectab');
-    this.g.findQSSL(this.g.db.recent, {accountID: localStorage.getItem('email')}, {time: -1}, 0, 5)
+    this.g.findQSSL(this.g.db.recent, {accountID: localStorage.getItem('email')}, {type: -1, time: -1}, 0, 5)
       .then((docs: any) => {
         console.log(docs);
-        that.listItem = docs;
+        that.typList = true;
+        that.listItem = [];
+        that.display = false;
+        that.typListSys = _.filter(docs, (v) => {
+          return v.type == "system";
+        });
+        that.typListSet = _.filter(docs, (v) => {
+          return v.type == "set";
+        });
+        that.typListPrt = _.filter(docs, (v) => {
+          return v.type == "part";
+        });
+        
         that.reclen = docs.length;
       }) // here you will get it
       .catch((err) => console.error(err));
@@ -866,6 +769,7 @@ options: DocumentViewerOptions = {
     this.display = false;
     this.txt = "";
     this.nomedia = true;
+    this.typList = false;
   }
 
   viewMedia(url : string){

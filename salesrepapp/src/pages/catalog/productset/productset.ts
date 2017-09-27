@@ -66,17 +66,18 @@ st = {};
     _.each(this.set, function(element, i){
       for(let i = 0; i < len; i++){
         //if view option is required
-        that.st[hdr[i].val] = (hdr[i].val == "View") ? "View" : element[hdr[i].val];
+        element[hdr[i].val] = (hdr[i].val == "View") ? "View" : element[hdr[i].val];
       }
-      that.fnl.push(that.st);
+      that.fnl.push(element);
     });
     console.log(this.fnl);
 
   }
 
-  setDetail(v: any) {
+  setDetail(h: any, v: any) {
+    console.log(h);
     console.log(v);
-    if(v == "View"){
+    if(h == "View"){
       if(this.g.Network){
         this.ws.postCall('display/set/'+ v, {})
         .then(data => {
@@ -85,7 +86,7 @@ st = {};
       }
       else{
         var that = this;
-        this.g.findQ(this.g.db.set, {voidfl : {$ne : 'Y'}})
+        this.g.findQ(this.g.db.set, {set_id: v, voidfl : {$ne : 'Y'}})
           .then((docs: any) => {
               console.log(docs);
               that.handleData({data: docs, success: true})

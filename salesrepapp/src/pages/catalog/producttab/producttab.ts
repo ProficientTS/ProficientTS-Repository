@@ -6,6 +6,7 @@ import { ProductImagePage } from '../productimage/productimage';
 import { ProductVideoPage } from '../productvideo/productvideo';
 import { ProductSetPage } from '../productset/productset';
 import { ProductPartPage } from '../productpart/productpart';
+import { CatalogPage } from '../catalog';
 
 @Component({
   selector: 'page-producttab',
@@ -21,22 +22,10 @@ ProductPartPage = ProductPartPage;
 data: any;
 type: any;
 info: any;
-// detail: any;
-// doc: any;
-// img: any;
-// vid: any;
-// set: any;
-// part: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.data = navParams.get('data');
     this.type = navParams.get('type');
-    // this.detail = this.data[0];
-    // this.doc = this.data[0].doc;
-    // this.img = this.data[0].img;
-    // this.vid = this.data[0].video;
-    // this.set = this.data[0].set;
-    // this.part = this.data[0].part;
     this.info = {data: this.data, type: this.type}
     console.log(this.data);
     console.log(this.type);
@@ -44,6 +33,12 @@ info: any;
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductTabPage');
+  }
+
+  goToCatalog(val: any){
+    this.navCtrl.push(CatalogPage, {
+      header: val
+    });
   }
 
 }

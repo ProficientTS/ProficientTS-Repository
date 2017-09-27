@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 import { MyApp } from './app.component';
 import { CatalogPage } from '../pages/catalog/catalog';
 import { HomePage } from '../pages/home/home';
+import { SettingsPage } from '../pages/settings/settings';
 import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
 import { ProductDetailPage } from '../pages/catalog/productdetail/productdetail';
@@ -41,6 +42,7 @@ import { EmailComposer } from '@ionic-native/email-composer';
     CatalogPage,
     MyApp,
     HomePage,
+    SettingsPage,
     ListPage,
     LoginPage,
     ProductDetailPage,
@@ -65,6 +67,7 @@ import { EmailComposer } from '@ionic-native/email-composer';
     CatalogPage,
     MyApp,
     HomePage,
+    SettingsPage,
     ListPage,
     LoginPage,
     ProductDetailPage,

@@ -52,19 +52,21 @@ prt = {};
 
     // Dynamic header and data
     var that = this;
+    console.log(this.part)
     _.each(this.part, function(element, i){
       for(let i = 0; i < len; i++){
         //if view option is required
-        that.prt[hdr[i].val] = (hdr[i].val == "View") ? "View" : element[hdr[i].val];
+        element[hdr[i].val] = (hdr[i].val == "View") ? "View" : element[hdr[i].val];
       }
-      that.fnl.push(that.prt);
+      that.fnl.push(element);
     });
     console.log(this.fnl);
   }
 
-  partDetail(v: any) {
+  partDetail(h: any, v: any) {
+    console.log(h)
     console.log(v);
-    if(v == "View"){
+    if(h == "View"){
       if(this.g.Network){
         this.ws.postCall('display/part/'+ v, {})
         .then(data => {
@@ -73,7 +75,7 @@ prt = {};
       }
       else{
         var that = this;
-        this.g.findQ(this.g.db.part, {voidfl : {$ne : 'Y'}})
+        this.g.findQ(this.g.db.part, {part_id: v, voidfl : {$ne : 'Y'}})
           .then((docs: any) => {
               console.log(docs);
               that.handleData({data: docs, success: true})

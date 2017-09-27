@@ -47,16 +47,11 @@ time: any;
     })
     .catch((err)=> console.log(err));
     this.time = Number(new Date());
-    // this.time =
-    //     this.time.getDay() + "/" +
-    //     this.time.getMonth() + "/" +
-    //     this.time.getFullYear() + "  " +
-    //     this.time.getHours() + ":" +
-    //     this.time.getMinutes() + ":" +
-    //     this.time.getMilliseconds();
-    // this.time = this.time.getFullYear() + this.time.getMonth() + this.time.getDay()
-    //           + this.time.getHours() + this.time.getMinutes() + this.time.getMilliseconds();
-    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system'}, {$set: {time: this.time}}, function(rst){
+    var url = "";
+    if(this.data && this.data.img && this.data.img.length){
+      url = this.data.img[0].url;
+    }
+    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: {time: this.time}}, function(rst){
       console.log(rst);
     });
     
@@ -68,7 +63,12 @@ time: any;
 
   fnFav(fav: boolean){
     var that = this;
-    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system'}, {$set: { fav : fav}}, function(rst){
+    console.log(this.data)
+    var url = "";
+    if(this.data && this.data.img && this.data.img.length){
+      url = this.data.img[0].url;
+    }
+    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
       console.log(rst);
       if(rst){
         that.fav = !that.fav;
