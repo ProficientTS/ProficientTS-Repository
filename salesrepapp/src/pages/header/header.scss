@@ -1,0 +1,19 @@
+pts-header {
+    .notification-bar{
+        margin-top: 10px;
+        background: #dddddd;
+        height: 30px;
+    }
+    .catalog-facility-bar{
+        background: #ffffff;
+        height: 0;
+    }
+
+    ion-icon, ion-title, .toolbar-title-ios, .toolbar-title-md, span{
+        color: white;
+    }
+
+    ion-title {
+        text-align: center;
+    }
+}

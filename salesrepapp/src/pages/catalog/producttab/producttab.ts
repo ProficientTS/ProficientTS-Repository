@@ -6,7 +6,6 @@ import { ProductImagePage } from '../productimage/productimage';
 import { ProductVideoPage } from '../productvideo/productvideo';
 import { ProductSetPage } from '../productset/productset';
 import { ProductPartPage } from '../productpart/productpart';
-import { CatalogPage } from '../catalog';
 
 @Component({
   selector: 'page-producttab',
@@ -33,12 +32,6 @@ info: any;
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductTabPage');
-  }
-
-  goToCatalog(val: any){
-    this.navCtrl.push(CatalogPage, {
-      header: val
-    });
   }
 
 }

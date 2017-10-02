@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { ProductTabPage } from '../catalog/producttab/producttab';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
@@ -19,12 +19,16 @@ import * as _ from 'underscore';
   selector: 'page-catalog',
   templateUrl: 'catalog.html',
 })
-export class CatalogPage {
+export class CatalogPage implements OnInit {
    @ViewChild('input') myInput;
 listItem = [];
 display: boolean = false;
 type = "key";
 tab = false;
+headerIpt = {
+  catalogfacility: false,
+  shareCnt: 0
+}
 tabs = {
   systab: false,
   doctab: false,
@@ -55,7 +59,10 @@ typListSet = [];
 typListPrt = [];
 headerOpt: any;
 options: DocumentViewerOptions = {
-  title: 'Proficient Documents'
+  title: 'Proficient Documents',
+  openWith: {
+    enabled: true
+  }
 };
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -73,7 +80,13 @@ options: DocumentViewerOptions = {
     console.log(this.g.Network)
 
     this.headerOpt = this.navParams.get('header');
-    //  this.g.Network = true;
+    // this.g.Network = true;
+  }
+
+  ngOnInit() {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+  
   }
 
   ionViewWillEnter(){
@@ -99,7 +112,11 @@ options: DocumentViewerOptions = {
 
   ionViewDidEnter(){
     console.log('ionViewDidEnter CatalogPage');
-    switch(this.headerOpt){
+    var typ = "";
+    if(this.headerOpt){
+      typ = this.headerOpt.type
+    }
+    switch(typ){
       case 'default':
           console.log("Renderer setF")
           this.myInput.setFocus();
@@ -116,8 +133,13 @@ options: DocumentViewerOptions = {
       case 'recent':
         this.showRecents();
       break;
+      case 'techsys':
+        this.type = "technique";
+        this.tab = true;
+        this.itemTapped({Name: this.headerOpt.hdrData});
+      break;
     }
-    console.log(this.headerOpt);
+    console.log(typ);
   }
 
   showProduct() {
@@ -455,6 +477,7 @@ options: DocumentViewerOptions = {
   }
 
   searchData(data: any){
+    var that = this;
     console.log(data);
     console.log(data.data);
     console.log(data.length)
@@ -463,46 +486,73 @@ options: DocumentViewerOptions = {
       console.log(0)
       if(this.type == "key"){
         console.log(console.log(data.data))
-        if(this.g.Network){
-          if(data.data.system.length){
-            _.each(data.data.system, function(element, i){
-                if(element.img.length){
-                  element["url"] = element.img[0].url;
-                }
-            });
+
+        this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), share: true})
+        .then((docs: any) => {
+          console.log(docs);
+          for(var i = 0; i < docs.length; i++){
+            for(var j = 0; j < data.data.img.length; j++){
+              if(data.data.img[j].title == docs[i].title && data.data.img[j].url == docs[i].url && docs[i].type == "img"){
+                data.data.img[j].share = true;
+              }
+            }
+            for(var k = 0; k < data.data.video.length; k++){
+              if(data.data.video[k].title == docs[i].title && data.data.video[k].url == docs[i].url && docs[i].type == "vid"){
+                data.data.video[k].share = true;
+              }
+            }
+            for(var l = 0; l < data.data.doc.length; l++){ 
+              if(data.data.doc[l].title == docs[i].title && data.data.doc[l].url == docs[i].url && docs[i].type == "doc"){
+                data.data.doc[l].share = true;
+              }
+            }
           }
-          if(data.data.set.length){
-            _.each(data.data.set, function(element, i){
-                if(element.img.length){
-                  element["url"] = element.img[0].url;
-                }
-            });
+
+          if(that.g.Network){
+            if(data.data.system.length){
+              _.each(data.data.system, function(element, i){
+                  if(element.img.length){
+                    element["url"] = element.img[0].url;
+                  }
+              });
+            }
+            if(data.data.set.length){
+              _.each(data.data.set, function(element, i){
+                  if(element.img.length){
+                    element["url"] = element.img[0].url;
+                  }
+              });
+            }
+            if(data.data.part.length){
+              _.each(data.data.part, function(element, i){
+                  if(element.img.length){
+                    element["url"] = element.img[0].url;
+                  }
+              });
+            }
           }
-          if(data.data.part.length){
-            _.each(data.data.part, function(element, i){
-                if(element.img.length){
-                  element["url"] = element.img[0].url;
-                }
-            });
-          }
-        }
-        
-        this.keyval = data.data;
-        this.keyval.system = data.data.system;
-        this.keyval.doc = data.data.doc;
-        this.keyval.img = data.data.img;
-        this.keyval.video = data.data.video;
-        this.keyval.technique = [];
-        this.keyval.set = data.data.set;
-        this.keyval.part = data.data.part;
-        this.listItem = data.data.system;
-        this.syslen = data.data.system.length;
-        this.doclen = data.data.doc.length;
-        this.imglen = data.data.img.length;
-        this.vidlen = data.data.video.length;
-        this.partlen = data.data.part.length;
-        this.setlen = data.data.set.length;
-        this.setTab('systab');
+          console.log("Finaleeee -------")
+          console.log(data.data);
+          that.keyval = data.data;
+          that.keyval.system = data.data.system;
+          that.keyval.doc = data.data.doc;
+          that.keyval.img = data.data.img;
+          that.keyval.video = data.data.video;
+          that.keyval.technique = [];
+          that.keyval.set = data.data.set;
+          that.keyval.part = data.data.part;
+          that.listItem = data.data.system;
+          that.syslen = data.data.system.length;
+          that.doclen = data.data.doc.length;
+          that.imglen = data.data.img.length;
+          that.vidlen = data.data.video.length;
+          that.partlen = data.data.part.length;
+          that.setlen = data.data.set.length;
+          that.setTab('systab');
+          
+        })
+        .catch((err)=> console.log(err));
+
       }
       else{
         if(data.data.length && this.type != "technique")
@@ -631,10 +681,7 @@ options: DocumentViewerOptions = {
             .catch((err) => console.error(err));
       }
     }
-    else if(this.type == "key" && (this.tabs.doctab || this.tabs.imgtab || this.tabs.vidtab)){
-
-    }
-    else{
+    else if(!(this.type == "key" && (this.tabs.doctab || this.tabs.imgtab || this.tabs.vidtab))){
 
       let typ = this.type;
       if(typ == "key"){
@@ -775,17 +822,25 @@ options: DocumentViewerOptions = {
   viewMedia(url : string){
     console.log(url);
     if(this.tabs.doctab){
-      this.document.viewDocument(this.file.applicationDirectory  + 'www/'+ url, 'application/octet-stream', this.options)
+      this.document.viewDocument(this.file.applicationDirectory  + 'www/'+ url, 'application/pdf', this.options)
     }
     else if(this.tabs.imgtab){
-      let path = url.split('/').splice((url.split('/').length - 1), 1);
+      let path: any = url.split('/');
+      path.pop();
+      path = path.join('/');
       let filenm = url.split('/')[(url.split('/').length - 1)]
+      console.log("Image ----------")
       console.log(path);
       console.log(filenm);
       this.file.readAsDataURL(this.file.applicationDirectory  + 'www/' + path, filenm)
       .then((dataURL:string) => { 
-        console.log(dataURL);
+        console.log("dataURL -------------");
+        // console.log(dataURL);
         this.photoViewer.show(dataURL)
+      })
+      .catch((err: any) => {
+        console.log("Pic Err -------------");
+        console.log(err);
       })
     }
     else if(this.tabs.vidtab){
@@ -799,27 +854,30 @@ options: DocumentViewerOptions = {
     
   }
 
-  shareMedia(url: string){
-    console.log(url);
+  shareMedia(item: any, index: any){
     var that = this;
-    // this.mail.isAvailable().then((available: boolean) =>{
-    //   console.log("Email ---- " + available);
-    //   if(available) {
-        //Now we know we can send
-        that.mail.open({
-        to: 'cjchrist777@gmail.com',
-        cc: 'christson_johnny@yahoo.com',
-        bcc: [],
-        attachments: [
-          this.file.applicationDirectory  + 'www/'+ url
-        ],
-        subject: 'Cordova Icons by {P}',
-        body: 'How are you? Nice greetings from {P}'
-        // ,
-        // isHtml: true
-      });
-    //   }
-    // });
+    console.log(item);
+    let typ = "";
+    if(this.tabs.imgtab){
+      typ = 'img';
+    }
+    else if(this.tabs.vidtab){
+      typ = 'vid';
+    }
+    else if(this.tabs.doctab){
+      typ = 'doc';
+    }
+
+    let share = (item.share === undefined) ? true : !item.share;
+    console.log(index);
+    console.log(this.listItem)
+    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
+      console.log(rst);
+      if(rst){
+        that.listItem[index].share = share;
+        that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
+      }
+    });
   }
 
 }

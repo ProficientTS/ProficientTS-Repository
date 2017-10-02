@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { VideoPlayer } from '@ionic-native/video-player';
 import { File } from '@ionic-native/file';
 import { EmailComposer } from '@ionic-native/email-composer';
 
+import { Global } from '../../../providers/global';
 
 @Component({
   selector: 'page-productvideo',
@@ -16,9 +17,14 @@ video: any;
 type: any;
 info: any;
 tit: any;
+headerIpt = {
+  catalogfacility: true,
+  shareCnt: 0
+}
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private videoPlayer: VideoPlayer, private file: File,
-  private mail: EmailComposer) {
+  private mail: EmailComposer,
+  private g: Global) {
     console.log('ProductVideoPage ----------------------')
     console.log(navParams.data);
     this.info = navParams.data;
@@ -27,6 +33,25 @@ tit: any;
     this.tit = this.type + "_nm";
     this.title = this.data[this.tit];
     this.video = this.data.video;
+  }
+
+  ngOnInit() {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    var that = this;
+    this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'vid', share: true})
+      .then((vids: any) => {
+        for(var i = 0; i < vids.length; i++){
+          for(var j = 0; j < that.video.length; j++){
+            if(that.video[j].title == vids[i].title && that.video[j].url == vids[i].url){
+              that.video[j].share = true;
+            }
+          }
+        }
+      })
+      .catch((err: any) => {
+
+      });
   }
 
   ionViewDidLoad() {
@@ -42,27 +67,19 @@ tit: any;
       });
   }
 
-  shareDoc(url: string){
-    console.log(url);
+  shareVid(item: any, index: any){
+    console.log(item);
     var that = this;
-    // this.mail.isAvailable().then((available: boolean) =>{
-    //   console.log("Email ---- " + available);
-    //   if(available) {
-        //Now we know we can send
-        that.mail.open({
-        to: 'cjchrist777@gmail.com',
-        cc: 'christson_johnny@yahoo.com',
-        bcc: [],
-        attachments: [
-          this.file.applicationDirectory  + 'www/'+ url
-        ],
-        subject: 'Cordova Icons by {P}',
-        body: 'How are you? Nice greetings from {P}'
-        // ,
-        // isHtml: true
-      });
-    //   }
-    // });
+
+    let share = (item.share === undefined) ? true : !item.share;
+    console.log(index);
+    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'vid', url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
+      console.log(rst);
+      if(rst){
+        that.video[index].share = share;
+        that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
+      }
+    });
   }
 
 }

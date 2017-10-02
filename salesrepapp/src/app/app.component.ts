@@ -4,6 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { CatalogPage } from '../pages/catalog/catalog';
+import { SharePage } from '../pages/share/share';
 import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
 import { ListPage } from '../pages/list/list';
@@ -36,7 +37,8 @@ export class MyApp {
     this.pages = [
       { title: 'Catalog', component: CatalogPage },
       // { title: 'Home', component: HomePage },
-      { title: 'Settings', component: SettingsPage }
+      { title: 'Settings', component: SettingsPage },
+      { title: 'Review Page', component: SharePage }
       // { title: 'List', component: ListPage },
       // { title: 'Login', component: LoginPage },
       // { title: 'Producttab', component: ProductTabPage }

@@ -22,6 +22,9 @@ type: any;
 header: any;
 fnl = [];
 st = {};
+headerIpt = {
+  catalogfacility: true
+}
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private ws: WebserviceProvider, private g: Global) {
     console.log('ProductSetPage ----------------------')

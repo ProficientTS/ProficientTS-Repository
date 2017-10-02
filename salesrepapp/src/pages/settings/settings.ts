@@ -163,6 +163,14 @@ export class SettingsPage {
                     console.log("Recent Reset Successful");
                     console.log(numRemoved);
                   }
+                  db.share.remove({}, { multi: true }, function (err, numRemoved) {
+                    if(err)
+                      console.log("Share Reset Failed");
+                    else{
+                      console.log("Share Reset Successful");
+                      console.log(numRemoved);
+                    }
+                  });
                 });
               });
             });

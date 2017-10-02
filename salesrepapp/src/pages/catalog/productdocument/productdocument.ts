@@ -1,15 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
 import { File } from '@ionic-native/file';
 import { EmailComposer } from '@ionic-native/email-composer';
 
+import { Global } from '../../../providers/global';
+
 @Component({
   selector: 'page-productdocument',
   templateUrl: 'productdocument.html',
 })
-export class ProductDocumentPage {
+export class ProductDocumentPage implements OnInit {
 data: any;
 title: any;
 doc: any;
@@ -19,11 +21,16 @@ type: any;
 options: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
+headerIpt = {
+  catalogfacility: true,
+  shareCnt: 0
+}
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private document: DocumentViewer,
   private file: File,
-  private mail: EmailComposer) {
+  private mail: EmailComposer,
+  private g: Global) {
     console.log('ProductDocumentPage ----------------------')
     this.info = navParams.data;
     this.data = this.info.data[0];
@@ -33,36 +40,47 @@ options: DocumentViewerOptions = {
     this.doc = this.data.doc;
   }
 
+  ngOnInit() {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    var that = this;
+    this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'doc', share: true})
+      .then((docs: any) => {
+        for(var i = 0; i < docs.length; i++){
+          for(var j = 0; j < that.doc.length; j++){
+            if(that.doc[j].title == docs[i].title && that.doc[j].url == docs[i].url){
+              that.doc[j].share = true;
+            }
+          }
+        }
+      })
+      .catch((err: any) => {
+
+      });
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductDocumentPage');
   }
 
   viewDoc(url : string){
     console.log(url);
-    this.document.viewDocument(this.file.applicationDirectory  + 'www/'+ url, 'application/octet-stream', this.options)
+    this.document.viewDocument(this.file.applicationDirectory  + 'www/'+ url, 'application/pdf', this.options)
   }
 
-  shareDoc(url: string){
-    console.log(url);
+  shareDoc(item: any, index: any){
+    console.log(item);
     var that = this;
-    // this.mail.isAvailable().then((available: boolean) =>{
-    //   console.log("Email ---- " + available);
-    //   if(available) {
-        //Now we know we can send
-        that.mail.open({
-        to: 'cjchrist777@gmail.com',
-        cc: 'christson_johnny@yahoo.com',
-        bcc: [],
-        attachments: [
-          this.file.applicationDirectory  + 'www/'+ url
-        ],
-        subject: 'Cordova Icons by {P}',
-        body: 'How are you? Nice greetings from {P}'
-        // ,
-        // isHtml: true
-      });
-    //   }
-    // });
+
+    let share = (item.share === undefined) ? true : !item.share;
+    console.log(index);
+    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'doc', url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
+      console.log(rst);
+      if(rst){
+        that.doc[index].share = share;
+        that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
+      }
+    });
   }
 
 }

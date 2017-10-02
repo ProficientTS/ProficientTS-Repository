@@ -3,11 +3,19 @@ page-catalog {
 }
 
 .catalogpage {
-    background-image: url("../assets/image/bg-module1.png");
+    background-image: url("../assets/image/content.png");
 }
 
 .productpage {
-    background-image: url("../assets/image/bg-module2.png");
+    background-image: url("../assets/image/content.png");
+}
+
+ion-header {
+    background-image: url("../assets/image/header.png");
+}
+
+ion-content{
+    margin-top: 85px;
 }
 
 input[type="text"] {

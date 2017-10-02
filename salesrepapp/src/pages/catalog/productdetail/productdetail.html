@@ -1,14 +1,12 @@
-<ion-header>
-    <ion-navbar transparent class="pts-navbar">
-        <ion-title></ion-title>
-    </ion-navbar>
-</ion-header>
-
+<pts-header [headerIpt]="headerIpt"></pts-header>
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
         <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
         <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
+        <div>
+            <b>Techniques Used</b> - <span *ngIf="data.technique.length; else nodata"><span *ngFor="let t of data.technique" class = "ptsSpanItem" (click) = "listTechniqueSys(t.technique_nm)">{{t.technique_nm}} </span></span>
+        </div>
         <div class="product-image">
             <ion-slides class="image-slider" slidesPerView="2">
                 <ion-slide *ngFor="let i of img">
@@ -16,7 +14,12 @@
                 </ion-slide>
             </ion-slides>
         </div>
+
         <div class="product-detail" [innerHTML]="desc">
         </div>
     </div>
 </ion-content>
+
+<ng-template #nodata>
+    <span><i>Unavailable</i></span>
+</ng-template>

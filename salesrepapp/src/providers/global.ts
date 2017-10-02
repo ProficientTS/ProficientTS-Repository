@@ -46,6 +46,7 @@ connectSubscription: any;
     this.db.devicesync = new Nedb({filename: 'assets/database/devicesync.db', autoload: true});
     this.db.fav = new Nedb({filename: 'assets/database/favorites.db', autoload: true});
     this.db.recent = new Nedb({filename: 'assets/database/recent.db', autoload: true});
+    this.db.share = new Nedb({filename: 'assets/database/share.db', autoload: true});
     
     this.uid.get()
     .then((uuid: any) => {console.log(uuid); this.deviceId = uuid;})
@@ -102,35 +103,23 @@ connectSubscription: any;
         });
     })
   }
-  
-  setFavorite(query: object, update: object, callback: any){
-    let setFav = new Promise((resolve, reject) => {
-        this.db.fav.update( query, update, { upsert: true }, function(err, numReplaced, upsert) {
-            if(err) reject(err);
-            resolve(upsert);
-        });
-    });
-    setFav
-      .then(data => {
-        callback(true);
-      })
-      .catch(err => {
-        callback(false);
-      })
-  }
 
-  setRecent(query: object, update: object, callback: any){
-    let setRecent = new Promise((resolve, reject) => {
-        this.db.recent.update( query, update, { upsert: true }, function(err, numReplaced, upsert) {
+  upsertQ(db: any, query: object, update: object, callback: any){
+    let upsertPromise = new Promise((resolve, reject) => {
+        db.update( query, update, { upsert: true }, function(err, numReplaced, upsert) {
             if(err) reject(err);
             resolve(upsert);
         });
     });
-    setRecent
-      .then(data => {
+    upsertPromise
+      .then((data: any) => {
+        console.log("upsertPromise Success Data --------")
+        console.log(data);
         callback(true);
       })
-      .catch(err => {
+      .catch((err: any) => {
+        console.log("upsertPromise Err -----------------")
+        console.log(err)
         callback(false);
       })
   }

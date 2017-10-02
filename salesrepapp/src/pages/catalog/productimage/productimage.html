@@ -1,24 +1,22 @@
-<ion-header>
-    <ion-navbar transparent class="pts-navbar">
-        <ion-title></ion-title>
-    </ion-navbar>
-</ion-header>
-
+<pts-header [headerIpt]="headerIpt"></pts-header>
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
         <div class="div-image">
             <div class="div-image-type">Implant</div>
-            <div class="div-outer" *ngFor="let i of img">
-                <div class="dummy"></div>
+            <div class="div-outer" *ngFor="let i of img; let ind = index">
                 <div class="div-image-item">
                     <img src="{{i.url}}" alt="" (click)="viewImg(i.url)">
                 </div>
-                <li class="li-document-share">
-                    <div (click)="shareDoc(i.url)">Share</div>
+                <div class="li-document-share">
+                    <div (click)="shareImg(i, ind)"><span *ngIf="i.share != true; else shared">Share</span></div>
                     <div>----</div>
-                </li>
+                </div>
             </div>
         </div>
     </div>
 </ion-content>
+
+<ng-template #shared>
+    <span>Shared</span>
+</ng-template>

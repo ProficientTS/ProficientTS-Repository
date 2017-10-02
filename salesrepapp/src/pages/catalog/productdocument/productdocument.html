@@ -1,22 +1,17 @@
-<ion-header>
-    <ion-navbar transparent class="pts-navbar">
-        <ion-title></ion-title>
-    </ion-navbar>
-</ion-header>
-
+<pts-header [headerIpt]="headerIpt"></pts-header>
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
         <div class="div-document">
             <div class="div-document-type">Brochure</div>
-            <ul class="ul-document" *ngFor="let d of doc">
+            <ul class="ul-document" *ngFor="let d of doc; let i = index">
                 <li class="li-document-title">{{d.title}}</li>
                 <li class="li-document-view">
                     <div (click)="viewDoc(d.url)">View</div>
                     <div>----</div>
                 </li>
                 <li class="li-document-share">
-                    <div (click)="shareDoc(d.url)">Share</div>
+                    <div (click)="shareDoc(d, i)"><span *ngIf="d.share != true; else shared">Share</span></div>
                     <div>----</div>
                 </li>
             </ul>
@@ -24,3 +19,8 @@
 
     </div>
 </ion-content>
+
+
+<ng-template #shared>
+    <span>Shared</span>
+</ng-template>

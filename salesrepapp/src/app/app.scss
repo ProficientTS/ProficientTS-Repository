@@ -19,6 +19,10 @@ ion-content {
     font-size: 16px;
 }
 
+b{
+    font-weight: bold;
+}
+
 input[type="text"],
 input[type="password"] {
     border-radius: 5px;
@@ -67,12 +71,20 @@ input[type="password"] {
     width: 19%;
 }
 
+.ptsW18pr{
+    width: 18%;
+}
+
 .ptsW60pr{
     width: 60%;
 }
 
 .ptsW10pr{
     width: 10%;
+}
+
+.ptsW23pr{
+    width: 23%;
 }
 
 .ptsW8pr{
@@ -122,4 +134,10 @@ input[type="password"] {
 
 .ptsVerticalTop{
     vertical-align: top;
+}
+
+.ptsSpanItem{
+    background-color: grey;
+    padding: 5px;
+    color: white;
 }

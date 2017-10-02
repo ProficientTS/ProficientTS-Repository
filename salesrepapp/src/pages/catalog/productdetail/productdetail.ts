@@ -3,6 +3,8 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { Global } from '../../../providers/global';
 
+import { CatalogPage } from '../catalog';
+
 @Component({
   selector: 'page-productdetail',
   templateUrl: 'productdetail.html',
@@ -17,6 +19,9 @@ info: any;
 tit: any;
 fav: boolean;
 time: any;
+headerIpt = {
+  catalogfacility: true
+}
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private g: Global
   ) {
@@ -51,10 +56,19 @@ time: any;
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: {time: this.time}}, function(rst){
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: {time: this.time}}, function(rst){
       console.log(rst);
     });
     
+  }
+
+  listTechniqueSys(technm: any){
+    this.navCtrl.push(CatalogPage, {
+      header: {
+        type: 'techsys',
+        hdrData: technm
+      }
+    });
   }
 
   ionViewDidLoad() {
@@ -68,7 +82,7 @@ time: any;
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
+    this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
       console.log(rst);
       if(rst){
         that.fav = !that.fav;

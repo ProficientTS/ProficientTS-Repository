@@ -4,7 +4,6 @@ import { NavController, NavParams } from 'ionic-angular';
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { ProductTabPage } from '../producttab/producttab';
 import { SetDetailPage } from '../setdetail/setdetail';
-import { CatalogPage } from '../catalog';
 
 import { Global } from '../../../providers/global';
 
@@ -27,6 +26,9 @@ set: any;
 system: any;
 fav: boolean;
 time: any;
+headerIpt = {
+  catalogfacility: true
+}
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private ws: WebserviceProvider, private g: Global) {
 
@@ -93,14 +95,8 @@ time: any;
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.part_id, Name: this.data.part_nm, type: 'part', url: url }, {$set: {time: this.time}}, function(rst){
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), ID: this.data.part_id, Name: this.data.part_nm, type: 'part', url: url }, {$set: {time: this.time}}, function(rst){
       console.log(rst);
-    });
-  }
-
-  goToCatalog(val: any){
-    this.navCtrl.push(CatalogPage, {
-      header: val
     });
   }
 
@@ -158,7 +154,7 @@ time: any;
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.part_id, Name: this.data.part_nm, type: 'part', url: url }, {$set: { fav : fav}}, function(rst){
+    this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.part_id, Name: this.data.part_nm, type: 'part', url: url }, {$set: { fav : fav}}, function(rst){
       console.log(rst);
       if(rst){
         that.fav = !that.fav;

@@ -1,0 +1,61 @@
+<ion-header>
+    <ion-navbar class="pts-navbar">
+        <ion-title>Review Page</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-list>
+        <ion-list *ngIf="shareD.img.length == 0 && shareD.video.length == 0 && shareD.doc.length == 0">
+            <ion-card>
+                <ion-card-header>No Data Found</ion-card-header>
+            </ion-card>
+        </ion-list>
+        <div *ngIf="shareD.img.length || shareD.video.length || shareD.doc.length">
+            <div>To share ({{shareD.img.length + shareD.video.length + shareD.doc.length}})</div>
+            <hr>
+            <div>
+                <textarea placeholder="...type in your review" autofocus [(ngModel)]="review"></textarea>
+                <button (click)="sendMail()">
+                    Mail
+                </button>
+            </div>
+        </div>
+        <div *ngIf="shareD.img.length">
+            <div>Pictures ({{shareD.img.length}})</div>
+            <ion-card *ngFor="let item of shareD.img; let i = index">
+                <div class="ptsDipsIB ptsVerticalTop">
+                    <ion-card-header>{{item.title}}</ion-card-header>
+                    <ion-card-content>
+                        <span (click)="viewMedia('img', item.url)">View</span>
+                        <ion-icon name="remove-circle" (click)="removeMedia('img', item.url, i)"></ion-icon>
+                    </ion-card-content>
+                </div>
+            </ion-card>
+        </div>
+        <div *ngIf="shareD.video.length">
+            <div>Videos ({{shareD.video.length}})</div>
+            <ion-card *ngFor="let item of shareD.video; let i = index">
+                <div class="ptsDipsIB ptsVerticalTop">
+                    <ion-card-header>{{item.title}}</ion-card-header>
+                    <ion-card-content>
+                        <span (click)="viewMedia('video', item.url)">View</span>
+                        <ion-icon name="remove-circle" (click)="removeMedia('video', item.url, i)"></ion-icon>
+                    </ion-card-content>
+                </div>
+            </ion-card>
+        </div>
+        <div *ngIf="shareD.doc.length">
+            <div>Documents ({{shareD.doc.length}})</div>
+            <ion-card *ngFor="let item of shareD.doc; let i = index">
+                <div class="ptsDipsIB ptsVerticalTop">
+                    <ion-card-header>{{item.title}}</ion-card-header>
+                    <ion-card-content>
+                        <span (click)="viewMedia('doc', item.url)">View</span>
+                        <ion-icon name="remove-circle" (click)="removeMedia('doc', item.url, i)"></ion-icon>
+                    </ion-card-content>
+                </div>
+            </ion-card>
+        </div>
+    </ion-list>
+</ion-content>

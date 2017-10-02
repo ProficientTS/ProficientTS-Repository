@@ -16,6 +16,7 @@
     border-radius: 3px;
     display: inline-block;
     margin: 0.125em;
+    vertical-align: top;
 }
 
 .dummy {
@@ -23,12 +24,12 @@
 }
 
 .div-image-item {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
+    // position: absolute;
+    // top: 0;
+    // bottom: 0;
+    // left: 0;
+    // right: 0;
+    padding-top: 10px;
     text-align:center; /* Align center inline elements */
     font: 0/0 a;
 }

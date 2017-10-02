@@ -1,9 +1,4 @@
-<ion-header>
-    <ion-navbar transparent class="pts-navbar">
-        <ion-title></ion-title>
-    </ion-navbar>
-</ion-header>
-
+<pts-header [headerIpt]="headerIpt"></pts-header>
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
@@ -12,10 +7,10 @@
                 <input type="text" placeholder="Search" class="">
             </div>
             <ul class="ul-set-header field-header">
-                <li *ngFor="let h of header" class="ptsPadTB5p ptsW45pr">{{h.c_fn}}</li>
+                <li *ngFor="let h of header" class="ptsPadTB5p ptsW23pr">{{h.c_fn}}</li>
             </ul>
             <ul *ngFor="let v of fnl">
-                <li class="ptsPadTB5p ptsDipsIB ptsW45pr" *ngFor="let k of header" (click)="setDetail(v[k.val], v.set_id)">{{v[k.val]}}</li>
+                <li class="ptsPadTB5p ptsDipsIB ptsW23pr" *ngFor="let k of header" (click)="setDetail(v[k.val], v.set_id)">{{v[k.val]}}</li>
             </ul>
         </div>
 

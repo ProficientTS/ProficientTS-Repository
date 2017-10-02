@@ -3,7 +3,6 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { ProductTabPage } from '../producttab/producttab';  
-import { CatalogPage } from '../catalog';
 
 import { Global } from '../../../providers/global';
 import * as _ from 'underscore';
@@ -24,6 +23,9 @@ header: any;
 system: any;
 fav: boolean;
 time: any;
+headerIpt = {
+  catalogfacility: true
+}
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private ws: WebserviceProvider, private g: Global) {
     console.log('SetDetailPage ----------------------')
@@ -68,17 +70,10 @@ time: any;
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.setRecent({accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: {time: this.time}}, function(rst){
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: {time: this.time}}, function(rst){
       console.log(rst);
     });
   }
-
-  goToCatalog(val: any){
-    this.navCtrl.push(CatalogPage, {
-      header: val
-    });
-  }
-
 
   fnDisplay(t: any, v: any){
     console.log(t);
@@ -129,7 +124,7 @@ time: any;
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.setFavorite({accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: { fav : fav}}, function(rst){
+    this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: { fav : fav}}, function(rst){
       console.log(rst);
       if(rst){
         that.fav = !that.fav;

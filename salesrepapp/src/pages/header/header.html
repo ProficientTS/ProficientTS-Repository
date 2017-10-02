@@ -1,0 +1,32 @@
+<ion-header>
+
+    <ion-navbar transparent no-border>
+        <button ion-button icon-only menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>Title</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only (click)="openSharePage()">
+                <ion-icon name="share-alt" ></ion-icon>  ({{headerIpt.shareCnt? headerIpt.shareCnt : 0}})
+            </button>
+        </ion-buttons>
+
+    </ion-navbar>
+    <div class="notification-bar">Alert</div>
+
+    <div *ngIf="headerIpt.catalogfacility" class="catalog-facility-bar ptsDMiddle">
+        <input placeholder="Search by Criteria" class="search-text" (click)="goToCatalog('search')">
+        <div class="pts-button catalog-search-button" (click)="goToCatalog('product')">
+            Product
+        </div>
+        <div class="pts-button catalog-search-button" (click)="goToCatalog('approach')">
+            Approach
+        </div>
+        <div class="pts-button catalog-search-button" (click)="goToCatalog('favorites')">
+            Favorites
+        </div>
+        <div class="pts-button catalog-search-button" (click)="goToCatalog('recent')">
+            Recent
+        </div>
+    </div>
+</ion-header>

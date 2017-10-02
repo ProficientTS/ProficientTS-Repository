@@ -14,7 +14,9 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-process.env.SECRET_KEY = "cj777key";
+
+
+process.env.SECRET_KEY = "IamProficient";
 
 MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', function(err, db) {
     "use strict";
@@ -27,10 +29,59 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
 
     var router = express.Router();
 
-    router.get("/", function(req, res) {
+    router.post("/auth", function(req, res) {
+        console.log("auth ----------")
         "use strict";
-        console.log("Back to code")
-        res.send('Hello and welcome! We are happy to have you here {P}');
+        var userInfo = req.body;
+        users.checkUser(userInfo, function(user) {
+            if (user.length) {
+                var token = jwt.sign(userInfo, process.env.SECRET_KEY, {
+                    expiresIn: 172800
+                        // 2 days
+                })
+                users.updateUserToken(userInfo, token, function(userTokenUpdate) {
+                    res.json({
+                        success: true,
+                        msg: 'Valid Account!',
+                        data: user,
+                        token: token
+                    });
+                })
+
+            } else {
+                res.json({
+                    success: false,
+                    msg: 'Invalid Account!'
+                });
+            }
+        });
+    });
+
+    app.use('/', router);
+
+    router.use(function(req, res, next) {
+        console.log("Secure Routes");
+        var token = req.body.token || req.headers['token'];
+        if (token) {
+            jwt.verify(token, process.env.SECRET_KEY, function(err, decode) {
+                console.log("Decode")
+                console.log(decode);
+
+                if (err) {
+                    res.json({
+                        msg: "InValid Credential"
+                    });
+                } else {
+                    global.tokenDecode = decode;
+                    console.log("Secure Routes Inner");
+                    next();
+                }
+            })
+        } else {
+            res.json({
+                msg: "Hello, we are {P}roficient. Please provide the right Credentials at the right Place ;)"
+            });
+        }
     });
 
     router.post("/list/:type", fnGetData);
@@ -74,33 +125,6 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
             });
         }
     }
-
-    router.post("/auth", function(req, res) {
-        console.log("auth ----------")
-        "use strict";
-        var userInfo = req.body;
-        users.checkUser(userInfo, function(user) {
-            if (user.length) {
-                var token = jwt.sign(userInfo, process.env.SECRET_KEY, {
-                    expiresIn: 3600
-                })
-                users.updateUserToken(userInfo, token, function(userTokenUpdate) {
-                    res.json({
-                        success: true,
-                        msg: 'Valid Account!',
-                        data: user,
-                        token: token
-                    });
-                })
-
-            } else {
-                res.json({
-                    success: false,
-                    msg: 'Invalid Account!'
-                });
-            }
-        });
-    });
 
     router.post("/sync", function(req, res) {
 
@@ -288,8 +312,7 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
     });
 
     function fnTrigger(op, d, type) {
-        console.log("cat Trigger --------------");
-        type = (type == 'grp') ? 'group' : type;
+        console.log("Catalog Trigger --------------");
         console.log(op);
         console.log(d);
         console.log(type);

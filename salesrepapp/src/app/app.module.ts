@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 
 import { MyApp } from './app.component';
 import { CatalogPage } from '../pages/catalog/catalog';
+import { SharePage } from '../pages/share/share';
 import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
 import { ListPage } from '../pages/list/list';
@@ -36,6 +37,7 @@ import { VideoPlayer } from '@ionic-native/video-player';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { Network } from '@ionic-native/network';
 import { EmailComposer } from '@ionic-native/email-composer';
+import { HeaderComponent } from '../pages/header/header.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,9 @@ import { EmailComposer } from '@ionic-native/email-composer';
     ProductPartPage,
     ProductSetPage,
     PartDetailPage,
-    SetDetailPage
+    SetDetailPage,
+    HeaderComponent,
+    SharePage
   ],
   imports: [
     BrowserModule,
@@ -78,7 +82,9 @@ import { EmailComposer } from '@ionic-native/email-composer';
     ProductPartPage,
     ProductSetPage,
     PartDetailPage,
-    SetDetailPage
+    SetDetailPage,
+    HeaderComponent,
+    SharePage
   ],
   providers: [
     StatusBar,
