@@ -4,12 +4,12 @@
         <div class="product-title">{{title}}</div>
         <div class="div-document">
             <div class="div-document-type">
-                <input type="text" placeholder="Search" class="">
+                <ion-input type="text" placeholder="Search" class="" [(ngModel)]="txt" autofocus (input)="searchItem()"></ion-input>
             </div>
             <ul class="ul-part-header field-header">
                 <li *ngFor="let h of header" class="ptsPadTB5p ptsW45pr">{{h.c_fn}}</li>
             </ul>
-            <ul *ngFor="let v of fnl">
+            <ul *ngFor="let v of srh">
                 <li class="ptsPadTB5p ptsDipsIB ptsW45pr" *ngFor="let k of header" (click)="partDetail(v[k.val], v.part_id)">{{v[k.val]}}</li>
             </ul>
         </div>

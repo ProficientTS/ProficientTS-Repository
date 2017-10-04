@@ -5,12 +5,18 @@ import { WebserviceProvider } from '../../providers/webservice/webservice';
 
 import { Global } from '../../providers/global';
 
+import { LoginPage } from '../login/login';
+
 @Component({
   selector: 'page-settings',
   templateUrl: 'settings.html'
 })
 export class SettingsPage {
-
+headerIpt = {
+  // catalogfacility: true,
+  shareCnt: 0,
+  title: "Settings"
+}
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
   private g: Global) {
@@ -24,8 +30,13 @@ export class SettingsPage {
       console.log(doc);
       if(doc.length == 0){
         that.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: that.g.deviceId})
-          .then(data => {
-            that.syncService(data);
+          .then((data: any) => {
+            if(data && data.msg == "InValid Credential"){
+              that.logOut();
+            }
+            else{
+              that.syncService(data);
+            }
           });
       }
       else{
@@ -101,8 +112,13 @@ export class SettingsPage {
       console.log(doc);
       if(doc.length){
         that.ws.postCall('sync', {email: localStorage.getItem('email'), update: 'Y', deviceID: that.g.deviceId})
-        .then(data => {
-          that.updateService(data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            that.logOut();
+          }
+          else{
+            that.updateService(data);
+          }
         });
       }
       else{
@@ -241,6 +257,12 @@ export class SettingsPage {
     else{
       console.log("No updates for now!")
     }
+  }
+   
+  logOut(){
+    console.log("logOut ========")
+    localStorage.clear();
+    this.navCtrl.popToRoot();
   }
 
 }

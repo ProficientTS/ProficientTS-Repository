@@ -1,5 +1,7 @@
 page-catalog {
-
+    input[type="text"] {
+        margin-top: 100px;
+    }
 }
 
 .catalogpage {
@@ -20,7 +22,6 @@ ion-content{
 
 input[type="text"] {
     border: 1px solid #ccc;
-    margin-top: 100px;
 }
 
 #inp-criteria{

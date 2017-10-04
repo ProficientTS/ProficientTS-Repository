@@ -3,6 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { PartDetailPage } from '../partdetail/partdetail';
+import { LoginPage } from '../../login/login';
 
 import { Global } from '../../../providers/global';
 
@@ -21,6 +22,8 @@ tit: any;
 type: any;
 header: any;
 fnl = [];
+txt = "";
+srh: any = [];
 prt = {};
 headerIpt = {
   catalogfacility: true
@@ -64,6 +67,28 @@ headerIpt = {
       that.fnl.push(element);
     });
     console.log(this.fnl);
+    this.srh = this.fnl;
+  }
+
+  searchItem(){
+    if(this.txt.length > 2){
+      // let searchArray = [];
+      let searchKeys = ["part_id"]; 
+      this.srh = _.filter(this.fnl, (v, i) => {
+        let searchTxt = "";
+        for(var key in v){
+          if(_.contains(searchKeys, key)){
+            searchTxt = searchTxt + " " + v[key].toString().toLowerCase();
+          }
+        }
+        let exp = this.txt.toLowerCase();
+        return searchTxt.indexOf(exp) !=-1;
+      });
+      console.log(this.fnl);
+    }
+    else{
+      this.srh = this.fnl;
+    }
   }
 
   partDetail(h: any, v: any) {
@@ -72,8 +97,13 @@ headerIpt = {
     if(h == "View"){
       if(this.g.Network){
         this.ws.postCall('display/part/'+ v, {})
-        .then(data => {
-          this.handleData(data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            this.logOut();
+          }
+          else{
+            this.handleData(data);
+          }
         });
       }
       else{
@@ -100,6 +130,12 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductPartPage');
+  }
+
+  logOut(){
+    console.log("logOut ========")
+    localStorage.clear();
+    this.navCtrl.popToRoot();
   }
 
 }

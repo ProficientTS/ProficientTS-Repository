@@ -6,6 +6,8 @@ import { EmailComposer } from '@ionic-native/email-composer';
 
 import { Global } from '../../../providers/global';
 
+import * as _ from 'underscore';
+
 @Component({
   selector: 'page-productimage',
   templateUrl: 'productimage.html',
@@ -17,6 +19,8 @@ img: any;
 info: any;
 tit: any;
 type: any;
+imgType = [];
+typeJsn: any = {};
 headerIpt = {
   catalogfacility: true,
   shareCnt: 0
@@ -34,6 +38,16 @@ headerIpt = {
     this.tit = this.type + "_nm";
     this.title = this.data[this.tit];
     this.img = this.data.img;
+    if(this.img.length){
+      this.imgType = _.uniq(_.pluck(this.img, 'type'));
+      console.log(this.imgType);
+      for(var i = 0; i < this.imgType.length; i++){
+        this.typeJsn[this.imgType[i]] = _.filter(this.img, (v) => {
+          return v.type == this.imgType[i];
+        });
+      }
+    }
+    console.log(this.typeJsn);
   }
 
   ionViewDidLoad() {
@@ -74,16 +88,19 @@ headerIpt = {
     })
   }
 
-  shareImg(item: any, index: any){
+  shareImg(item: any){
     console.log(item);
     var that = this;
 
     let share = (item.share === undefined) ? true : !item.share;
-    console.log(index);
     this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'img', url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
       console.log(rst);
       if(rst){
-        that.img[index].share = share;
+        _.each(that.img, (v, i) => {
+          if(v.title == item.title && v.url == item.url){
+            v.share = share;
+          }
+        })
         that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
       }
     });

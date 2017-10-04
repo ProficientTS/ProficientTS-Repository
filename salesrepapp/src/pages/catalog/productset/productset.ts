@@ -3,6 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { SetDetailPage } from '../setdetail/setdetail';
+import { LoginPage } from '../../login/login';
 
 import { Global } from '../../../providers/global';
 
@@ -22,6 +23,8 @@ type: any;
 header: any;
 fnl = [];
 st = {};
+txt = "";
+srh: any = [];
 headerIpt = {
   catalogfacility: true
 }
@@ -61,6 +64,7 @@ headerIpt = {
                       val: "View"
                     }
                   ];
+                     
     let hdr = this.header;
     let len = hdr.length;
 
@@ -74,7 +78,30 @@ headerIpt = {
       that.fnl.push(element);
     });
     console.log(this.fnl);
+    this.srh = this.fnl;
+    
+    
+  }
 
+  searchItem(){
+    if(this.txt.length > 2){
+      // let searchArray = [];
+      let searchKeys = ["set_id", "desc", "qty"]; 
+      this.srh = _.filter(this.fnl, (v, i) => {
+        let searchTxt = "";
+        for(var key in v){
+          if(_.contains(searchKeys, key)){
+            searchTxt = searchTxt + " " + v[key].toString().toLowerCase();
+          }
+        }
+        let exp = this.txt.toLowerCase();
+        return searchTxt.indexOf(exp) !=-1;
+      });
+      console.log(this.fnl);
+    }
+    else{
+      this.srh = this.fnl;
+    }
   }
 
   setDetail(h: any, v: any) {
@@ -83,8 +110,13 @@ headerIpt = {
     if(h == "View"){
       if(this.g.Network){
         this.ws.postCall('display/set/'+ v, {})
-        .then(data => {
-          this.handleData(data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            this.logOut();
+          }
+          else{
+            this.handleData(data);
+          }
         });
       }
       else{
@@ -110,6 +142,12 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductSetPage');
+  }
+
+  logOut(){
+    console.log("logOut ========")
+    localStorage.clear();
+    this.navCtrl.popToRoot();
   }
 
 }

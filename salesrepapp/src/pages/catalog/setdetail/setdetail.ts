@@ -7,6 +7,8 @@ import { ProductTabPage } from '../producttab/producttab';
 import { Global } from '../../../providers/global';
 import * as _ from 'underscore';
 
+import { LoginPage } from '../../login/login';
+
 @Component({
   selector: 'page-setdetail',
   templateUrl: 'setdetail.html',
@@ -82,8 +84,13 @@ headerIpt = {
     if(v !==undefined){
       if(this.g.Network){
         this.ws.postCall('display/'+t+'/'+ v, {})
-        .then(data => {
-          this.handleData(t, data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            this.logOut();
+          }
+          else{
+            this.handleData(t, data);
+          }
         });
       }
       else{
@@ -130,5 +137,11 @@ headerIpt = {
         that.fav = !that.fav;
       }
     })
+  }
+
+  logOut(){
+    console.log("logOut ========")
+    localStorage.clear();
+    this.navCtrl.popToRoot();
   }
 }

@@ -7,6 +7,8 @@ import { EmailComposer } from '@ionic-native/email-composer';
 
 import { Global } from '../../../providers/global';
 
+import * as _ from 'underscore';
+
 @Component({
   selector: 'page-productdocument',
   templateUrl: 'productdocument.html',
@@ -18,6 +20,8 @@ doc: any;
 info: any;
 tit: any;
 type: any;
+docType = [];
+typeJsn: any = {};
 options: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
@@ -38,6 +42,16 @@ headerIpt = {
     this.tit = this.type + "_nm";
     this.title = this.data[this.tit];
     this.doc = this.data.doc;
+    if(this.doc.length){
+      this.docType = _.uniq(_.pluck(this.doc, 'type'));
+      console.log(this.docType);
+      for(var i = 0; i < this.docType.length; i++){
+        this.typeJsn[this.docType[i]] = _.filter(this.doc, (v) => {
+          return v.type == this.docType[i];
+        });
+      }
+    }
+    console.log(this.typeJsn);
   }
 
   ngOnInit() {
@@ -77,7 +91,11 @@ headerIpt = {
     this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'doc', url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
       console.log(rst);
       if(rst){
-        that.doc[index].share = share;
+        _.each(that.doc, (v, i) => {
+          if(v.title == item.title && v.url == item.url){
+            v.share = share;
+          }
+        })
         that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
       }
     });

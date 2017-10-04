@@ -4,9 +4,9 @@
         <button ion-button icon-only menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>Title</ion-title>
+        <ion-title>{{headerIpt.title? headerIpt.title : "Catalog"}}</ion-title>
         <ion-buttons end>
-            <button ion-button icon-only (click)="openSharePage()">
+            <button *ngIf="headerIpt.shareCnt !== undefined" ion-button icon-only (click)="openSharePage()">
                 <ion-icon name="share-alt" ></ion-icon>  ({{headerIpt.shareCnt? headerIpt.shareCnt : 0}})
             </button>
         </ion-buttons>

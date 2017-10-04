@@ -2,15 +2,17 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
-        <div class="div-image">
-            <div class="div-image-type">Implant</div>
-            <div class="div-outer" *ngFor="let i of img; let ind = index">
-                <div class="div-image-item">
-                    <img src="{{i.url}}" alt="" (click)="viewImg(i.url)">
-                </div>
-                <div class="li-document-share">
-                    <div (click)="shareImg(i, ind)"><span *ngIf="i.share != true; else shared">Share</span></div>
-                    <div>----</div>
+        <div *ngIf="imgType.length; else nodata">
+            <div *ngFor="let key of imgType" class="div-image">
+                <div class="div-image-type">{{key}}</div>
+                <div class="div-outer" *ngFor="let val of typeJsn[key]">
+                    <div class="div-image-item">
+                        <img src="{{val.url}}" alt="" (click)="viewImg(val.url)">
+                    </div>
+                    <div class="li-document-share">
+                        <div (click)="shareImg(val)"><span *ngIf="val.share != true; else shared">Share</span></div>
+                        <div>----</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -19,4 +21,8 @@
 
 <ng-template #shared>
     <span>Shared</span>
+</ng-template>
+
+<ng-template #nodata>
+    <div>No data Found</div>
 </ng-template>

@@ -4,6 +4,7 @@ import { ProductTabPage } from '../catalog/producttab/producttab';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 import { PartDetailPage } from '../catalog/partdetail/partdetail';
 import { SetDetailPage } from '../catalog/setdetail/setdetail';
+import { LoginPage } from '../login/login';
 
 import { Global } from '../../providers/global';
 
@@ -142,6 +143,12 @@ options: DocumentViewerOptions = {
     console.log(typ);
   }
 
+  logOut(){
+    console.log("logOut ========")
+    localStorage.clear();
+    this.navCtrl.popToRoot();
+  }
+
   showProduct() {
     var that = this;
     this.type = "system";
@@ -154,14 +161,19 @@ options: DocumentViewerOptions = {
       this.ws.postCall('list/system', {})
       .then((data: any) => {
         console.log(data)
-        if(data.data.length)
-          _.each(data.data, function(element, i){
-              if(element.img.length){
-                element["url"] = element.img[0].url;
-              }
-          });
-        that.listItem = data.data;
-        that.syslen = data.data.length;
+        if(data && data.msg == "InValid Credential"){
+          that.logOut();
+        }
+        else{
+          if(data.data.length)
+            _.each(data.data, function(element, i){
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
+            });
+          that.listItem = data.data;
+          that.syslen = data.data.length;
+        }
       });
     }
     else{
@@ -211,8 +223,13 @@ options: DocumentViewerOptions = {
     if(this.g.Network){
       this.ws.postCall('list/technique', {})
       .then((data: any) => {
-        that.listItem = data.data;
-        that.techlen = data.data.length;
+        if(data && data.msg == "InValid Credential"){
+          that.logOut();
+        }
+        else{
+          that.listItem = data.data;
+          that.techlen = data.data.length;
+        }
       });
     }
     else{
@@ -291,8 +308,13 @@ options: DocumentViewerOptions = {
       if(this.g.Network){
         console.log("oo")
         this.ws.postCall('list/' + this.type + '/name/' + this.txt, {})
-        .then(data => {
-          this.searchData(data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            that.logOut();
+          }
+          else{
+            this.searchData(data);
+          }
         });
       }
       else if(this.type == "key"){
@@ -643,15 +665,20 @@ options: DocumentViewerOptions = {
       if(this.g.Network){
         this.ws.postCall('list/technique/'+ item.Name + '/system' , {})
         .then((data: any) => {
-          console.log(data.data)
-          if(data.data.length)
-            _.each(data.data, function(element, i){
-                if(element.img.length){
-                  element["url"] = element.img[0].url;
-                }
-            });
-          that.listItem = data.data;
-          that.syslen = data.data.length;
+          if(data && data.msg == "InValid Credential"){
+            that.logOut();
+          }
+          else{
+            console.log(data.data)
+            if(data.data.length)
+              _.each(data.data, function(element, i){
+                  if(element.img.length){
+                    element["url"] = element.img[0].url;
+                  }
+              });
+            that.listItem = data.data;
+            that.syslen = data.data.length;
+          }
         });
       }
       else{
@@ -698,8 +725,13 @@ options: DocumentViewerOptions = {
       }
       if(this.g.Network){
         this.ws.postCall('display/'+typ+'/'+ item.ID, {})
-        .then(data => {
-          this.handleData(data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            that.logOut();
+          }
+          else{
+            this.handleData(data);
+          }
         });
       }
       else{

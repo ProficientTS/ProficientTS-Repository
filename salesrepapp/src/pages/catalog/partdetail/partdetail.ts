@@ -4,6 +4,7 @@ import { NavController, NavParams } from 'ionic-angular';
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { ProductTabPage } from '../producttab/producttab';
 import { SetDetailPage } from '../setdetail/setdetail';
+import { LoginPage } from '../../login/login';
 
 import { Global } from '../../../providers/global';
 
@@ -107,8 +108,13 @@ headerIpt = {
     if(v !==undefined){
       if(this.g.Network){
         this.ws.postCall('display/'+t+'/'+ v, {})
-        .then(data => {
-          this.handleData(t, data);
+        .then((data: any) => {
+          if(data && data.msg == "InValid Credential"){
+            this.logOut();
+          }
+          else{
+            this.handleData(t, data);
+          }
         });
       }
       else{
@@ -160,5 +166,11 @@ headerIpt = {
         that.fav = !that.fav;
       }
     })
+  }
+
+  logOut(){
+    console.log("logOut ========")
+    localStorage.clear();
+    this.navCtrl.popToRoot();
   }
 }

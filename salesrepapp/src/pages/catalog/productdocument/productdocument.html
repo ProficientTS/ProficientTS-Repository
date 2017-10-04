@@ -2,25 +2,30 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
-        <div class="div-document">
-            <div class="div-document-type">Brochure</div>
-            <ul class="ul-document" *ngFor="let d of doc; let i = index">
-                <li class="li-document-title">{{d.title}}</li>
-                <li class="li-document-view">
-                    <div (click)="viewDoc(d.url)">View</div>
-                    <div>----</div>
-                </li>
-                <li class="li-document-share">
-                    <div (click)="shareDoc(d, i)"><span *ngIf="d.share != true; else shared">Share</span></div>
-                    <div>----</div>
-                </li>
-            </ul>
+        <div *ngIf="docType.length; else nodata">
+            <div class="div-document" *ngFor="let key of docType">
+                <div class="div-document-type">{{key}}</div>
+                <ul class="ul-document" *ngFor="let val of typeJsn[key]">
+                    <li class="li-document-title">{{val.title}}</li>
+                    <li class="li-document-view">
+                        <div (click)="viewDoc(val.url)">View</div>
+                        <div>----</div>
+                    </li>
+                    <li class="li-document-share">
+                        <div (click)="shareDoc(val)"><span *ngIf="val.share != true; else shared">Share</span></div>
+                        <div>----</div>
+                    </li>
+                </ul>
+            </div>
         </div>
-
     </div>
 </ion-content>
 
 
 <ng-template #shared>
     <span>Shared</span>
+</ng-template>
+
+<ng-template #nodata>
+    <div>No data Found</div>
 </ng-template>

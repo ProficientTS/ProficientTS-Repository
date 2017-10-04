@@ -6,6 +6,8 @@ import { EmailComposer } from '@ionic-native/email-composer';
 
 import { Global } from '../../../providers/global';
 
+import * as _ from 'underscore';
+
 @Component({
   selector: 'page-productvideo',
   templateUrl: 'productvideo.html',
@@ -17,6 +19,8 @@ video: any;
 type: any;
 info: any;
 tit: any;
+videoType = [];
+typeJsn: any = {};
 headerIpt = {
   catalogfacility: true,
   shareCnt: 0
@@ -33,6 +37,16 @@ headerIpt = {
     this.tit = this.type + "_nm";
     this.title = this.data[this.tit];
     this.video = this.data.video;
+    if(this.video.length){
+      this.videoType = _.uniq(_.pluck(this.video, 'type'));
+      console.log(this.videoType);
+      for(var i = 0; i < this.videoType.length; i++){
+        this.typeJsn[this.videoType[i]] = _.filter(this.video, (v) => {
+          return v.type == this.videoType[i];
+        });
+      }
+    }
+    console.log(this.typeJsn);
   }
 
   ngOnInit() {
@@ -76,7 +90,11 @@ headerIpt = {
     this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'vid', url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
       console.log(rst);
       if(rst){
-        that.video[index].share = share;
+        _.each(that.video, (v, i) => {
+          if(v.title == item.title && v.url == item.url){
+            v.share = share;
+          }
+        })
         that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
       }
     });

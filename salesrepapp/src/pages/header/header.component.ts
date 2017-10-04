@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { Global } from '../../providers/global';
-import { WebserviceProvider } from '../../providers/webservice/webservice';
 
 import { CatalogPage } from '../catalog/catalog';
 import { SharePage } from '../share/share';
@@ -12,13 +11,12 @@ import { SharePage } from '../share/share';
   templateUrl: 'header.html',
 })
 export class HeaderComponent implements OnInit {
-@Input() headerIpt = {
+@Input() headerIpt: any = {
   catalogfacility: false,
-  shareCnt: 0
+  shareCnt: undefined
 };
 catalogfacility: false;
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private ws: WebserviceProvider,
   private g: Global) {
     console.log(this.headerIpt);
   }
@@ -28,14 +26,18 @@ catalogfacility: false;
     //Add 'implements OnInit' to the class.
     console.log(this.headerIpt);
     var that = this;
-    this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), share: true})
-    .then((rst: any) => {
-      console.log(rst);
-      this.headerIpt.shareCnt = rst.length;
-    })
-    .catch((err: any) => {
+    console.log(this.headerIpt.shareCnt);
+    if(this.headerIpt.shareCnt !== undefined){
+      this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), share: true})
+      .then((rst: any) => {
+        console.log(rst);
+        this.headerIpt.shareCnt = rst.length;
+      })
+      .catch((err: any) => {
 
-    });
+      });
+    }
+    
   }
 
   ionViewWillEnter(){

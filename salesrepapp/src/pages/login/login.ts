@@ -42,7 +42,7 @@ export class LoginPage {
   clickLogin() {
     if(this.email && this.pwd){
       this.ws.postCall("auth/", {
-          email: this.email,
+          email: this.email.toLowerCase(),
           password: this.pwd
       }).then(data => {
         this.fnhandlesignin(data);

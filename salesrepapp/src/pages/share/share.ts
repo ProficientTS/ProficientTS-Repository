@@ -28,6 +28,11 @@ options: DocumentViewerOptions = {
     enabled: true
   }
 };
+headerIpt = {
+  // catalogfacility: true,
+  // shareCnt: 0,
+  title: "Review Page"
+}
 review = "";
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
