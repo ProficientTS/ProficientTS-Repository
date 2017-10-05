@@ -146,7 +146,7 @@ options: DocumentViewerOptions = {
   logOut(){
     console.log("logOut ========")
     localStorage.clear();
-    this.navCtrl.popToRoot();
+    this.navCtrl.setRoot(LoginPage);
   }
 
   showProduct() {
@@ -655,7 +655,7 @@ options: DocumentViewerOptions = {
     console.log(item)
     console.log(this.type)
     console.log(item.type);
-    if(item.type){ // Recent and Favorites
+    if(item.type && (this.tabs.favtab || this.tabs.rectab)){ // Recent and Favorites
       this.type = item.type;
     }
     var that = this;
@@ -708,7 +708,10 @@ options: DocumentViewerOptions = {
             .catch((err) => console.error(err));
       }
     }
-    else if(!(this.type == "key" && (this.tabs.doctab || this.tabs.imgtab || this.tabs.vidtab))){
+    else if(this.type == "key" && (this.tabs.doctab || this.tabs.imgtab || this.tabs.vidtab)){
+      // Do not remove this condition
+    }
+    else {
 
       let typ = this.type;
       if(typ == "key"){
@@ -887,6 +890,8 @@ options: DocumentViewerOptions = {
   }
 
   shareMedia(item: any, index: any){
+    console.log(this.tab);
+    console.log(this.type)
     var that = this;
     console.log(item);
     let typ = "";

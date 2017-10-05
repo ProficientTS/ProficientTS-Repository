@@ -26,12 +26,8 @@ import { WebserviceProvider } from '../providers/webservice/webservice';
 import { Global } from '../providers/global';
 
 import { Device } from '@ionic-native/device';
-import { Camera } from '@ionic-native/camera';
 import { DocumentViewer } from '@ionic-native/document-viewer';
-import { ImagePicker } from '@ionic-native/image-picker';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
-import { StreamingMedia } from '@ionic-native/streaming-media';
-import { Media } from '@ionic-native/media';
 import { File } from '@ionic-native/file';
 import { VideoPlayer } from '@ionic-native/video-player';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
@@ -93,12 +89,8 @@ import { HeaderComponent } from '../pages/header/header.component';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     WebserviceProvider,
     Device,
-    Camera,
-    ImagePicker,
     DocumentViewer,
     PhotoViewer,
-    StreamingMedia,
-    Media,
     File,
     VideoPlayer,
     Global,

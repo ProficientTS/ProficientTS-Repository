@@ -171,6 +171,6 @@ headerIpt = {
   logOut(){
     console.log("logOut ========")
     localStorage.clear();
-    this.navCtrl.popToRoot();
+    this.navCtrl.setRoot(LoginPage);
   }
 }
