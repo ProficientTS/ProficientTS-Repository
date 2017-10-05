@@ -10,9 +10,9 @@
         <div *ngIf="shareD.img.length || shareD.video.length || shareD.doc.length">
             <div>To share ({{shareD.img.length + shareD.video.length + shareD.doc.length}})</div>
             <hr>
-            <div>
+            <div id="div-share-mail">
                 <!--<textarea placeholder="...type in your review" autofocus [(ngModel)]="review"></textarea>-->
-                <button (click)="sendMail()">
+                <button class="ptsFloatR ptsMarginR15p" (click)="sendMail()">
                     Mail
                 </button>
             </div>

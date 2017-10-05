@@ -21,6 +21,7 @@ info: any;
 tit: any;
 videoType = [];
 typeJsn: any = {};
+fav: boolean;
 headerIpt = {
   catalogfacility: true,
   shareCnt: 0
@@ -53,6 +54,18 @@ headerIpt = {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     var that = this;
+    this.g.findQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, type: 'system', fav: true})
+    .then((docs: any) => {
+      console.log(docs);
+      if(docs.length){
+        that.fav = true;
+      }
+      else{
+        that.fav = false;
+      }
+    })
+    .catch((err)=> console.log(err));
+
     this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'vid', share: true})
       .then((vids: any) => {
         for(var i = 0; i < vids.length; i++){
@@ -98,6 +111,21 @@ headerIpt = {
         that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
       }
     });
+  }
+
+  fnFav(fav: boolean){
+    var that = this;
+    console.log(this.data)
+    var url = "";
+    if(this.data && this.data.img && this.data.img.length){
+      url = this.data.img[0].url;
+    }
+    this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
+      console.log(rst);
+      if(rst){
+        that.fav = !that.fav;
+      }
+    })
   }
 
 }

@@ -2,6 +2,8 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
+        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
         <div *ngIf="imgType.length; else nodata">
             <div *ngFor="let key of imgType" class="div-image">
                 <div class="div-image-type">{{key}}</div>

@@ -28,7 +28,8 @@ system: any;
 fav: boolean;
 time: any;
 headerIpt = {
-  catalogfacility: true
+  catalogfacility: true,
+  shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private ws: WebserviceProvider, private g: Global) {

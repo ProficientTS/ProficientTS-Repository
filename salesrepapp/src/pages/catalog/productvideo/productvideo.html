@@ -2,6 +2,8 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
+        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
         <div *ngIf="videoType.length; else nodata">
             <div *ngFor="let key of videoType" class="div-document">
                 <div class="div-document-type">{{key}}</div>
@@ -12,7 +14,7 @@
                         <div>----</div>
                     </li>
                     <li class="li-document-share">
-                        <div (click)="shareDoc(val)"><span *ngIf="val.share != true; else shared">Share</span></div>
+                        <div (click)="shareVid(val)"><span *ngIf="val.share != true; else shared">Share</span></div>
                         <div>----</div>
                     </li>
                 </ul>

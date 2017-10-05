@@ -2,6 +2,8 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
+        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
         <div *ngIf="docType.length; else nodata">
             <div class="div-document" *ngFor="let key of docType">
                 <div class="div-document-type">{{key}}</div>

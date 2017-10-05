@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
@@ -13,7 +13,7 @@ import * as _ from 'underscore';
   selector: 'page-productpart',
   templateUrl: 'productpart.html',
 })
-export class ProductPartPage {
+export class ProductPartPage implements OnInit {
 data: any;
 title: any;
 part: any;
@@ -24,9 +24,11 @@ header: any;
 fnl = [];
 txt = "";
 srh: any = [];
+fav: boolean;
 prt = {};
 headerIpt = {
-  catalogfacility: true
+  catalogfacility: true,
+  shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private ws: WebserviceProvider, private g: Global) {
@@ -68,6 +70,23 @@ headerIpt = {
     });
     console.log(this.fnl);
     this.srh = this.fnl;
+  }
+
+  ngOnInit() {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    var that = this;
+    this.g.findQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, type: 'system', fav: true})
+    .then((docs: any) => {
+      console.log(docs);
+      if(docs.length){
+        that.fav = true;
+      }
+      else{
+        that.fav = false;
+      }
+    })
+    .catch((err)=> console.log(err));
   }
 
   searchItem(){
@@ -136,6 +155,21 @@ headerIpt = {
     console.log("logOut ========")
     localStorage.clear();
     this.navCtrl.setRoot(LoginPage);
+  }
+
+  fnFav(fav: boolean){
+    var that = this;
+    console.log(this.data)
+    var url = "";
+    if(this.data && this.data.img && this.data.img.length){
+      url = this.data.img[0].url;
+    }
+    this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
+      console.log(rst);
+      if(rst){
+        that.fav = !that.fav;
+      }
+    })
   }
 
 }
