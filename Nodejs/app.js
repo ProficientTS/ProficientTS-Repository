@@ -305,7 +305,8 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
         if (data.ns == 'cat.part' ||
             data.ns == 'cat.set' ||
             data.ns == 'cat.system' ||
-            data.ns == 'cat.technique') {
+            data.ns == 'cat.technique' ||
+            data.ns == 'cat.file') {
             console.log(data);
             fnTrigger(data.op, (data.o2) ? data.o2 : data.o, data.ns.replace('cat.', ''));
         }

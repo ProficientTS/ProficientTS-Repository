@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { VideoPlayer } from '@ionic-native/video-player';
 import { File } from '@ionic-native/file';
@@ -8,11 +8,14 @@ import { Global } from '../../../providers/global';
 
 import * as _ from 'underscore';
 
+import { HeaderComponent } from '../../header/header.component';
+
 @Component({
   selector: 'page-productvideo',
   templateUrl: 'productvideo.html',
 })
 export class ProductVideoPage {
+  @ViewChild(HeaderComponent) hc: HeaderComponent
 data: any;
 title: any;
 video: any;
@@ -83,6 +86,11 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductVideoPage');
+    this.hc.backButtonClickEventSetUp();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter ProductVideoPage');
   }
 
   viewVideo(url: string){

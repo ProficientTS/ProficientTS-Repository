@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { Global } from '../../../providers/global';
 
 import { CatalogPage } from '../catalog';
 
+import { HeaderComponent } from '../../header/header.component';
+
 @Component({
   selector: 'page-productdetail',
   templateUrl: 'productdetail.html',
 })
 export class ProductDetailPage implements OnInit {
+  @ViewChild(HeaderComponent) hc: HeaderComponent
 data: any;
 title: any;
 img: any;
@@ -74,6 +77,11 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductDetailPage');
+    this.hc.backButtonClickEventSetUp();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter ProductDetailPage');
   }
 
   fnFav(fav: boolean){

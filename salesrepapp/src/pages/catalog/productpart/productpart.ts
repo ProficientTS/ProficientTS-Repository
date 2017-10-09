@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NavController, NavParams, App } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { PartDetailPage } from '../partdetail/partdetail';
@@ -9,11 +9,14 @@ import { Global } from '../../../providers/global';
 
 import * as _ from 'underscore';
 
+import { HeaderComponent } from '../../header/header.component';
+
 @Component({
   selector: 'page-productpart',
   templateUrl: 'productpart.html',
 })
 export class ProductPartPage implements OnInit {
+  @ViewChild(HeaderComponent) hc: HeaderComponent
 data: any;
 title: any;
 part: any;
@@ -31,7 +34,8 @@ headerIpt = {
   shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private ws: WebserviceProvider, private g: Global) {
+  private ws: WebserviceProvider, private g: Global,
+  private app: App) {
     console.log('ProductPartPage ----------------------')
     console.log(navParams.data);
     this.info = navParams.data;
@@ -149,12 +153,17 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductPartPage');
+    this.hc.backButtonClickEventSetUp();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter ProductPartPage');
   }
 
   logOut(){
     console.log("logOut ========")
     localStorage.clear();
-    this.navCtrl.setRoot(LoginPage);
+    this.app.getRootNav().setRoot(LoginPage);
   }
 
   fnFav(fav: boolean){

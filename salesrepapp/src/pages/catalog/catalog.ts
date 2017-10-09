@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, App } from 'ionic-angular';
 import { ProductTabPage } from '../catalog/producttab/producttab';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 import { PartDetailPage } from '../catalog/partdetail/partdetail';
@@ -16,12 +16,15 @@ import { EmailComposer } from '@ionic-native/email-composer';
 
 import * as _ from 'underscore';
 
+import { HeaderComponent } from '../header/header.component';
+
 @Component({
   selector: 'page-catalog',
   templateUrl: 'catalog.html',
 })
 export class CatalogPage implements OnInit {
    @ViewChild('input') myInput;
+   @ViewChild(HeaderComponent) hc: HeaderComponent;
 listItem = [];
 display: boolean = false;
 type = "key";
@@ -73,7 +76,8 @@ options: DocumentViewerOptions = {
   private photoViewer: PhotoViewer,
   private videoPlayer: VideoPlayer,
   private file: File,
-  private mail: EmailComposer) {
+  private mail: EmailComposer,
+  private app: App) {
     
     console.log(Nedb);
     console.dir(Nedb);
@@ -146,7 +150,7 @@ options: DocumentViewerOptions = {
   logOut(){
     console.log("logOut ========")
     localStorage.clear();
-    this.navCtrl.setRoot(LoginPage);
+    this.app.getRootNav().setRoot(LoginPage);
   }
 
   showProduct() {
@@ -177,7 +181,7 @@ options: DocumentViewerOptions = {
       });
     }
     else{
-      this.g.findQ(this.g.db.system, {voidfl : {$ne : 'Y'}})
+      this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_nm: 1}, 0, 0)
         .then((docs: any) => {
             console.log(docs);
             var len = docs.length;
@@ -233,7 +237,7 @@ options: DocumentViewerOptions = {
       });
     }
     else{
-      this.g.findQ(this.g.db.technique, {voidfl : {$ne : 'Y'}})
+      this.g.findQSSL(this.g.db.technique, {voidfl : {$ne : 'Y'}}, {technique_nm: 1}, 0, 0)
         .then((docs: any) => {
             console.log(docs);
             var len = docs.length;
@@ -300,13 +304,13 @@ options: DocumentViewerOptions = {
     console.log(this.type)
     var that = this;
     this.typList = false;
+    this.txt = this.txt.trim();
     if(this.txt.length >= 3){
       this.display = true;
       this.tab = true;
       console.log(typ)
       this.type = typ;
       if(this.g.Network){
-        console.log("oo")
         this.ws.postCall('list/' + this.type + '/name/' + this.txt, {})
         .then((data: any) => {
           if(data && data.msg == "InValid Credential"){
@@ -320,12 +324,9 @@ options: DocumentViewerOptions = {
       else if(this.type == "key"){
         var rst: any = {};
         var v = JSON.parse(JSON.stringify(this.txt));
-        var f = v.split("")[0].toUpperCase() + v.slice(1);
-        f = new RegExp(f);
-        v = new RegExp(v);
+        v = new RegExp(v, 'i');
         console.log(v)
-        // , { "video.title": { $regex: f  } }, { "img.title": { $regex: f  } }, { "doc.title": { $regex: f  } }, { "video.title": { $regex: v  } }, { "img.title": { $regex: v  } }, { "doc.title": { $regex: v  }}
-        this.g.findQ(this.g.db.system, { $or: [{ system_nm: { $regex: f } }, { system_nm: { $regex: v } }, { system_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
+        this.g.findQSSL(this.g.db.system, { $or: [{ system_nm: { $regex: v } }, { system_id: { $regex: v } }], voidfl : {$ne : 'Y'} }, {system_nm: 1}, 0, 0)
         .then((system: any) => {
           console.log(system);
             var sys = [];
@@ -339,43 +340,19 @@ options: DocumentViewerOptions = {
                 
             }
             rst.system = sys;
-            that.g.findQ(that.g.db.system, { $or: [{ "img.title": { $regex: f  } }, { "img.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+            that.g.findQSSL(that.g.db.file, { file_type: "img", title: { $regex: v }, voidfl : {$ne : 'Y'} }, {title: 1}, 0, 0)
             .then((image: any) => {
               console.log(image);
-                var img = [];
-                for (var i = 0; i < image.length; i++) {
-                    if (image[i].img.length) {
-                        for (var j = 0; j < image[i].img.length; j++) {
-                            img.push(image[i].img[j]);
-                        }
-                    }
-                }
-                rst.img = _.uniq(img);
-                that.g.findQ(that.g.db.system, { $or: [{ "video.title": { $regex: f  } }, { "video.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+                rst.img = _.uniq(image);
+                that.g.findQSSL(that.g.db.file, { file_type: "video", title: { $regex: v }, voidfl : {$ne : 'Y'} }, {title: 1}, 0, 0)
                 .then((video: any) => {
                   console.log(video);
-                    var vid = [];
-                    for (var i = 0; i < video.length; i++) {
-                        if (video[i].video.length) {
-                            for (var j = 0; j < video[i].video.length; j++) {
-                                vid.push(video[i].video[j]);
-                            }
-                        }
-                    }
-                    rst.video = _.uniq(vid);
-                    that.g.findQ(that.g.db.system, { $or: [{ "doc.title": { $regex: f  } }, { "doc.title": { $regex: v  } }], voidfl : {$ne : 'Y'} })
+                    rst.video = _.uniq(video);
+                    that.g.findQSSL(that.g.db.file, { file_type: "doc", title: { $regex: v }, voidfl : {$ne : 'Y'} }, {title: 1}, 0, 0)
                     .then((doc: any) => {
                       console.log(doc);
-                        var docm = [];
-                        for (var i = 0; i < doc.length; i++) {
-                            if (doc[i].doc.length) {
-                                for (var j = 0; j < doc[i].doc.length; j++) {
-                                    docm.push(doc[i].doc[j]);
-                                }
-                            }
-                        }
-                        rst.doc = _.uniq(docm);
-                        that.g.findQ(that.g.db.set, { $or: [{ set_nm: { $regex: f } }, { set_nm: { $regex: v } }, { set_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
+                        rst.doc = _.uniq(doc);
+                        that.g.findQSSL(that.g.db.set, { $or: [{ set_nm: { $regex: v } }, { set_id: { $regex: v } }], voidfl : {$ne : 'Y'} }, {set_nm: 1}, 0, 0)
                         .then((set: any) => {
                             console.log(set);
                             var setArr = [];
@@ -389,7 +366,7 @@ options: DocumentViewerOptions = {
                             }
                             rst.set = setArr;
                             
-                            that.g.findQ(that.g.db.part, { $or: [{ part_nm: { $regex: f } }, { part_nm: { $regex: v } }, { part_id: { $regex: v } }], voidfl : {$ne : 'Y'} })
+                            that.g.findQSSL(that.g.db.part, { $or: [{ part_nm: { $regex: v } }, { part_id: { $regex: v } }], voidfl : {$ne : 'Y'} }, {part_nm: 1}, 0, 0)
                             .then((part: any) => {
                                 console.log(part);
                                 var partArr = [];
@@ -422,30 +399,33 @@ options: DocumentViewerOptions = {
           .catch((err) => console.error(err));
       }
       else{
-        var query = {};
+        var query = {},
+            sort = {};
         // nedb not supporting case insensitivity
         var v = JSON.parse(JSON.stringify(this.txt));
-        var f = v.split("")[0].toUpperCase() + v.slice(1);
-        f = new RegExp(f);
-        v = new RegExp(v);
+        v = new RegExp(v, 'i');
         console.log(v)
 
         
         switch (this.type) {
             case 'part':
-                query = { $or: [{ part_nm: { $regex: f } }, { part_nm: { $regex: v } }, { part_id: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                query = { $or: [{ part_nm: { $regex: v } }, { part_id: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                sort = { part_nm: 1 };
                 break;
             case 'set':
-                query = { $or: [{ set_nm: { $regex: f } }, { set_nm: { $regex: v } }, { set_id: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                query = { $or: [{ set_nm: { $regex: v } }, { set_id: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                sort = { set_nm: 1 };
                 break;
             case 'system':
-                query = { $or: [{ system_nm: { $regex: f } }, { system_nm: { $regex: v } }, { system_id: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                query = { $or: [{ system_nm: { $regex: v } }, { system_id: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                sort = { system_nm: 1 };
                 break;
             case 'technique':
-                query = { $or: [{ technique_nm: { $regex: f } }, { technique_nm: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                query = { $or: [{ technique_nm: { $regex: v } }], voidfl : {$ne : 'Y'} };
+                sort = { technique_nm: 1 };
                 break;
         }
-        this.g.findQ(this.g.db[this.type], query)
+        this.g.findQSSL(this.g.db[this.type], query, sort, 0, 0)
         .then((docs: any) => {
             console.log(docs);
             var len = docs.length;
@@ -682,7 +662,7 @@ options: DocumentViewerOptions = {
         });
       }
       else{
-        this.g.findQ(this.g.db.system, { "technique.technique_nm": {$in: [item.Name]}, voidfl : {$ne : 'Y'} })
+        this.g.findQSSL(this.g.db.system, { "technique.technique_nm": {$in: [item.Name]}, voidfl : {$ne : 'Y'} },{ system_nm: 1}, 0, 0)
           .then((docs: any) => {
               console.log(docs);
               var len = docs.length;

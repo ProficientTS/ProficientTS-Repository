@@ -19,7 +19,7 @@ function UserDAO(database) {
     this.checkUser = function(userInfo, callback) {
         "use strict";
         console.log(userInfo)
-        var query = (userInfo.password) ? { email: userInfo.email, password: userInfo.password, active: true } : { email: userInfo.email, active: true };
+        var query = (userInfo.password) ? { email: userInfo.email, password: userInfo.password, active: true, voidfl: { $ne: 'Y' } } : { email: userInfo.email, active: true, voidfl: { $ne: 'Y' } };
         var cursor = this.db.collection('user').find(query);
 
         cursor.toArray(
@@ -35,7 +35,7 @@ function UserDAO(database) {
 
     this.resetpwd = function(email, pwd, callback) {
         "use strict";
-        this.db.collection('user').update({ email: email }, { $set: { password: pwd } },
+        this.db.collection('user').update({ email: email, voidfl: { $ne: 'Y' } }, { $set: { password: pwd } },
             function(err, doc) {
                 assert.equal(err, null);
                 console.log("resetpwd Result")
@@ -49,7 +49,7 @@ function UserDAO(database) {
     this.updateUserToken = function(userInfo, token, callback) {
         "use strict";
 
-        this.db.collection('user').update({ email: userInfo.email }, { $set: { token: token } },
+        this.db.collection('user').update({ email: userInfo.email, voidfl: { $ne: 'Y' } }, { $set: { token: token } },
             function(err, doc) {
                 assert.equal(err, null);
                 console.log("checkUser Result")

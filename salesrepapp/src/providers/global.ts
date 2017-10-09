@@ -42,7 +42,7 @@ connectSubscription: any;
     this.db.set = new Nedb({filename: 'assets/database/set.db', autoload: true});
     this.db.system = new Nedb({filename: 'assets/database/system.db', autoload: true});
     this.db.technique = new Nedb({filename: 'assets/database/technique.db', autoload: true});
-    this.db.mastersync = new Nedb({filename: 'assets/database/mastersync.db', autoload: true});
+    this.db.file = new Nedb({filename: 'assets/database/file.db', autoload: true});
     this.db.devicesync = new Nedb({filename: 'assets/database/devicesync.db', autoload: true});
     this.db.fav = new Nedb({filename: 'assets/database/favorites.db', autoload: true});
     this.db.recent = new Nedb({filename: 'assets/database/recent.db', autoload: true});
@@ -98,6 +98,7 @@ connectSubscription: any;
   findQSSL(db: any, query: object, srt: object, skp: any, lmt: any){
     return new Promise((resolve, reject) => {
         db.find(query).sort(srt).skip(skp).limit(lmt).exec(function(err, docs) {
+          console.log(docs)
             if(err) reject(err);
             resolve(docs);
         });

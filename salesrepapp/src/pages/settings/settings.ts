@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { NavController, App } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 
 import { Global } from '../../providers/global';
 
 import { LoginPage } from '../login/login';
+import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'page-settings',
   templateUrl: 'settings.html'
 })
 export class SettingsPage {
+  @ViewChild(HeaderComponent) hc: HeaderComponent;
 headerIpt = {
   // catalogfacility: true,
   shareCnt: 0,
@@ -19,7 +21,8 @@ headerIpt = {
 }
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
-  private g: Global) {
+  private g: Global,
+  private app: App) {
 
   }
 
@@ -44,6 +47,14 @@ headerIpt = {
       }
     });
     
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad SettingsPage');
+  }
+
+  ionViewDidEnter(){
+    console.log('ionViewDidEnter SettingsPage');
   }
 
     // more performance
@@ -88,6 +99,16 @@ headerIpt = {
               console.log("Insert Failed");
             else{
               console.log("Technique Inserted Successfully");
+              console.log(newDocs);
+            }
+          })
+      }
+      if(data.data.file.length){
+        db.file.insert(data.data.file, function(err, newDocs){
+            if(err)
+              console.log("Insert Failed");
+            else{
+              console.log("File Inserted Successfully");
               console.log(newDocs);
             }
           })
@@ -186,6 +207,14 @@ headerIpt = {
                       console.log("Share Reset Successful");
                       console.log(numRemoved);
                     }
+                    db.file.remove({}, { multi: true }, function (err, numRemoved) {
+                      if(err)
+                        console.log("File Reset Failed");
+                      else{
+                        console.log("File Reset Successful");
+                        console.log(numRemoved);
+                      }
+                    });
                   });
                 });
               });
@@ -253,6 +282,18 @@ headerIpt = {
           })
         }
       }
+      if(data.data.file.length){
+        for(var i = 0; i < data.data.file.length; i++){
+          db.file.update({_id: data.data.file[i]['_id']},data.data.file[i], {upsert: true}, function(err, numReplaced, upsert){
+            if(err)
+              console.log("File Update Failed");
+            else{
+              console.log("File Update Successfully");
+              console.log(numReplaced);
+            }
+          })
+        }
+      }
     }
     else{
       console.log("No updates for now!")
@@ -262,7 +303,7 @@ headerIpt = {
   logOut(){
     console.log("logOut ========")
     localStorage.clear();
-    this.navCtrl.setRoot(LoginPage);
+    this.app.getRootNav().setRoot(LoginPage);
   }
 
 }

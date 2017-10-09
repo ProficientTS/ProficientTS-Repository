@@ -24,7 +24,7 @@
                     <ion-card-header>{{item.title}}</ion-card-header>
                     <ion-card-content>
                         <span (click)="viewMedia('img', item.url)">View</span>
-                        <ion-icon name="remove-circle" (click)="removeMedia('img', item.url, i)"></ion-icon>
+                        <ion-icon name="remove-circle" (click)="removeMedia('img', item, i)"></ion-icon>
                     </ion-card-content>
                 </div>
             </ion-card>
@@ -36,7 +36,7 @@
                     <ion-card-header>{{item.title}}</ion-card-header>
                     <ion-card-content>
                         <span (click)="viewMedia('video', item.url)">View</span>
-                        <ion-icon name="remove-circle" (click)="removeMedia('video', item.url, i)"></ion-icon>
+                        <ion-icon name="remove-circle" (click)="removeMedia('video', item, i)"></ion-icon>
                     </ion-card-content>
                 </div>
             </ion-card>
@@ -48,7 +48,7 @@
                     <ion-card-header>{{item.title}}</ion-card-header>
                     <ion-card-content>
                         <span (click)="viewMedia('doc', item.url)">View</span>
-                        <ion-icon name="remove-circle" (click)="removeMedia('doc', item.url, i)"></ion-icon>
+                        <ion-icon name="remove-circle" (click)="removeMedia('doc', item, i)"></ion-icon>
                     </ion-card-content>
                 </div>
             </ion-card>

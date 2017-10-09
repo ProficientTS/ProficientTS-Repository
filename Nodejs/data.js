@@ -21,7 +21,6 @@ function ItemDAO(database) {
         console.log("List Data ID")
         console.log(id)
         var cursor = this.db.collection(type).find({});
-        type = (type == "group") ? "grp" : type;
         var query = {},
             project;
         var aggr = [];
@@ -29,55 +28,46 @@ function ItemDAO(database) {
         switch (type) {
             case 'part':
                 if (id) {
-                    query = { part_id: id };
+                    query = { part_id: id, voidfl: { $ne: 'Y' } };
                 } else if (name) {
-                    aggr = [{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }];
+                    aggr = [{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }, { $sort: { part_nm: 1 } }];
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }];
+                    aggr = [{ $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }, { $sort: { part_nm: 1 } }];
                 }
 
                 break;
             case 'set':
                 if (id) {
-                    query = { set_id: id };
+                    query = { set_id: id, voidfl: { $ne: 'Y' } };
                 } else if (name) {
-                    aggr = [{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }];
+                    aggr = [{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }, { $sort: { set_nm: 1 } }];
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }];
+                    aggr = [{ $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }, { $sort: { set_nm: 1 } }];
                 }
                 break;
-                // case 'grp':
-                //     if (id) {
-                //         query = { group_id: id };
-                //     } else if (name) {
-                //         aggr = [{ $match: { $or: [{ group_nm: { $regex: name, $options: 'i' } }, { group_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$group_id", Name: "$group_nm" } }];
-                //     } else {
-                //         aggr = [{ $project: { _id: 0, ID: "$group_id", Name: "$group_nm" } }];
-                //     }
-                //     break;
             case 'system':
                 if (id) {
-                    query = { system_id: id };
+                    query = { system_id: id, voidfl: { $ne: 'Y' } };
                 } else if (name) {
-                    aggr = [{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }];
+                    aggr = [{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }];
                 } else {
-                    aggr = [{ $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }];
+                    aggr = [{ $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }];
                 }
                 break;
             case 'technique':
                 if (view === "display") {
-                    query = { technique_nm: id };
+                    query = { technique_nm: id, voidfl: { $ne: 'Y' } };
                 } else if (name) {
-                    aggr = [{ $match: { technique_nm: { $regex: name, $options: 'i' } } }, { $project: { _id: 0, Name: "$technique_nm" } }];
+                    aggr = [{ $match: { technique_nm: { $regex: name, $options: 'i' }, voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, Name: "$technique_nm" } }, { $sort: { technique_nm: 1 } }];
                 } else if (type2) {
                     type = type2;
                     switch (type2) {
                         case "system":
-                            aggr = [{ $match: { "technique.technique_nm": id } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }];
+                            aggr = [{ $match: { "technique.technique_nm": id, voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }];
                             break;
                     }
                 } else {
-                    aggr = [{ $project: { _id: 0, Name: "$technique_nm" } }];
+                    aggr = [{ $project: { _id: 0, Name: "$technique_nm" } }, { $sort: { technique_nm: 1 } }];
                 }
                 break;
         }
@@ -104,8 +94,8 @@ function ItemDAO(database) {
         "use strict";
         var that = this;
         var rst = {};
-        // this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }, { "video.title": { $regex: name, $options: 'i' } }, { "img.title": { $regex: name, $options: 'i' } }, { "doc.title": { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: "$img", video: "$video", doc: "$doc" } }]).toArray(
-        this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }]).toArray(
+        var name = new RegExp(name);
+        this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }]).toArray(
             function(err, system) {
                 assert.equal(err, null);
                 console.log("System List Result");
@@ -115,58 +105,31 @@ function ItemDAO(database) {
                     console.log(system);
                     rst.system = system;
 
-                    that.db.collection('system').aggregate([{ $match: { "img.title": { $regex: name, $options: 'i' } } }, { $project: { _id: 0, img: "$img" } }]).toArray(
+                    that.db.collection('file').find({ file_type: "img", "title": { $regex: name, $options: 'i' } }).sort({ title: 1 }).toArray(
                         function(err, image) {
                             assert.equal(err, null);
                             console.log("Img List Result");
                             if (err)
                                 callback(false, err);
                             else {
-                                var img = [];
-                                for (var i = 0; i < image.length; i++) {
-                                    if (image[i].img.length) {
-                                        for (var j = 0; j < image[i].img.length; j++) {
-                                            img.push(image[i].img[j]);
-                                        }
-                                    }
-                                    // delete image[i].img;
-                                }
-                                rst.img = _.uniq(img);
-                                that.db.collection('system').aggregate([{ $match: { "video.title": { $regex: name, $options: 'i' } } }, { $project: { _id: 0, video: "$video" } }]).toArray(
+                                rst.img = _.uniq(image);
+                                that.db.collection('file').find({ file_type: "video", "title": { $regex: name, $options: 'i' } }).sort({ title: 1 }).toArray(
                                     function(err, video) {
                                         assert.equal(err, null);
                                         console.log("Video List Result");
                                         if (err)
                                             callback(false, err);
                                         else {
-                                            var vid = [];
-                                            for (var i = 0; i < video.length; i++) {
-                                                if (video[i].video.length) {
-                                                    for (var j = 0; j < video[i].video.length; j++) {
-                                                        vid.push(video[i].video[j]);
-                                                    }
-                                                }
-                                                // delete video[i].video;
-                                            }
-                                            rst.video = _.uniq(vid);
-                                            that.db.collection('system').aggregate([{ $match: { "doc.title": { $regex: name, $options: 'i' } } }, { $project: { _id: 0, doc: "$doc" } }]).toArray(
+                                            rst.video = _.uniq(video);
+                                            that.db.collection('file').find({ file_type: "doc", "title": { $regex: name, $options: 'i' } }).sort({ title: 1 }).toArray(
                                                 function(err, doc) {
                                                     assert.equal(err, null);
                                                     console.log("Doc List Result");
                                                     if (err)
                                                         callback(false, err);
                                                     else {
-                                                        var docm = [];
-                                                        for (var i = 0; i < doc.length; i++) {
-                                                            if (doc[i].doc.length) {
-                                                                for (var j = 0; j < doc[i].doc.length; j++) {
-                                                                    docm.push(doc[i].doc[j]);
-                                                                }
-                                                            }
-                                                            // delete doc[i].doc;
-                                                        }
-                                                        rst.doc = _.uniq(docm);
-                                                        that.db.collection('set').aggregate([{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }]).toArray(
+                                                        rst.doc = _.uniq(doc);
+                                                        that.db.collection('set').aggregate([{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }, { $sort: { set_nm: 1 } }]).toArray(
                                                             function(err, set) {
                                                                 assert.equal(err, null);
                                                                 console.log("Set List Result");
@@ -174,7 +137,7 @@ function ItemDAO(database) {
                                                                     callback(false, err);
                                                                 else {
                                                                     rst.set = set;
-                                                                    that.db.collection('part').aggregate([{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }] } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }]).toArray(
+                                                                    that.db.collection('part').aggregate([{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }, { $sort: { part_nm: 1 } }]).toArray(
                                                                         function(err, part) {
                                                                             assert.equal(err, null);
                                                                             console.log("Part List Result");
@@ -226,14 +189,6 @@ function ItemDAO(database) {
                         console.log("Set Sync Result")
                         console.log(set)
                         rst.set = set;
-                        // that.db.collection('grp').find({voidfl : {$ne : 'Y'}}).snapshot().toArray(
-                        //     function(err, grp) {
-                        //         console.log("new Date -------------------------------------------------------------------");
-                        //         console.log(new Date);
-                        //         assert.equal(err, null);
-                        //         console.log("Group Sync Result")
-                        //         console.log(grp)
-                        //         rst.group = grp;
                         that.db.collection('system').find({ voidfl: { $ne: 'Y' } }).snapshot().toArray(
                             function(err, system) {
                                 console.log("new Date -------------------------------------------------------------------");
@@ -252,23 +207,33 @@ function ItemDAO(database) {
                                         console.log("Technique Sync Result")
                                         console.log(technique)
                                         rst.technique = technique;
-                                        console.log(rst);
-                                        var devSync = that.DevSyncInfo(syncInfo, startTM, endTM);
-                                        console.log(devSync);
-                                        that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email }, [
-                                            ['deviceID', 'asc']
-                                        ], devSync, { upsert: true }, function(err, final) {
-                                            assert.equal(err, null);
-                                            console.log("final Result")
-                                            console.log(final);
-                                            callback(rst);
-                                        });
+                                        that.db.collection('file').find({ voidfl: { $ne: 'Y' } }).snapshot().toArray(
+                                            function(err, file) {
+                                                endTM = Number(new Date());
+                                                console.log(endTM);
+                                                console.log("new Date -------------------------------------------------------------------");
+                                                console.log(new Date);
+                                                assert.equal(err, null);
+                                                console.log("File Sync Result")
+                                                console.log(file)
+                                                rst.file = file;
+                                                console.log(rst);
+                                                var devSync = that.DevSyncInfo(syncInfo, startTM, endTM);
+                                                console.log(devSync);
+                                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email, voidfl: { $ne: 'Y' } }, [
+                                                    ['deviceID', 'asc']
+                                                ], devSync, { upsert: true }, function(err, final) {
+                                                    assert.equal(err, null);
+                                                    console.log("final Result")
+                                                    console.log(final);
+                                                    callback(rst);
+                                                });
+                                            }
+                                        );
                                     }
                                 );
                             }
                         );
-                        //     }
-                        // );
                     }
                 );
             }
@@ -282,7 +247,7 @@ function ItemDAO(database) {
         var updateTM = Number(new Date());
         console.log("updateTM ----------- updateTM -------------- updateTM");
         console.log(updateTM);
-        this.db.collection('devicesync').find({ email: syncInfo.email, deviceID: syncInfo.deviceID }, { _id: 0, startTM: 1 }).toArray(
+        this.db.collection('devicesync').find({ email: syncInfo.email, deviceID: syncInfo.deviceID, voidfl: { $ne: 'Y' } }, { _id: 0, startTM: 1 }).toArray(
             function(err, doc) {
                 assert.equal(err, null);
                 console.log("Device Sync startTM Fetch Result")
@@ -292,7 +257,7 @@ function ItemDAO(database) {
                     // callback(doc)
                     console.log(doc[0].startTM);
                     // gte start time only, since we are taking snapshot! 
-                    that.db.collection('mastersync').find({ updateTM: { $gte: doc[0].startTM } }).toArray(
+                    that.db.collection('mastersync').find({ updateTM: { $gte: doc[0].startTM }, voidfl: { $ne: 'Y' } }).toArray(
                         function(err, mstrst) {
                             assert.equal(err, null);
                             console.log("Updates in Master Sync Fetch Result")
@@ -321,17 +286,6 @@ function ItemDAO(database) {
                                         setVd.push({ _id: set [i].refid, voidfl: "Y" })
                                     }
                                 }
-                                // var group = mstrst.filter(function(o) {
-                                //         return o.reftype == 'group'
-                                //     })
-                                // var groupID = [],
-                                //     groupVd = [];
-                                // for (var i = 0; i < group.length; i++) {
-                                //     groupID.push(ObjectId(group[i].refid));
-                                //     if (group[i].action == "Y") {
-                                //         groupVd.push({ _id: group[i].refid, voidfl: "Y" })
-                                //     }
-                                // }
                                 var system = mstrst.filter(function(o) {
                                     return o.reftype == 'system'
                                 })
@@ -354,51 +308,62 @@ function ItemDAO(database) {
                                         techniqueVd.push({ _id: technique[i].refid, voidfl: "Y" })
                                     }
                                 }
+                                var file = mstrst.filter(function(o) {
+                                    return o.reftype == 'file'
+                                })
+                                var fileID = [],
+                                    fileVd = [];
+                                for (var i = 0; i < file.length; i++) {
+                                    fileID.push(ObjectId(file[i].refid));
+                                    if (file[i].action == "Y") {
+                                        fileVd.push({ _id: file[i].refid, voidfl: "Y" })
+                                    }
+                                }
                                 // Array.prototype.push.apply(arr1,arr2);
-                                that.db.collection('part').find({ _id: { $in: partID } }).snapshot().toArray(
+                                that.db.collection('part').find({ _id: { $in: partID }, voidfl: { $ne: 'Y' } }).snapshot().toArray(
                                     function(err, part) {
                                         assert.equal(err, null);
                                         rst.part = part;
                                         Array.prototype.push.apply(rst.part, partVd);
-                                        that.db.collection('set').find({ _id: { $in: setID } }).snapshot().toArray(
+                                        that.db.collection('set').find({ _id: { $in: setID }, voidfl: { $ne: 'Y' } }).snapshot().toArray(
                                             function(err, set) {
                                                 assert.equal(err, null);
                                                 rst.set = set;
                                                 Array.prototype.push.apply(rst.set, setVd);
-                                                // that.db.collection('grp').find({ _id: { $in: groupID } }).snapshot().toArray(
-                                                //     function(err, grp) {
-                                                //         assert.equal(err, null);
-                                                //         rst.group = grp;
-                                                // Array.prototype.push.apply(rst.group, groupVd);
-                                                that.db.collection('system').find({ _id: { $in: systemID } }).snapshot().toArray(
+                                                that.db.collection('system').find({ _id: { $in: systemID }, voidfl: { $ne: 'Y' } }).snapshot().toArray(
                                                     function(err, system) {
                                                         assert.equal(err, null);
                                                         rst.system = system;
                                                         Array.prototype.push.apply(rst.system, systemVd);
-                                                        that.db.collection('technique').find({ _id: { $in: techniqueID } }).snapshot().toArray(
+                                                        that.db.collection('technique').find({ _id: { $in: techniqueID }, voidfl: { $ne: 'Y' } }).snapshot().toArray(
                                                             function(err, technique) {
                                                                 assert.equal(err, null);
                                                                 rst.technique = technique;
                                                                 Array.prototype.push.apply(rst.technique, techniqueVd);
-                                                                var endTM;
-                                                                endTM = Number(new Date());
-                                                                console.log(endTM);
-                                                                // callback(rst);
-                                                                var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
-                                                                console.log(devSync);
-                                                                console.log(devSync.deviceID + "------------------ deviceID");
-                                                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email }, [
-                                                                    ['_id', 'asc']
-                                                                ], devSync, { upsert: true }, function(err, data) {
-                                                                    assert.equal(err, null);
-                                                                    callback(rst);
-                                                                });
+                                                                that.db.collection('file').find({ _id: { $in: fileID }, voidfl: { $ne: 'Y' } }).snapshot().toArray(
+                                                                    function(err, file) {
+                                                                        assert.equal(err, null);
+                                                                        rst.file = file;
+                                                                        Array.prototype.push.apply(rst.file, fileVd);
+                                                                        var endTM;
+                                                                        endTM = Number(new Date());
+                                                                        console.log(endTM);
+                                                                        // callback(rst);
+                                                                        var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
+                                                                        console.log(devSync);
+                                                                        console.log(devSync.deviceID + "------------------ deviceID");
+                                                                        that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email, voidfl: { $ne: 'Y' } }, [
+                                                                            ['_id', 'asc']
+                                                                        ], devSync, { upsert: true }, function(err, data) {
+                                                                            assert.equal(err, null);
+                                                                            callback(rst);
+                                                                        });
+                                                                    }
+                                                                );
                                                             }
                                                         );
                                                     }
                                                 );
-                                                //     }
-                                                // );
                                             }
                                         );
                                     }
@@ -411,7 +376,7 @@ function ItemDAO(database) {
                                 var devSync = that.DevSyncInfo(syncInfo, updateTM, endTM);
                                 console.log(devSync);
                                 console.log(devSync.deviceID + "------------------ deviceID");
-                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email }, [
+                                that.db.collection('devicesync').findAndModify({ deviceID: devSync.deviceID, email: devSync.email, voidfl: { $ne: 'Y' } }, [
                                     ['deviceID', 'asc']
                                 ], devSync, { upsert: true }, function(err, data) {
                                     assert.equal(err, null);
@@ -432,7 +397,7 @@ function ItemDAO(database) {
     this.updateMaster = function(info, callback) {
         "use strict";
 
-        this.db.collection('mastersync').findAndModify({ refid: info.refid, reftype: info.reftype }, [
+        this.db.collection('mastersync').findAndModify({ refid: info.refid, reftype: info.reftype, voidfl: { $ne: 'Y' } }, [
             ['_id', 'asc']
         ], info, { upsert: true }, function(err, rst) {
             assert.equal(err, null);

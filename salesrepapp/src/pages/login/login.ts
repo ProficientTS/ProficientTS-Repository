@@ -60,7 +60,7 @@ export class LoginPage {
       console.log(data.data[0].email.split('@')[0])
       localStorage.setItem('email', data.data[0].email);
       localStorage.setItem('user', data.data[0].email.split('@')[0]);
-      this.navCtrl.push(CatalogPage);
+      this.navCtrl.setRoot(CatalogPage);
       this.msg = this.email = this.pwd = '';
     }
     else{

@@ -33,7 +33,6 @@ headerIpt = {
   // shareCnt: 0,
   title: "Review Page"
 }
-review = "";
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
   private g: Global,
@@ -49,7 +48,7 @@ review = "";
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     var that = this;
-    this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), share: true})
+    this.g.findQSSL(this.g.db.share, {accountID: localStorage.getItem('email'), share: true}, {title: 1}, 0, 0)
     .then((rst: any) => {
       console.log(rst);
       this.shareD.img = _.filter(rst, (v) => {
@@ -102,13 +101,13 @@ review = "";
     }
   }
 
-  removeMedia(type: any, url: any, index: any){
-    console.log(type);
-    console.log(url);
+  removeMedia(type: any, item: any, index: any){
+    console.log(item);
     console.log(index);
     var that = this;
     let typ = (type == "video") ? "vid" : type
-    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: url }, {$set: {share: false}}, function(rst){
+    console.log(typ)
+    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: item.url, title: item.title }, {$set: {share: false}}, function(rst){
       console.log(rst);
       if(rst){
         that.shareD[type].splice(index, 1);
@@ -117,6 +116,47 @@ review = "";
   }
 
   sendMail(){
+    // var arr = [];
+    // for(var key in this.shareD){
+    //   if(this.shareD[key].length){
+    //     for(var a = 0; a < this.shareD[key].length; a++){
+    //       arr.push(this.shareD[key][a]);
+    //     }
+    //   }
+    // }
+    // console.log(arr);
+    // var msg = "";
+    // for(var i = 0; i < arr.length; i++){
+    //   msg = msg + "<li><a href = '"+ arr[i].url +"'>"+ arr[i].title +"</a></li>";
+    // }
+    // msg = (arr.length) ? "<ul>" + msg + "</ul>" : "";
+
+
+    var msg = "";
+    if(this.shareD.img.length){
+      msg = msg + "<div> Pictures (" + this.shareD.img.length+ ")</div>";
+      var txt = "";
+      for(var i = 0; i < this.shareD.img.length; i++){
+        txt = txt + "<li><a href = '"+ this.shareD.img[i].url +"'>"+ this.shareD.img[i].title +"</a></li>";
+      }
+      msg = msg + "<ul>" + txt + "</ul>";
+    }
+    if(this.shareD.video.length){
+      msg = msg + "<div> Videos (" + this.shareD.video.length+ ")</div>";
+      var txt = "";
+      for(var i = 0; i < this.shareD.video.length; i++){
+        txt = txt + "<li><a href = '"+ this.shareD.video[i].url +"'>"+ this.shareD.video[i].title +"</a></li>";
+      }
+      msg = msg + "<ul>" + txt + "</ul>";
+    }
+    if(this.shareD.doc.length){
+      msg = msg + "<div> Documents (" + this.shareD.doc.length+ ")</div>";
+      var txt = "";
+      for(var i = 0; i < this.shareD.doc.length; i++){
+        txt = txt + "<li><a href = '"+ this.shareD.doc[i].url +"'>"+ this.shareD.doc[i].title +"</a></li>";
+      }
+      msg = msg + "<ul>" + txt + "</ul>";
+    }
     var body =
     `
       <html>
@@ -125,15 +165,14 @@ review = "";
         </head>
         <body>
           <p>
-            <h1>Hi Cj 777</h1>
-            <br>
             <div>
-              <h6>` + this.review + `</h6>
+              ` + msg + `
             </div>
           </p>
         </body>
       </html>
     `;
+    console.log(body);
     this.mail.open({
       to: null,
       cc: null,

@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { NavController, NavParams, Navbar, App } from 'ionic-angular';
 
 import { Global } from '../../providers/global';
 
@@ -11,19 +11,27 @@ import { SharePage } from '../share/share';
   templateUrl: 'header.html',
 })
 export class HeaderComponent implements OnInit {
+  @ViewChild(Navbar) navbar: Navbar
 @Input() headerIpt: any = {
   catalogfacility: false,
   shareCnt: undefined
 };
+
+back: boolean = false;
 catalogfacility: false;
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private g: Global) {
+  private g: Global, private app: App) {
     console.log(this.headerIpt);
   }
 
   ngOnInit() {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
+    this.setShareCount();
+    
+  }
+
+  setShareCount(){
     console.log(this.headerIpt);
     var that = this;
     console.log(this.headerIpt.shareCnt);
@@ -37,7 +45,15 @@ catalogfacility: false;
 
       });
     }
-    
+  }
+
+  backButtonClickEventSetUp(){
+    console.log(this.navbar);
+    this.back = true;
+    this.navbar.backButtonClick = (e: UIEvent) => {
+      console.log("Back button clicked");
+      this.navCtrl.parent.viewCtrl.dismiss();
+    };
   }
 
   ionViewWillEnter(){
@@ -65,6 +81,6 @@ catalogfacility: false;
   }
 
   openSharePage(){
-    this.navCtrl.push(SharePage);
+    this.app.getRootNav().setRoot(SharePage);
   }
 }

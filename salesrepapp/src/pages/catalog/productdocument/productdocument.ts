@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
@@ -9,11 +9,14 @@ import { Global } from '../../../providers/global';
 
 import * as _ from 'underscore';
 
+import { HeaderComponent } from '../../header/header.component';
+
 @Component({
   selector: 'page-productdocument',
   templateUrl: 'productdocument.html',
 })
 export class ProductDocumentPage implements OnInit {
+  @ViewChild(HeaderComponent) hc: HeaderComponent
 data: any;
 title: any;
 doc: any;
@@ -88,6 +91,11 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductDocumentPage');
+    this.hc.backButtonClickEventSetUp();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter ProductDetailPage');
   }
 
   viewDoc(url : string){

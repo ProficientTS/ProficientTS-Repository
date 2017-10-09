@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NavController, NavParams, App } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { SetDetailPage } from '../setdetail/setdetail';
@@ -9,11 +9,14 @@ import { Global } from '../../../providers/global';
 
 import * as _ from 'underscore';
 
+import { HeaderComponent } from '../../header/header.component';
+
 @Component({
   selector: 'page-productset',
   templateUrl: 'productset.html',
 })
 export class ProductSetPage implements OnInit {
+  @ViewChild(HeaderComponent) hc: HeaderComponent
 data: any;
 title: any;
 set: any;
@@ -31,7 +34,8 @@ headerIpt = {
   shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private ws: WebserviceProvider, private g: Global) {
+  private ws: WebserviceProvider, private g: Global,
+  private app: App) {
     console.log('ProductSetPage ----------------------')
     console.log(navParams.data);
     this.info = navParams.data;
@@ -128,6 +132,7 @@ headerIpt = {
       if(this.g.Network){
         this.ws.postCall('display/set/'+ v, {})
         .then((data: any) => {
+          console.log(data)
           if(data && data.msg == "InValid Credential"){
             this.logOut();
           }
@@ -159,12 +164,17 @@ headerIpt = {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductSetPage');
+    this.hc.backButtonClickEventSetUp();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter ProductSetPage');
   }
 
   logOut(){
     console.log("logOut ========")
     localStorage.clear();
-    this.navCtrl.setRoot(LoginPage);
+    this.app.getRootNav().setRoot(LoginPage);
   }
 
   fnFav(fav: boolean){
