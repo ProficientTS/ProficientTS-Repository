@@ -131,8 +131,7 @@ review: any = "";
       })
     }
     else if(type == "video"){
-      this.hc.videosrc = url;
-      this.hc.playvideo = true;
+      this.hc.playVideo(url);
     }
   }
 

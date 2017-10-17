@@ -1,11 +1,11 @@
 <ion-header>
 
     <ion-navbar transparent no-border [ngClass]="{'force-back-button' : back}">
-        <button ion-button icon-only menuToggle>
+        <button ion-button icon-only menuToggle [ngClass]="{'force-menu-button' : menu}">
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>{{headerIpt.title? headerIpt.title : "Catalog"}}</ion-title>
-        <ion-buttons end>
+        <ion-buttons end [ngClass]="{'force-menu-button' : menu}">
             <button *ngIf="headerIpt.shareCnt !== undefined" ion-button icon-only (click)="openSharePage()">
                 <ion-icon name="share-alt" ></ion-icon>  ({{headerIpt.shareCnt? headerIpt.shareCnt : 0}})
             </button>

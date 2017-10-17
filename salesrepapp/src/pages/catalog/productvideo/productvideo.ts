@@ -90,8 +90,7 @@ headerIpt = {
 
   viewVideo(url: string){
     console.log("view")
-    this.hc.videosrc = url;
-    this.hc.playvideo = true;
+    this.hc.playVideo(url);
   }
 
   shareVid(item: any, index: any){

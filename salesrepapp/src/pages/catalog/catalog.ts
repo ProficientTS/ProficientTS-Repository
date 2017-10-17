@@ -83,6 +83,7 @@ headerOpt: any;
         }
         else{
           this.sync = true;
+          this.hc.menu = true;
           this.hc.setMsg(10000002);
           this.freshsync();
         }
@@ -178,6 +179,7 @@ headerOpt: any;
           _.each(doc, (file) => {
             this.g.download(file.url, () => {
               this.sync = false;
+              this.hc.menu = false;
               this.hc.setMsg(20000002);
               this.g.otherFileSync();
             });
@@ -185,6 +187,7 @@ headerOpt: any;
         }
         else{
           this.sync = false;
+          this.hc.menu = false;
           this.hc.setMsg(20000002);
         }
       });
@@ -873,8 +876,7 @@ headerOpt: any;
     }
     else if(this.tabs.vidtab){
       console.log("view")
-      this.hc.videosrc = url;
-      this.hc.playvideo = true;
+      this.hc.playVideo(url);
     }
     
   }

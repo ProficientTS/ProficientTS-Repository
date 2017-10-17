@@ -18,6 +18,7 @@ export class HeaderComponent implements OnInit {
     catalogfacility: false,
     shareCnt: undefined
   };
+tabBarElement: any;
 msg = "";
 back: boolean = false;
 playvideo = false;
@@ -26,9 +27,13 @@ catalogfacility: false;
 color: string = "#dddddd";
 font: string = "black";
 timeOut: any = 0;
+menu: boolean = false;
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private g: Global, private app: App) {
     console.log(this.headerIpt);
+    this.tabBarElement = document.querySelector('#product-root-tab div:first-child');
+    console.log("tabBarElement")
+    console.log(this.tabBarElement);
   }
 
   ngOnInit() {
@@ -124,6 +129,8 @@ timeOut: any = 0;
     this.navbar.backButtonClick = (e: UIEvent) => {
       console.log("Back button clicked");
       this.navCtrl.parent.viewCtrl.dismiss();
+      if(this.tabBarElement !== null)
+        this.tabBarElement.style.display = 'flex';
     };
   }
 
@@ -158,5 +165,15 @@ timeOut: any = 0;
   closeVid(){
     this.videosrc = "";
     this.playvideo = false;
+    if(this.tabBarElement !== null)
+      this.tabBarElement.style.display = 'flex';
+  }
+
+  playVideo(url: any){
+    console.log(url);
+    this.videosrc = url;
+    this.playvideo = true;
+    if(this.tabBarElement !== null)
+      this.tabBarElement.style.display = 'none';
   }
 }
