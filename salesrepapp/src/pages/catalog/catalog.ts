@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { NavController, NavParams, App } from 'ionic-angular';
+import { NavController, NavParams, App, Platform } from 'ionic-angular';
 import { ProductTabPage } from '../catalog/producttab/producttab';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 import { PartDetailPage } from '../catalog/partdetail/partdetail';
@@ -7,12 +7,6 @@ import { SetDetailPage } from '../catalog/setdetail/setdetail';
 import { LoginPage } from '../login/login';
 
 import { Global } from '../../providers/global';
-
-import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
-import { PhotoViewer } from '@ionic-native/photo-viewer';
-import { VideoPlayer } from '@ionic-native/video-player';
-import { File } from '@ionic-native/file';
-import { EmailComposer } from '@ionic-native/email-composer';
 
 import * as _ from 'underscore';
 
@@ -29,6 +23,7 @@ listItem = [];
 display: boolean = false;
 type = "key";
 tab = false;
+sync: boolean = false;
 headerIpt = {
   catalogfacility: false,
   shareCnt: 0
@@ -62,28 +57,17 @@ typListSys = [];
 typListSet = [];
 typListPrt = [];
 headerOpt: any;
-options: DocumentViewerOptions = {
-  title: 'Proficient Documents',
-  openWith: {
-    enabled: true
-  }
-};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
+  constructor(public navCtrl: NavController, public navParams: NavParams, 
   private ws: WebserviceProvider,
   private g: Global,
-  private document: DocumentViewer,
-  private photoViewer: PhotoViewer,
-  private videoPlayer: VideoPlayer,
-  private file: File,
-  private mail: EmailComposer,
-  private app: App) {
-    
+  private app: App,
+  private platform: Platform) {
+    console.log(platform)
     console.log(Nedb);
     console.dir(Nedb);
     console.log(this.g.deviceId)
     console.log(this.g.Network)
-
     this.headerOpt = this.navParams.get('header');
     // this.g.Network = true;
   }
@@ -91,7 +75,119 @@ options: DocumentViewerOptions = {
   ngOnInit() {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
-  
+    var that = this;
+     this.g.findQSSL(this.g.db.devicesync, {email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, {deviceID: 1}, 0, 0)
+      .then((docs: any) => {
+        if(docs.length){
+          this.sync = false;
+        }
+        else{
+          this.sync = true;
+          this.hc.msg = "Initial Sync Setup";
+          this.freshsync();
+        }
+      });
+  }
+
+  freshsync(){
+    var that = this;
+    that.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: that.g.deviceId})
+      .then((data: any) => {
+        if(data && data.msg == "InValid Credential"){
+          that.logOut();
+        }
+        else{
+          that.syncService(data);
+        }
+      });
+    
+  }
+
+  // more performance
+  syncService(data: any){
+    console.log(data);
+    var that = this;
+    if(data.success){
+      this.g.insertQ(this.g.db.part, data.data.part, (partstatus, part) => {
+        if(partstatus){
+          console.log("Parts Inserted Successfully");
+          console.log(part);
+        }
+        else{
+          console.log("Insert Failed");
+        }
+        this.g.insertQ(this.g.db.set, data.data.set, (setstatus, set) => {
+          if(setstatus){
+            console.log("sets Inserted Successfully");
+            console.log(set);
+          }
+          else{
+            console.log("Insert Failed");
+          }
+          this.g.insertQ(this.g.db.system, data.data.system, (systemstatus, system) => {
+            if(systemstatus){
+              console.log("systems Inserted Successfully");
+              console.log(system);
+            }
+            else{
+              console.log("Insert Failed");
+            }
+            this.g.insertQ(this.g.db.technique, data.data.technique, (techniquestatus, technique) => {
+              if(techniquestatus){
+                console.log("techniques Inserted Successfully");
+                console.log(technique);
+              }
+              else{
+                console.log("Insert Failed");
+              }
+              this.g.insertQ(this.g.db.file, data.data.file, (filestatus, file) => {
+                if(filestatus){
+                  console.log("files Inserted Successfully");
+                  console.log(file);
+                }
+                else{
+                  console.log("Insert Failed");
+                }
+                this.g.insertQ(this.g.db.devicesync, {fullsync: "Y", email: localStorage.getItem('email'), deviceID: that.g.deviceId}, (devicesyncstatus, devicesync) => {
+                  if(devicesyncstatus){
+                    console.log("devicesyncs Inserted Successfully");
+                    console.log(devicesync);
+                  }
+                  else{
+                    console.log("Insert Failed");
+                  }
+                  this.primaryFileSync();
+                })
+              })
+            })
+          })
+        })
+      })
+    }
+  }
+
+  primaryFileSync(){
+    this.g.totalFileCnt = 0;
+    this.g.fileCnt = 0;
+    this.g.findQSSL(this.g.db.file, {voidfl : {$ne : 'Y'}, "file_type": "img", "primary": "Y"}, {"url": 1}, 0, 0)
+      .then((doc: any) => {
+        console.log(doc);
+        console.log(doc.length);
+        this.g.totalFileCnt = doc.length;
+        if(doc.length && this.platform.is('cordova')){
+          _.each(doc, (file) => {
+            this.g.download(file.url, () => {
+              this.sync = false;
+              this.hc.msg = "Initial Sync Setup Completed";
+              this.g.otherFileSync();
+            });
+          });
+        }
+        else{
+          this.sync = false;
+          this.hc.msg = "Initial Sync Setup Completed";
+        }
+      });
   }
 
   ionViewWillEnter(){
@@ -161,51 +257,30 @@ options: DocumentViewerOptions = {
     this.typList = false;
     console.log(this.g.Network)
     this.setTab('systab');
-    if(this.g.Network){
-      this.ws.postCall('list/system', {})
-      .then((data: any) => {
-        console.log(data)
-        if(data && data.msg == "InValid Credential"){
-          that.logOut();
-        }
-        else{
-          if(data.data.length)
-            _.each(data.data, function(element, i){
-                if(element.img.length){
-                  element["url"] = element.img[0].url;
-                }
+    this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_nm: 1}, 0, 0)
+      .then((docs: any) => {
+          console.log(docs);
+          var len = docs.length;
+          if(len){
+            _.each(docs, function(element, i){
+              element["Name"] = element.system_nm;
+              element["ID"] = element.system_id;
+              if(element.img.length){
+                element["url"] = element.img[0].url;
+              }
+              if(i == (len-1)){
+                that.listItem = docs;
+                that.syslen = docs.length;
+              }
             });
-          that.listItem = data.data;
-          that.syslen = data.data.length;
-        }
-      });
-    }
-    else{
-      this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_nm: 1}, 0, 0)
-        .then((docs: any) => {
-            console.log(docs);
-            var len = docs.length;
-            if(len){
-              _.each(docs, function(element, i){
-                element["Name"] = element.system_nm;
-                element["ID"] = element.system_id;
-                if(element.img.length){
-                  element["url"] = element.img[0].url;
-                }
-                if(i == (len-1)){
-                  that.listItem = docs;
-                  that.syslen = docs.length;
-                }
-              });
-            }
-            else{
-              that.listItem = [];
-              that.syslen = 0;
-            }
-            
-          }) // here you will get it
-          .catch((err) => console.error(err));
-    }    
+          }
+          else{
+            that.listItem = [];
+            that.syslen = 0;
+          }
+          
+        }) // here you will get it
+        .catch((err) => console.error(err)); 
   }
 
   setTab(tab: any){
@@ -224,41 +299,26 @@ options: DocumentViewerOptions = {
     this.tab = true;
     this.setTab('techtab');
     this.typList = false;
-    if(this.g.Network){
-      this.ws.postCall('list/technique', {})
-      .then((data: any) => {
-        if(data && data.msg == "InValid Credential"){
-          that.logOut();
-        }
-        else{
-          that.listItem = data.data;
-          that.techlen = data.data.length;
-        }
-      });
-    }
-    else{
-      this.g.findQSSL(this.g.db.technique, {voidfl : {$ne : 'Y'}}, {technique_nm: 1}, 0, 0)
-        .then((docs: any) => {
-            console.log(docs);
-            var len = docs.length;
-            if(len){
-              _.each(docs, function(element, i){
-                element["Name"] = element.technique_nm;
-                if(i == (len-1)){
-                  that.listItem = docs;
-                  that.techlen = docs.length;
-                }
-              });
-            }
-            else{
-              that.listItem = [];
-              that.techlen = 0;
-            }
-            
-          }) // here you will get it
-          .catch((err) => console.error(err));
-
-    }
+    this.g.findQSSL(this.g.db.technique, {voidfl : {$ne : 'Y'}}, {technique_nm: 1}, 0, 0)
+      .then((docs: any) => {
+          console.log(docs);
+          var len = docs.length;
+          if(len){
+            _.each(docs, function(element, i){
+              element["Name"] = element.technique_nm;
+              if(i == (len-1)){
+                that.listItem = docs;
+                that.techlen = docs.length;
+              }
+            });
+          }
+          else{
+            that.listItem = [];
+            that.techlen = 0;
+          }
+          
+        }) // here you will get it
+        .catch((err) => console.error(err));
   }
 
   handleData(data: any){
@@ -310,18 +370,7 @@ options: DocumentViewerOptions = {
       this.tab = true;
       console.log(typ)
       this.type = typ;
-      if(this.g.Network){
-        this.ws.postCall('list/' + this.type + '/name/' + this.txt, {})
-        .then((data: any) => {
-          if(data && data.msg == "InValid Credential"){
-            that.logOut();
-          }
-          else{
-            this.searchData(data);
-          }
-        });
-      }
-      else if(this.type == "key"){
+      if(this.type == "key"){
         var rst: any = {};
         var v = JSON.parse(JSON.stringify(this.txt));
         v = new RegExp(v, 'i');
@@ -464,10 +513,8 @@ options: DocumentViewerOptions = {
               }
             }
             
-          }) // here you will get it
+          }) 
           .catch((err) => console.error(err));
-
-
       }
     }
     else{
@@ -533,7 +580,6 @@ options: DocumentViewerOptions = {
               });
             }
           }
-          console.log("Finaleeee -------")
           console.log(data.data);
           that.keyval = data.data;
           that.keyval.system = data.data.system;
@@ -642,51 +688,30 @@ options: DocumentViewerOptions = {
     if(this.type === "technique" && item.ID === undefined){
       this.setTab('systab');
       this.type = 'system';
-      if(this.g.Network){
-        this.ws.postCall('list/technique/'+ item.Name + '/system' , {})
-        .then((data: any) => {
-          if(data && data.msg == "InValid Credential"){
-            that.logOut();
-          }
-          else{
-            console.log(data.data)
-            if(data.data.length)
-              _.each(data.data, function(element, i){
-                  if(element.img.length){
-                    element["url"] = element.img[0].url;
-                  }
+      this.g.findQSSL(this.g.db.system, { "technique.technique_nm": {$in: [item.Name]}, voidfl : {$ne : 'Y'} },{ system_nm: 1}, 0, 0)
+        .then((docs: any) => {
+            console.log(docs);
+            var len = docs.length;
+            if(len){
+              _.each(docs, function(element, i){
+                element["Name"] = element.system_nm;
+                element["ID"] = element.system_id;
+                if(element.img.length){
+                  element["url"] = element.img[0].url;
+                }
+                if(i == (len-1)){
+                  that.listItem = docs;
+                  that.syslen = docs.length;
+                }
               });
-            that.listItem = data.data;
-            that.syslen = data.data.length;
-          }
-        });
-      }
-      else{
-        this.g.findQSSL(this.g.db.system, { "technique.technique_nm": {$in: [item.Name]}, voidfl : {$ne : 'Y'} },{ system_nm: 1}, 0, 0)
-          .then((docs: any) => {
-              console.log(docs);
-              var len = docs.length;
-              if(len){
-                _.each(docs, function(element, i){
-                  element["Name"] = element.system_nm;
-                  element["ID"] = element.system_id;
-                  if(element.img.length){
-                    element["url"] = element.img[0].url;
-                  }
-                  if(i == (len-1)){
-                    that.listItem = docs;
-                    that.syslen = docs.length;
-                  }
-                });
-              }
-              else{
-                that.listItem = [];
-                that.syslen = 0;
-              }
-              
-            }) // here you will get it
-            .catch((err) => console.error(err));
-      }
+            }
+            else{
+              that.listItem = [];
+              that.syslen = 0;
+            }
+            
+          }) // here you will get it
+          .catch((err) => console.error(err));
     }
     else if(this.type == "key" && (this.tabs.doctab || this.tabs.imgtab || this.tabs.vidtab)){
       // Do not remove this condition
@@ -706,47 +731,34 @@ options: DocumentViewerOptions = {
           typ = 'set';
         }
       }
-      if(this.g.Network){
-        this.ws.postCall('display/'+typ+'/'+ item.ID, {})
-        .then((data: any) => {
-          if(data && data.msg == "InValid Credential"){
-            that.logOut();
-          }
-          else{
-            this.handleData(data);
-          }
-        });
-      }
-      else{
-        var that = this;
-        var query = {voidfl : {$ne : 'Y'}};
-        query[typ + '_id'] = item.ID;
-        
+      var that = this;
+      var query = {voidfl : {$ne : 'Y'}};
+      query[typ + '_id'] = item.ID;
+      
 
-        this.g.findQ(this.g.db[typ], query)
-          .then((docs: any) => {
-            console.log(docs);
-            switch(typ){
-              case "part":
-                that.navCtrl.push(PartDetailPage, {
-                  data: docs
-                });
-                break;
-              case "set":
-                that.navCtrl.push(SetDetailPage, {
-                  data: docs
-                });
-                break;
-              case "system":
-                that.navCtrl.push(ProductTabPage, {
-                  data: docs
-                });
-                break;
-            }
-            
-          }) // here you will get it
-          .catch((err) => console.error(err));
-      }
+      this.g.findQ(this.g.db[typ], query)
+        .then((docs: any) => {
+          console.log(docs);
+          switch(typ){
+            case "part":
+              that.navCtrl.push(PartDetailPage, {
+                data: docs
+              });
+              break;
+            case "set":
+              that.navCtrl.push(SetDetailPage, {
+                data: docs
+              });
+              break;
+            case "system":
+              that.navCtrl.push(ProductTabPage, {
+                data: docs
+              });
+              break;
+          }
+          
+        }) // here you will get it
+        .catch((err) => console.error(err));
     }
 
   }
@@ -836,8 +848,9 @@ options: DocumentViewerOptions = {
 
   viewMedia(url : string){
     console.log(url);
+    console.log(this.g.file.dataDirectory  + 'www/'+ url);
     if(this.tabs.doctab){
-      this.document.viewDocument(this.file.applicationDirectory  + 'www/'+ url, 'application/pdf', this.options)
+      this.g.document.viewDocument(this.g.file.dataDirectory + 'salesrepapp/' + url, 'application/pdf', this.g.docVOptions)
     }
     else if(this.tabs.imgtab){
       let path: any = url.split('/');
@@ -847,11 +860,11 @@ options: DocumentViewerOptions = {
       console.log("Image ----------")
       console.log(path);
       console.log(filenm);
-      this.file.readAsDataURL(this.file.applicationDirectory  + 'www/' + path, filenm)
+      this.g.file.readAsDataURL(this.g.file.dataDirectory + 'salesrepapp/' + path, filenm)
       .then((dataURL:string) => { 
         console.log("dataURL -------------");
         // console.log(dataURL);
-        this.photoViewer.show(dataURL)
+        this.g.photoViewer.show(dataURL)
       })
       .catch((err: any) => {
         console.log("Pic Err -------------");
@@ -859,12 +872,9 @@ options: DocumentViewerOptions = {
       })
     }
     else if(this.tabs.vidtab){
-      this.videoPlayer.play(this.file.applicationDirectory  + 'www/' + url).then(() => {
-          console.log('video completed');
-        }).catch(err => {
-          console.log("Video Player Err ---->")
-          console.log(err);
-      });
+      console.log("view")
+      this.hc.videosrc = url;
+      this.hc.playvideo = true;
     }
     
   }

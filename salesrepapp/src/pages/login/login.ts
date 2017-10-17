@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
-import { Device } from '@ionic-native/device';
-
 import { CatalogPage } from '../catalog/catalog';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 
@@ -17,10 +14,7 @@ export class LoginPage {
   auth = '';
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private ws: WebserviceProvider,
-  private device: Device) {
-    console.log('Device UUID is: ' + this.device.uuid);
-    console.log(this.device);
+  private ws: WebserviceProvider) {
   }
 
   ionViewWillEnter(){

@@ -8,14 +8,20 @@
             </ion-card>
         </ion-list>
         <div *ngIf="shareD.img.length || shareD.video.length || shareD.doc.length">
-            <div>To share ({{shareD.img.length + shareD.video.length + shareD.doc.length}})</div>
-            <hr>
             <div id="div-share-mail">
-                <!--<textarea placeholder="...type in your review" autofocus [(ngModel)]="review"></textarea>-->
-                <button class="ptsFloatR ptsMarginR15p" (click)="sendMail()">
+                <div>To: <span *ngFor="let item of toArr">{{item}} <ion-icon name="remove-circle" (click) = "removeToAddr(item)"></ion-icon></span>
+                    <ion-input [(ngModel)]="toaddr" autofocus (keypress)="setToAddr($event)"></ion-input>
+                </div>
+                <div>CC: <span *ngFor="let item of ccArr">{{item}} <ion-icon name="remove-circle" (click) = "removeCCAddr(item)"></ion-icon></span>
+                    <ion-input [(ngModel)]="ccaddr" (keypress)="setCCAddr($event)"></ion-input>
+                </div>
+                <textarea placeholder="...type in your review" [(ngModel)]="review"></textarea>
+                <button class="ptsMarginR15p" (click)="sendMail()">
                     Mail
                 </button>
             </div>
+            <div>To share ({{shareD.img.length + shareD.video.length + shareD.doc.length}})</div>
+            <hr>
         </div>
         <div *ngIf="shareD.img.length">
             <div>Pictures ({{shareD.img.length}})</div>

@@ -82,8 +82,9 @@ function UserDAO(database) {
         client.sendMail(email, function(err, info) {
             if (err) {
                 console.log(err);
+                callback(false, err)
             } else {
-                callback();
+                callback(true, info);
             }
         });
     }

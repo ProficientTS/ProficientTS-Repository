@@ -1,10 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
-import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
-import { File } from '@ionic-native/file';
-import { EmailComposer } from '@ionic-native/email-composer';
-
 import { Global } from '../../../providers/global';
 
 import * as _ from 'underscore';
@@ -26,18 +22,12 @@ type: any;
 docType = [];
 fav: boolean;
 typeJsn: any = {};
-options: DocumentViewerOptions = {
-  title: 'Proficient Documents'
-};
 headerIpt = {
   catalogfacility: true,
   shareCnt: 0
 }
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private document: DocumentViewer,
-  private file: File,
-  private mail: EmailComposer,
   private g: Global) {
     console.log('ProductDocumentPage ----------------------')
     this.info = navParams.data;
@@ -100,7 +90,7 @@ headerIpt = {
 
   viewDoc(url : string){
     console.log(url);
-    this.document.viewDocument(this.file.applicationDirectory  + 'www/'+ url, 'application/pdf', this.options)
+    this.g.document.viewDocument(this.g.file.dataDirectory + 'salesrepapp/' + url, 'application/pdf', this.g.docVOptions)
   }
 
   shareDoc(item: any, index: any){

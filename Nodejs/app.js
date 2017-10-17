@@ -5,7 +5,8 @@ var express = require('express'),
     assert = require('assert'),
     UserDAO = require('./users').UserDAO,
     ItemDAO = require('./data').ItemDAO,
-    jwt = require('jsonwebtoken');
+    jwt = require('jsonwebtoken'),
+    fs = require('fs');
 var MongoOplog = require('mongo-oplog');
 
 const oplog = MongoOplog('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', { ns: 'cat.*' })
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 process.env.SECRET_KEY = "IamProficient";
+process.env.ServerURL = "http://192.169.169.6:3000/filesystem/";
 
 MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', function(err, db) {
     "use strict";
@@ -57,10 +59,92 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
         });
     });
 
+    router.get("/filesystem/*", function(req, res) {
+        "use strict";
+        console.log(req.params['0']);
+        var token;
+        var fileFormat = "";
+        var cType = "";
+        // Handle tokened url file calls
+        if (req.params['0'].indexOf('filetoken') > -1) {
+            token = req.params['0'].split("/").pop();
+            console.log("URL Token ----------> " + token);
+            if (token) {
+                jwt.verify(token, process.env.SECRET_KEY, function(err, decode) {
+                    console.log("Decode")
+                    console.log(decode);
+                    if (err) {
+                        res.json({
+                            msg: "InValid Credential"
+                        });
+                    } else {
+                        fileFormat = decode.url.split(".").pop();
+                        console.log("fileFormat token url ---- " + fileFormat)
+                        switch (fileFormat.toLowerCase()) {
+                            case 'jpg':
+                                cType = "image/jpg";
+                                break;
+                            case 'jpeg':
+                                cType = "image/jpeg";
+                                break;
+                            case 'png':
+                                cType = "image/png";
+                                break;
+                            case 'pdf':
+                                cType = "application/pdf";
+                                break;
+                            case 'mp4':
+                                cType = "video/mp4";
+                                break;
+                            default:
+                                cType = "plain/text";
+                        }
+                        console.log(cType);
+                        var fileToLoad = fs.readFileSync('./files/' + decode.url);
+                        res.writeHead(200, { 'Content-Type': cType });
+                        res.end(fileToLoad, 'binary');
+                    }
+                })
+            } else {
+                res.json({
+                    msg: "Hello, we are {P}roficient. Please provide the right Credentials at the right Place ;)"
+                });
+            }
+        } else {
+            fileFormat = req.params['0'].split(".").pop();
+            console.log("fileFormat simple get ---- " + fileFormat)
+            switch (fileFormat.toLowerCase()) {
+                case 'jpg':
+                    cType = "image/jpg";
+                    break;
+                case 'jpeg':
+                    cType = "image/jpeg";
+                    break;
+                case 'png':
+                    cType = "image/png";
+                    break;
+                case 'pdf':
+                    cType = "application/pdf";
+                    break;
+                case 'mp4':
+                    cType = "video/mp4";
+                    break;
+                default:
+                    cType = "plain/text";
+            }
+            console.log(cType);
+            var fileToLoad = fs.readFileSync('./files/' + req.params['0']);
+            res.writeHead(200, { 'Content-Type': cType });
+            res.end(fileToLoad, 'binary');
+        }
+
+    });
+
     app.use('/', router);
 
     router.use(function(req, res, next) {
         console.log("Secure Routes");
+        console.log(req.params);
         var token = req.body.token || req.headers['token'];
         if (token) {
             jwt.verify(token, process.env.SECRET_KEY, function(err, decode) {
@@ -83,48 +167,6 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
             });
         }
     });
-
-    router.post("/list/:type", fnGetData);
-    router.post("/display/:type/:id", fnGetData);
-    router.post("/list/:type/name/:name", fnGetData);
-    router.post("/list/:type/:id/:type2", fnGetData);
-
-    function fnGetData(req, res) {
-        "use strict";
-        var typeInfo = req.body;
-        var type = req.params.type;
-        var id = req.params.id;
-        var type2 = req.params.type2;
-        var name = req.params.name;
-        var view = "list";
-        if (id && type && type2 === undefined) {
-            view = "display"
-        }
-        console.log('typeInfo')
-        console.log(type)
-        console.log('type2')
-        console.log(type2);
-        console.log("View ---- " + view);
-        console.log(id);
-        console.log(name)
-        if (type == "key") {
-            data.listByKeyword(name, function(status, rst) {
-                res.json({
-                    success: status,
-                    msg: 'List Result!',
-                    data: rst
-                });
-            });
-        } else {
-            data.listItem(id, type, type2, name, view, function(rst) {
-                res.json({
-                    success: true,
-                    msg: 'List Result!',
-                    data: rst
-                });
-            });
-        }
-    }
 
     router.post("/sync", function(req, res) {
 
@@ -238,6 +280,97 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
         })
     });
 
+    router.post("/sharemail", function(req, res) {
+        "use strict";
+        var that = this;
+        var shareInfo = req.body;
+        console.log(shareInfo);
+        var msg = "";
+        if (shareInfo.data.img.length) {
+            msg = msg + "<div> Pictures (" + shareInfo.data.img.length + ")</div>";
+            var txt = "";
+            for (var i = 0; i < shareInfo.data.img.length; i++) {
+                var imgurl = jwt.sign({ email: shareInfo.email, url: shareInfo.data.img[i].url }, process.env.SECRET_KEY, {
+                    expiresIn: "10 days"
+                })
+                txt = txt + "<li><a href = '" + process.env.ServerURL + "filetoken/" + imgurl + "' target='_blank'>" + shareInfo.data.img[i].title + "</a></li>";
+            }
+            msg = msg + "<ul>" + txt + "</ul>";
+        }
+        if (shareInfo.data.video.length) {
+            msg = msg + "<div> Videos (" + shareInfo.data.video.length + ")</div>";
+            var txt = "";
+            for (var i = 0; i < shareInfo.data.video.length; i++) {
+                var videourl = jwt.sign({ email: shareInfo.email, url: shareInfo.data.video[i].url }, process.env.SECRET_KEY, {
+                    expiresIn: "10 days"
+                })
+                txt = txt + "<li><a href = '" + process.env.ServerURL + "filetoken/" + videourl + "' target='_blank'>" + shareInfo.data.video[i].title + "</a></li>";
+            }
+            msg = msg + "<ul>" + txt + "</ul>";
+        }
+        if (shareInfo.data.doc.length) {
+            msg = msg + "<div> Documents (" + shareInfo.data.doc.length + ")</div>";
+            var txt = "";
+            for (var i = 0; i < shareInfo.data.doc.length; i++) {
+                var docurl = jwt.sign({ email: shareInfo.email, url: shareInfo.data.doc[i].url }, process.env.SECRET_KEY, {
+                    expiresIn: "10 days"
+                })
+                txt = txt + "<li><a href = '" + process.env.ServerURL + "filetoken/" + docurl + "' target='_blank'>" + shareInfo.data.doc[i].title + "</a></li>";
+            }
+            msg = msg + "<ul>" + txt + "</ul>";
+        }
+        var body =
+            `
+        <html>
+            <head>
+            <title>Mail in Html</title>
+            </head>
+            <body>
+            <p>
+                <div> Review Comments </div>
+                <div>
+                ` + shareInfo.review + `
+                </div>
+            </p>
+            <p>
+                <div>
+                ` + msg + `
+                </div>
+            </p>
+            </body>
+        </html>
+        `;
+        console.log(body);
+        var email = {
+            from: shareInfo.email,
+            to: shareInfo.to.join(","),
+            cc: shareInfo.cc.join(","),
+            subject: 'Check these out',
+            text: 'Hello from ProficientTS Applications.',
+            html: body
+        };
+        users.sendMail(email, function(status, rst) {
+            console.log(rst);
+            console.log(status)
+            if (status) {
+                var userInfo = data.statsInfo(shareInfo);
+                console.log(userInfo)
+                data.saveStats(userInfo, function() {
+                    res.json({
+                        success: status,
+                        msg: rst
+                    });
+                })
+
+            } else {
+                res.json({
+                    success: status,
+                    msg: rst
+                });
+            }
+        })
+    });
+
     router.post("/forgotpwd", function(req, res) {
         "use strict";
         var userInfo = req.body;
@@ -264,7 +397,7 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
             } else {
                 res.json({
                     success: false,
-                    msg: 'Invalid Account!'
+                    msg: 'Invalid Account or Password!'
                 });
             }
         });

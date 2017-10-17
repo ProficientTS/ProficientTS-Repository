@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
+import * as _ from 'underscore';
 import { Global } from '../../../providers/global';
 
 import { CatalogPage } from '../catalog';

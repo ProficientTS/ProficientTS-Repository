@@ -4,7 +4,7 @@ import { NavController, App } from 'ionic-angular';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 
 import { Global } from '../../providers/global';
-
+import * as _ from 'underscore';
 import { LoginPage } from '../login/login';
 import { HeaderComponent } from '../header/header.component';
 
@@ -22,30 +22,50 @@ headerIpt = {
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
   private g: Global,
-  private app: App) {
+  private app: App,) {
+  }
 
+  downloadFiles(){
+    var that = this;
+    this.g.totalFileCnt = 0;
+    this.g.fileCnt = 0;
+    this.g.findQSSL(this.g.db.file, {voidfl : {$ne : 'Y'}}, {"file_type": 1}, 0, 0)
+      .then((doc: any) => {
+        console.log(doc);
+        this.g.totalFileCnt = doc.length;
+        if(doc.length){
+          _.each(doc, (file) => {
+            this.g.download(file.url, () => {
+              console.log("All Files Download Complete");
+            });
+          });
+        }
+        else{
+          console.log("No Files to Download!")
+        }
+      });
   }
 
   freshsync(){
     var that = this;
-    that.g.db.devicesync.find({email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, function(err, doc){
-      console.log(err);
-      console.log(doc);
-      if(doc.length == 0){
-        that.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: that.g.deviceId})
-          .then((data: any) => {
-            if(data && data.msg == "InValid Credential"){
-              that.logOut();
-            }
-            else{
-              that.syncService(data);
-            }
-          });
-      }
-      else{
-        console.log("Already Synced!")
-      }
-    });
+    this.g.findQSSL(this.g.db.devicesync, {email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, {deviceID: 1}, 0, 0)
+      .then((doc: any) => {
+        console.log(doc);
+        if(doc.length == 0){
+          that.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: that.g.deviceId})
+            .then((data: any) => {
+              if(data && data.msg == "InValid Credential"){
+                that.logOut();
+              }
+              else{
+                that.syncService(data);
+              }
+            });
+        }
+        else{
+          console.log("Already Synced!")
+        }
+      });
     
   }
 
@@ -61,168 +81,181 @@ headerIpt = {
   syncService(data: any){
     console.log(data);
     if(data.success){
-      var db = this.g.db;
-      if(data.data.part.length){
-        db.part.insert(data.data.part, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("Parts Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      console.log(data.data.set);
-      if(data.data.set.length){
-        db.set.insert(data.data.set, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("Set Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      if(data.data.system.length){
-        db.system.insert(data.data.system, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("System Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      if(data.data.technique.length){
-        db.technique.insert(data.data.technique, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("Technique Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-      if(data.data.file.length){
-        db.file.insert(data.data.file, function(err, newDocs){
-            if(err)
-              console.log("Insert Failed");
-            else{
-              console.log("File Inserted Successfully");
-              console.log(newDocs);
-            }
-          })
-      }
-
-      db.devicesync.insert({fullsync: "Y", email: localStorage.getItem('email'), deviceID: this.g.deviceId}, function(err, newDocs){
-        if(err)
-          console.log("Insert Failed");
-        else{
-          console.log("Devicesync Inserted Successfully");
-          console.log(newDocs);
+      this.g.insertQ(this.g.db.part, data.data.part, (partstatus, part) => {
+        if(partstatus){
+          console.log("Parts Inserted Successfully");
+          console.log(part);
         }
+        else{
+          console.log("Insert Failed");
+        }
+        this.g.insertQ(this.g.db.set, data.data.set, (setstatus, set) => {
+          if(setstatus){
+            console.log("sets Inserted Successfully");
+            console.log(set);
+          }
+          else{
+            console.log("Insert Failed");
+          }
+          this.g.insertQ(this.g.db.system, data.data.system, (systemstatus, system) => {
+            if(systemstatus){
+              console.log("systems Inserted Successfully");
+              console.log(system);
+            }
+            else{
+              console.log("Insert Failed");
+            }
+            this.g.insertQ(this.g.db.technique, data.data.technique, (techniquestatus, technique) => {
+              if(techniquestatus){
+                console.log("techniques Inserted Successfully");
+                console.log(technique);
+              }
+              else{
+                console.log("Insert Failed");
+              }
+              this.g.insertQ(this.g.db.file, data.data.file, (filestatus, file) => {
+                if(filestatus){
+                  console.log("files Inserted Successfully");
+                  console.log(file);
+                }
+                else{
+                  console.log("Insert Failed");
+                }
+                this.g.insertQ(this.g.db.devicesync, {fullsync: "Y", email: localStorage.getItem('email'), deviceID: this.g.deviceId}, (devicesyncstatus, devicesync) => {
+                  if(devicesyncstatus){
+                    console.log("devicesyncs Inserted Successfully");
+                    console.log(devicesync);
+                  }
+                  else{
+                    console.log("Insert Failed");
+                  }
+                  this.hc.msg = "Fresh Sync Completed";
+                })
+              })
+            })
+          })
+        })
       })
-
     }
   }
 
   getupdates(){
     var that = this;
-    that.g.db.devicesync.find({email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, function(err, doc){
-      console.log(err);
-      console.log(doc);
-      if(doc.length){
-        that.ws.postCall('sync', {email: localStorage.getItem('email'), update: 'Y', deviceID: that.g.deviceId})
-        .then((data: any) => {
-          if(data && data.msg == "InValid Credential"){
-            that.logOut();
-          }
-          else{
-            that.updateService(data);
-          }
-        });
-      }
-      else{
-        console.log("Full Sync First!")
-      }
-    });
+    this.g.findQSSL(this.g.db.devicesync, {email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, {deviceID: 1}, 0, 0)
+      .then((doc: any) => {
+        if(doc.length){
+          that.ws.postCall('sync', {email: localStorage.getItem('email'), update: 'Y', deviceID: that.g.deviceId})
+          .then((data: any) => {
+            if(data && data.msg == "InValid Credential"){
+              that.logOut();
+            }
+            else{
+              that.updateService(data);
+            }
+          });
+        }
+        else{
+          console.log("Fresh Sync First!")
+        }
+      });
 
+  }
+
+  resetFiles(){
+    var db = this.g.db;
+    var that = this;
   }
 
   resetdata(){
     var db = this.g.db;
-    db.part.remove({}, { multi: true }, function (err, numRemoved) {
-      if(err)
-        console.log("Part Reset Failed");
-      else{
-        console.log("Part Reset Successful");
-        console.log(numRemoved);
-      }
-      db.set.remove({}, { multi: true }, function (err, numRemoved) {
-        if(err)
-          console.log("Set Reset Failed");
-        else{
-          console.log("Set Reset Successful");
-          console.log(numRemoved);
-        }
-        db.system.remove({}, { multi: true }, function (err, numRemoved) {
-          if(err)
-            console.log("System Reset Failed");
-          else{
-            console.log("System Reset Successful");
-            console.log(numRemoved);
-          }
-          db.technique.remove({}, { multi: true }, function (err, numRemoved) {
+    var that = this;
+    if(this.g.platform.is('cordova')){
+      this.g.file.removeDir(this.g.file.dataDirectory, 'salesrepapp')
+      .then((success: any) => {
+        console.log("Directory Removed");
+        console.log(success);
+        this.hc.msg = "App Data Reset Successful";
+      })
+      .catch((err: any) => {
+        console.log("Error Removing Directory");
+        console.log(err);
+      })
+    }
+    else{
+          db.part.remove({}, { multi: true }, function (err, numRemoved) {
             if(err)
-              console.log("Technique Reset Failed");
+              console.log("Part Reset Failed");
             else{
-              console.log("Technique Reset Successful");
+              console.log("Part Reset Successful");
               console.log(numRemoved);
             }
-            db.devicesync.remove({}, { multi: true }, function (err, numRemoved) {
+            db.set.remove({}, { multi: true }, function (err, numRemoved) {
               if(err)
-                console.log("Devicesync Reset Failed");
+                console.log("Set Reset Failed");
               else{
-                console.log("Devicesync Reset Successful");
+                console.log("Set Reset Successful");
                 console.log(numRemoved);
               }
-              db.fav.remove({}, { multi: true }, function (err, numRemoved) {
+              db.system.remove({}, { multi: true }, function (err, numRemoved) {
                 if(err)
-                  console.log("Fav Reset Failed");
+                  console.log("System Reset Failed");
                 else{
-                  console.log("Fav Reset Successful");
+                  console.log("System Reset Successful");
                   console.log(numRemoved);
                 }
-                db.recent.remove({}, { multi: true }, function (err, numRemoved) {
+                db.technique.remove({}, { multi: true }, function (err, numRemoved) {
                   if(err)
-                    console.log("Recent Reset Failed");
+                    console.log("Technique Reset Failed");
                   else{
-                    console.log("Recent Reset Successful");
+                    console.log("Technique Reset Successful");
                     console.log(numRemoved);
                   }
-                  db.share.remove({}, { multi: true }, function (err, numRemoved) {
+                  db.devicesync.remove({}, { multi: true }, function (err, numRemoved) {
                     if(err)
-                      console.log("Share Reset Failed");
+                      console.log("Devicesync Reset Failed");
                     else{
-                      console.log("Share Reset Successful");
+                      console.log("Devicesync Reset Successful");
                       console.log(numRemoved);
                     }
-                    db.file.remove({}, { multi: true }, function (err, numRemoved) {
+                    db.fav.remove({}, { multi: true }, function (err, numRemoved) {
                       if(err)
-                        console.log("File Reset Failed");
+                        console.log("Fav Reset Failed");
                       else{
-                        console.log("File Reset Successful");
+                        console.log("Fav Reset Successful");
                         console.log(numRemoved);
                       }
+                      db.recent.remove({}, { multi: true }, function (err, numRemoved) {
+                        if(err)
+                          console.log("Recent Reset Failed");
+                        else{
+                          console.log("Recent Reset Successful");
+                          console.log(numRemoved);
+                        }
+                        db.share.remove({}, { multi: true }, function (err, numRemoved) {
+                          if(err)
+                            console.log("Share Reset Failed");
+                          else{
+                            console.log("Share Reset Successful");
+                            console.log(numRemoved);
+                          }
+                          db.file.remove({}, { multi: true }, function (err, numRemoved) {
+                            if(err)
+                              console.log("File Reset Failed");
+                            else{
+                              console.log("File Reset Successful");
+                              console.log(numRemoved);
+                              that.hc.msg = "App Data Reset Successful";
+                            }
+                          });
+                        });
+                      });
                     });
                   });
                 });
               });
             });
           });
-        });
-      });
-    });
+    }
   }
 
 

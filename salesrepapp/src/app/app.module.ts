@@ -6,9 +6,7 @@ import { HttpModule } from '@angular/http';
 import { MyApp } from './app.component';
 import { CatalogPage } from '../pages/catalog/catalog';
 import { SharePage } from '../pages/share/share';
-import { HomePage } from '../pages/home/home';
 import { SettingsPage } from '../pages/settings/settings';
-import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
 import { ProductDetailPage } from '../pages/catalog/productdetail/productdetail';
 import { ProductTabPage } from '../pages/catalog/producttab/producttab';
@@ -25,23 +23,19 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { WebserviceProvider } from '../providers/webservice/webservice';
 import { Global } from '../providers/global';
 
-import { Device } from '@ionic-native/device';
 import { DocumentViewer } from '@ionic-native/document-viewer';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { File } from '@ionic-native/file';
-import { VideoPlayer } from '@ionic-native/video-player';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { Network } from '@ionic-native/network';
-import { EmailComposer } from '@ionic-native/email-composer';
 import { HeaderComponent } from '../pages/header/header.component';
+import { FileTransfer } from '@ionic-native/file-transfer';
 
 @NgModule({
   declarations: [
     CatalogPage,
     MyApp,
-    HomePage,
     SettingsPage,
-    ListPage,
     LoginPage,
     ProductDetailPage,
     ProductTabPage,
@@ -66,9 +60,7 @@ import { HeaderComponent } from '../pages/header/header.component';
   entryComponents: [
     CatalogPage,
     MyApp,
-    HomePage,
     SettingsPage,
-    ListPage,
     LoginPage,
     ProductDetailPage,
     ProductTabPage,
@@ -88,15 +80,13 @@ import { HeaderComponent } from '../pages/header/header.component';
     // SQLite,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     WebserviceProvider,
-    Device,
     DocumentViewer,
     PhotoViewer,
     File,
-    VideoPlayer,
     Global,
     UniqueDeviceID,
     Network,
-    EmailComposer
+    FileTransfer
   ]
 })
 export class AppModule {}

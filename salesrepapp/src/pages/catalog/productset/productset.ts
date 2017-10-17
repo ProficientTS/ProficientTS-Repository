@@ -129,28 +129,13 @@ headerIpt = {
     console.log(h);
     console.log(v);
     if(h == "View"){
-      if(this.g.Network){
-        this.ws.postCall('display/set/'+ v, {})
-        .then((data: any) => {
-          console.log(data)
-          if(data && data.msg == "InValid Credential"){
-            this.logOut();
-          }
-          else{
-            this.handleData(data);
-          }
-        });
-      }
-      else{
-        var that = this;
-        this.g.findQ(this.g.db.set, {set_id: v, voidfl : {$ne : 'Y'}})
-          .then((docs: any) => {
-              console.log(docs);
-              that.handleData({data: docs, success: true})
-              
-            }) // here you will get it
-            .catch((err) => console.error(err));
-      }
+      this.g.findQ(this.g.db.set, {set_id: v, voidfl : {$ne : 'Y'}})
+      .then((docs: any) => {
+          console.log(docs);
+          this.handleData({data: docs, success: true})
+          
+        }) // here you will get it
+        .catch((err) => console.error(err));
     }
   }
 

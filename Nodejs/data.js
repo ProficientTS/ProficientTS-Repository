@@ -16,152 +16,16 @@ var client = nodemailer.createTransport({
 function ItemDAO(database) {
     "use strict";
     this.db = database;
-    this.listItem = function(id, type, type2, name, view, callback) {
+
+    this.saveStats = function(userInfo, callback) {
         "use strict";
-        console.log("List Data ID")
-        console.log(id)
-        var cursor = this.db.collection(type).find({});
-        var query = {},
-            project;
-        var aggr = [];
-
-        switch (type) {
-            case 'part':
-                if (id) {
-                    query = { part_id: id, voidfl: { $ne: 'Y' } };
-                } else if (name) {
-                    aggr = [{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }, { $sort: { part_nm: 1 } }];
-                } else {
-                    aggr = [{ $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }, { $sort: { part_nm: 1 } }];
-                }
-
-                break;
-            case 'set':
-                if (id) {
-                    query = { set_id: id, voidfl: { $ne: 'Y' } };
-                } else if (name) {
-                    aggr = [{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }, { $sort: { set_nm: 1 } }];
-                } else {
-                    aggr = [{ $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }, { $sort: { set_nm: 1 } }];
-                }
-                break;
-            case 'system':
-                if (id) {
-                    query = { system_id: id, voidfl: { $ne: 'Y' } };
-                } else if (name) {
-                    aggr = [{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }];
-                } else {
-                    aggr = [{ $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }];
-                }
-                break;
-            case 'technique':
-                if (view === "display") {
-                    query = { technique_nm: id, voidfl: { $ne: 'Y' } };
-                } else if (name) {
-                    aggr = [{ $match: { technique_nm: { $regex: name, $options: 'i' }, voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, Name: "$technique_nm" } }, { $sort: { technique_nm: 1 } }];
-                } else if (type2) {
-                    type = type2;
-                    switch (type2) {
-                        case "system":
-                            aggr = [{ $match: { "technique.technique_nm": id, voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }];
-                            break;
-                    }
-                } else {
-                    aggr = [{ $project: { _id: 0, Name: "$technique_nm" } }, { $sort: { technique_nm: 1 } }];
-                }
-                break;
-        }
-        console.log("Query -------------")
-        console.log(query)
-        console.log(project)
-        console.log(aggr)
-
-        var cursor = this.db.collection(type).find(query);
-        if (view === "list") {
-            cursor = this.db.collection(type).aggregate(aggr);
-        }
-        cursor.toArray(
+        console.log("Save Stats");
+        this.db.collection('statistics').insert(userInfo,
             function(err, doc) {
                 assert.equal(err, null);
-                console.log("Type List Result")
-                    // console.log(doc)
+                console.log("Save Stats Result")
+                console.log(doc)
                 callback(doc);
-            }
-        );
-    }
-
-    this.listByKeyword = function(name, callback) {
-        "use strict";
-        var that = this;
-        var rst = {};
-        var name = new RegExp(name);
-        this.db.collection('system').aggregate([{ $match: { $or: [{ system_nm: { $regex: name, $options: 'i' } }, { system_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$system_id", Name: "$system_nm", img: 1 } }, { $sort: { system_nm: 1 } }]).toArray(
-            function(err, system) {
-                assert.equal(err, null);
-                console.log("System List Result");
-                if (err)
-                    callback(false, err);
-                else {
-                    console.log(system);
-                    rst.system = system;
-
-                    that.db.collection('file').find({ file_type: "img", "title": { $regex: name, $options: 'i' } }).sort({ title: 1 }).toArray(
-                        function(err, image) {
-                            assert.equal(err, null);
-                            console.log("Img List Result");
-                            if (err)
-                                callback(false, err);
-                            else {
-                                rst.img = _.uniq(image);
-                                that.db.collection('file').find({ file_type: "video", "title": { $regex: name, $options: 'i' } }).sort({ title: 1 }).toArray(
-                                    function(err, video) {
-                                        assert.equal(err, null);
-                                        console.log("Video List Result");
-                                        if (err)
-                                            callback(false, err);
-                                        else {
-                                            rst.video = _.uniq(video);
-                                            that.db.collection('file').find({ file_type: "doc", "title": { $regex: name, $options: 'i' } }).sort({ title: 1 }).toArray(
-                                                function(err, doc) {
-                                                    assert.equal(err, null);
-                                                    console.log("Doc List Result");
-                                                    if (err)
-                                                        callback(false, err);
-                                                    else {
-                                                        rst.doc = _.uniq(doc);
-                                                        that.db.collection('set').aggregate([{ $match: { $or: [{ set_nm: { $regex: name, $options: 'i' } }, { set_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$set_id", Name: "$set_nm", img: 1 } }, { $sort: { set_nm: 1 } }]).toArray(
-                                                            function(err, set) {
-                                                                assert.equal(err, null);
-                                                                console.log("Set List Result");
-                                                                if (err)
-                                                                    callback(false, err);
-                                                                else {
-                                                                    rst.set = set;
-                                                                    that.db.collection('part').aggregate([{ $match: { $or: [{ part_nm: { $regex: name, $options: 'i' } }, { part_id: { $regex: name, $options: 'i' } }], voidfl: { $ne: 'Y' } } }, { $project: { _id: 0, ID: "$part_id", Name: "$part_nm", img: 1 } }, { $sort: { part_nm: 1 } }]).toArray(
-                                                                        function(err, part) {
-                                                                            assert.equal(err, null);
-                                                                            console.log("Part List Result");
-                                                                            if (err)
-                                                                                callback(false, err);
-                                                                            else {
-                                                                                rst.part = part;
-                                                                                callback(true, rst)
-                                                                            }
-                                                                        }
-                                                                    );
-                                                                }
-                                                            }
-                                                        );
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    }
-                                );
-                            }
-                        }
-                    );
-                }
             }
         );
     }
@@ -433,6 +297,20 @@ function ItemDAO(database) {
         };
 
         return MasterSync;
+    }
+
+    this.statsInfo = function(info) {
+        "use strict";
+        var stats = {
+            user: info.email,
+            type: "File Share",
+            data: info.data,
+            to: info.to,
+            cc: info.cc,
+            review: info.review,
+            date: Number(new Date())
+        };
+        return stats;
     }
 }
 

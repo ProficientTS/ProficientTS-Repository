@@ -85,29 +85,15 @@ headerIpt = {
     console.log(t);
     console.log(v);
     t = t.toLowerCase();
-    if(v !==undefined){
-      if(this.g.Network){
-        this.ws.postCall('display/'+t+'/'+ v, {})
-        .then((data: any) => {
-          if(data && data.msg == "InValid Credential"){
-            this.logOut();
-          }
-          else{
-            this.handleData(t, data);
-          }
-        });
-      }
-      else{
-        var that = this;
-        var query = {voidfl : {$ne : 'Y'}};
-        query[t + '_id'] = v;
-        this.g.findQ(this.g.db[t], query)
-          .then((docs: any) => {
-            console.log(docs);
-            that.handleData(t, {data: docs, success: true});
-          }) // here you will get it
-          .catch((err) => console.error(err));
-      }
+    if(v){
+      var query = {voidfl : {$ne : 'Y'}};
+      query[t + '_id'] = v;
+      this.g.findQ(this.g.db[t], query)
+        .then((docs: any) => {
+          console.log(docs);
+          this.handleData(t, {data: docs, success: true});
+        }) // here you will get it
+        .catch((err) => console.error(err));
     }
   }
 

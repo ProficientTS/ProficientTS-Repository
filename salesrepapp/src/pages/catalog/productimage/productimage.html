@@ -9,7 +9,7 @@
                 <div class="div-image-type">{{key}}</div>
                 <div class="div-outer" *ngFor="let val of typeJsn[key]">
                     <div class="div-image-item">
-                        <img src="{{val.url}}" alt="" (click)="viewImg(val.url)">
+                        <img src="{{g.file.dataDirectory}}salesrepapp/{{val.url}}" alt="" (click)="viewImg(val.url)">
                     </div>
                     <div class="li-document-share">
                         <div (click)="shareImg(val)"><span *ngIf="val.share != true; else shared">Share</span></div>

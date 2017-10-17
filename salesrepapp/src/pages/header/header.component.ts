@@ -12,12 +12,14 @@ import { SharePage } from '../share/share';
 })
 export class HeaderComponent implements OnInit {
   @ViewChild(Navbar) navbar: Navbar
-@Input() headerIpt: any = {
-  catalogfacility: false,
-  shareCnt: undefined
-};
-
+  @Input() headerIpt: any = {
+    catalogfacility: false,
+    shareCnt: undefined
+  };
+msg = "";
 back: boolean = false;
+playvideo = false;
+videosrc = "";
 catalogfacility: false;
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private g: Global, private app: App) {
@@ -82,5 +84,10 @@ catalogfacility: false;
 
   openSharePage(){
     this.app.getRootNav().setRoot(SharePage);
+  }
+  
+  closeVid(){
+    this.videosrc = "";
+    this.playvideo = false;
   }
 }

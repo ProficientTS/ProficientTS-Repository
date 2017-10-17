@@ -1,7 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Nav, Platform } from 'ionic-angular';
+
+import * as _ from 'underscore';
+
+//...loading up plugins
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
 import { Network } from '@ionic-native/network';
-import { OnDestroy } from '@angular/core';
+import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
+import { PhotoViewer } from '@ionic-native/photo-viewer';
+import { File } from '@ionic-native/file';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 // import { Http } from '@angular/http';
 // import 'rxjs/add/operator/map';
 
@@ -19,12 +29,13 @@ deviceId: any;
 Network: any;
 disconnectSubscription: any;
 connectSubscription: any;
-// user: any;
-// part: any;
-// set: any;
-// system: any;
-// technique: any;
-
+file_System_URL: any = "192.169.169.6:3000/filesystem";
+docVOptions: DocumentViewerOptions = {
+  title: 'Proficient Documents'
+};
+fileTransfer: FileTransferObject;
+totalFileCnt: any = 0;
+fileCnt: any = 0;
   ngOnDestroy() {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
@@ -32,21 +43,29 @@ connectSubscription: any;
     this.connectSubscription.unsubscribe();
   }
 
-  constructor(private uid: UniqueDeviceID, private network: Network) {
+  constructor(
+    public platform: Platform,
+    public uid: UniqueDeviceID,
+    public network: Network,
+    public document: DocumentViewer,
+    public photoViewer: PhotoViewer,
+    public file: File,
+    public transfer: FileTransfer) {
     console.log('Hello Global Provider');
     console.log(Nedb);
     this.Network = this.network.type;
+    this.fileTransfer = transfer.create();
     this.db = {};
-    this.db.user = new Nedb({filename: 'assets/database/user.db', autoload: true});
-    this.db.part = new Nedb({filename: 'assets/database/part.db', autoload: true});
-    this.db.set = new Nedb({filename: 'assets/database/set.db', autoload: true});
-    this.db.system = new Nedb({filename: 'assets/database/system.db', autoload: true});
-    this.db.technique = new Nedb({filename: 'assets/database/technique.db', autoload: true});
-    this.db.file = new Nedb({filename: 'assets/database/file.db', autoload: true});
-    this.db.devicesync = new Nedb({filename: 'assets/database/devicesync.db', autoload: true});
-    this.db.fav = new Nedb({filename: 'assets/database/favorites.db', autoload: true});
-    this.db.recent = new Nedb({filename: 'assets/database/recent.db', autoload: true});
-    this.db.share = new Nedb({filename: 'assets/database/share.db', autoload: true});
+    this.db.user = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/user.db', autoload: true});
+    this.db.part = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/part.db', autoload: true});
+    this.db.set = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/set.db', autoload: true});
+    this.db.system = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/system.db', autoload: true});
+    this.db.technique = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/technique.db', autoload: true});
+    this.db.file = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/file.db', autoload: true});
+    this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/devicesync.db', autoload: true});
+    this.db.fav = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/favorites.db', autoload: true});
+    this.db.recent = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/recent.db', autoload: true});
+    this.db.share = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/share.db', autoload: true});
     
     this.uid.get()
     .then((uuid: any) => {console.log(uuid); this.deviceId = uuid;})
@@ -123,6 +142,89 @@ connectSubscription: any;
         console.log(err)
         callback(false);
       })
+  }
+
+  insertQ(db: any, query: object, callback: any){
+    let insertPromise = new Promise((resolve, reject) => {
+        db.insert( query, function(err, data) {
+            if(err) reject(err);
+            resolve(data);
+        });
+    });
+    insertPromise
+      .then((data: any) => {
+        console.log("insertPromise Success Data --------")
+        console.log(data);
+        callback(true, data);
+      })
+      .catch((err: any) => {
+        console.log("insertPromise Err -----------------")
+        console.log(err)
+        callback(false);
+      })
+  }
+
+  removeQ(db: any, query: object, callback: any){
+    let removePromise = new Promise((resolve, reject) => {
+        db.remove(query, {multi: true}, (err, data) => {
+            if(err) reject(err);
+            resolve(data);
+        });
+    });
+    removePromise
+      .then((data: any) => {
+        console.log("removePromise Success Data --------")
+        console.log(data);
+        callback(true, data);
+      })
+      .catch((err: any) => {
+        console.log("removePromise Err -----------------")
+        console.log(err)
+        callback(false);
+      })
+  }
+
+  otherFileSync(){
+    this.totalFileCnt = 0;
+    this.fileCnt = 0;
+    this.findQSSL(this.db.file, {voidfl : {$ne : 'Y'}, "primary": {$ne : 'Y'}}, {"url": 1}, 0, 0)
+      .then((doc: any) => {
+        console.log(doc);
+        console.log(doc.length);
+        this.totalFileCnt = doc.length;
+        if(doc.length && this.platform.is('cordova')){
+          _.each(doc, (file) => {
+            this.download(file.url, () => {
+              console.log("Remaining Files Download Complete");
+            });
+          });
+        }
+      });
+  }
+
+  download(path: any, callback: any) {
+    // console.log(path);
+    console.log(this.file.dataDirectory)
+    const url = 'http://192.169.169.6:3000/filesystem/' + path;
+    this.fileTransfer.download(encodeURI(url), this.file.dataDirectory + 'salesrepapp/' + path).then((entry) => {
+      console.log('download complete: ' + entry.toURL());
+      complete();
+    }, (error) => {
+      // handle error
+      console.log(error)
+      complete();
+    });
+
+    function complete(){
+      ++this.fileCnt;
+      if(this.totalFileCnt == this.fileCnt){
+        this.totalFileCnt = 0;
+        this.fileCnt = 0;
+        if(callback)
+          callback()
+      }
+      
+    }
   }
 
 }

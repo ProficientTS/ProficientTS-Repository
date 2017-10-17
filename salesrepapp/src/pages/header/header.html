@@ -12,7 +12,7 @@
         </ion-buttons>
 
     </ion-navbar>
-    <div class="notification-bar">Alert</div>
+    <div class="notification-bar">{{msg}}</div>
 
     <div *ngIf="headerIpt.catalogfacility" class="catalog-facility-bar ptsDMiddle">
         <input placeholder="Search by Criteria" class="search-text" (click)="goToCatalog('search')">
@@ -28,5 +28,11 @@
         <div class="pts-button catalog-search-button" (click)="goToCatalog('recent')">
             Recent
         </div>
+    </div>
+    <div id="div-video-full" *ngIf="playvideo">
+        <ion-icon name="arrow-back" (click)="closeVid()"> Back</ion-icon>
+        <video controls>
+            <source src="{{g.file.dataDirectory}}salesrepapp/{{videosrc}}" type="video/mp4">
+        </video>
     </div>
 </ion-header>

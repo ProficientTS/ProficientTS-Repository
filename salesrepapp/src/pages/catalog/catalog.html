@@ -13,107 +13,109 @@
 <pts-header [headerIpt]="headerIpt"></pts-header>
 
 <ion-content padding class="catalogpage">
-    <div class="ptsDMiddle">
-        <select (change)="onChange($event.target.value)" #select>
-            <option value = "key">Keyword</option>
-            <option value = "part" >Part</option>
-            <option value = "set">Set</option>
-            <option value = "system">System</option>
-            <option value = "technique">Technique</option>
-        </select>
-        <ion-input id="inp-criteria" #input type="text" placeholder="Search by {{placeH}}" class="search-text" [(ngModel)]="txt" autofocus (input)="searchItem(select.value)"></ion-input>
-    </div>
-    <div *ngIf="txt.length == 0" class="ptsDMiddle ptsMarginT20p">
-        <div id="btn-system" class="pts-button catalog-search-button" (click)="showProduct()">
-            Product
+    <div *ngIf="!sync">
+        <div class="ptsDMiddle">
+            <select (change)="onChange($event.target.value)" #select>
+                <option value = "key">Keyword</option>
+                <option value = "part" >Part</option>
+                <option value = "set">Set</option>
+                <option value = "system">System</option>
+                <option value = "technique">Technique</option>
+            </select>
+            <ion-input id="inp-criteria" #input type="text" placeholder="Search by {{placeH}}" class="search-text" [(ngModel)]="txt" autofocus (input)="searchItem(select.value)"></ion-input>
         </div>
-        <div id="btn-techinque" class="pts-button catalog-search-button" (click)="showTechniques()">
-            Approach
+        <div *ngIf="txt.length == 0" class="ptsDMiddle ptsMarginT20p">
+            <div id="btn-system" class="pts-button catalog-search-button" (click)="showProduct()">
+                Product
+            </div>
+            <div id="btn-techinque" class="pts-button catalog-search-button" (click)="showTechniques()">
+                Approach
+            </div>
+            <div id="btn-fav" class="pts-button catalog-search-button" (click)="showFavs()">
+                Favorites
+            </div>
+            <div id="btn-recent" class="pts-button catalog-search-button" (click)="showRecents()">
+                Recent
+            </div>
         </div>
-        <div id="btn-fav" class="pts-button catalog-search-button" (click)="showFavs()">
-            Favorites
+        <div id="div-cat-srh-tab-container" *ngIf="tab">
+            <ul>
+                <li *ngIf="type == 'system' || type == 'key'" (click)="selectTab('system', 'systab')" [ngClass]='{ptsCatSelectedTab : tabs.systab}'>Product <span>{{syslen}}</span></li>
+                <li *ngIf="type == 'key'" (click)="selectTab('doc', 'doctab')" [ngClass]='{ptsCatSelectedTab : tabs.doctab}'>Document <span>{{doclen}}</span></li>
+                <li *ngIf="type == 'set' || type == 'key'" (click)="selectTab('set', 'settab')" [ngClass]='{ptsCatSelectedTab : tabs.settab}'>Set <span>{{setlen}}</span></li>
+                <li *ngIf="type == 'part' || type == 'key'" (click)="selectTab('part', 'parttab')" [ngClass]='{ptsCatSelectedTab : tabs.parttab}'>Part <span>{{partlen}}</span></li>
+                <li *ngIf="type == 'technique'" (click)="selectTab('technique', 'techtab')" [ngClass]='{ptsCatSelectedTab : tabs.techtab}'>Technique <span>{{techlen}}</span></li>
+                <li *ngIf="type == 'key'" (click)="selectTab('img', 'imgtab')" [ngClass]='{ptsCatSelectedTab : tabs.imgtab}'>Picture <span>{{imglen}}</span></li>
+                <li *ngIf="type == 'key'" (click)="selectTab('video', 'vidtab')" [ngClass]='{ptsCatSelectedTab : tabs.vidtab}'>Video <span>{{vidlen}}</span></li>
+                <li *ngIf="type == 'fav'" (click)="selectTab('fav', 'favtab')" [ngClass]='{ptsCatSelectedTab : tabs.favtab}'>Favorites <span>{{favlen}}</span></li>
+                <li *ngIf="type == 'rec'" (click)="selectTab('rec', 'rectab')" [ngClass]='{ptsCatSelectedTab : tabs.rectab}'>Recent <span>{{reclen}}</span></li>
+            </ul>
         </div>
-        <div id="btn-recent" class="pts-button catalog-search-button" (click)="showRecents()">
-            Recent
-        </div>
-    </div>
-    <div id="div-cat-srh-tab-container" *ngIf="tab">
-        <ul>
-            <li *ngIf="type == 'system' || type == 'key'" (click)="selectTab('system', 'systab')" [ngClass]='{ptsCatSelectedTab : tabs.systab}'>Product <span>{{syslen}}</span></li>
-            <li *ngIf="type == 'key'" (click)="selectTab('doc', 'doctab')" [ngClass]='{ptsCatSelectedTab : tabs.doctab}'>Document <span>{{doclen}}</span></li>
-            <li *ngIf="type == 'set' || type == 'key'" (click)="selectTab('set', 'settab')" [ngClass]='{ptsCatSelectedTab : tabs.settab}'>Set <span>{{setlen}}</span></li>
-            <li *ngIf="type == 'part' || type == 'key'" (click)="selectTab('part', 'parttab')" [ngClass]='{ptsCatSelectedTab : tabs.parttab}'>Part <span>{{partlen}}</span></li>
-            <li *ngIf="type == 'technique'" (click)="selectTab('technique', 'techtab')" [ngClass]='{ptsCatSelectedTab : tabs.techtab}'>Technique <span>{{techlen}}</span></li>
-            <li *ngIf="type == 'key'" (click)="selectTab('img', 'imgtab')" [ngClass]='{ptsCatSelectedTab : tabs.imgtab}'>Picture <span>{{imglen}}</span></li>
-            <li *ngIf="type == 'key'" (click)="selectTab('video', 'vidtab')" [ngClass]='{ptsCatSelectedTab : tabs.vidtab}'>Video <span>{{vidlen}}</span></li>
-            <li *ngIf="type == 'fav'" (click)="selectTab('fav', 'favtab')" [ngClass]='{ptsCatSelectedTab : tabs.favtab}'>Favorites <span>{{favlen}}</span></li>
-            <li *ngIf="type == 'rec'" (click)="selectTab('rec', 'rectab')" [ngClass]='{ptsCatSelectedTab : tabs.rectab}'>Recent <span>{{reclen}}</span></li>
-        </ul>
-    </div>
-    <ion-list *ngIf="display && listItem.length == 0">
-        <ion-card>
-            <ion-card-header>No Data Found</ion-card-header>
-        </ion-card>
-    </ion-list>
-    <ion-list *ngIf="!nomedia; else list">
-        <ion-card *ngFor="let item of listItem; let i = index" (click)="itemTapped(item)">
-            <ion-card-header>{{item.title}}</ion-card-header>
-            <ion-card-content>
-                <div (click)="viewMedia(item.url)">View</div>
-                <div (click)="shareMedia(item, i)"><span *ngIf="item.share != true; else shared">Share</span></div>
-            </ion-card-content>
-        </ion-card>
-    </ion-list>
-
-    <ion-list *ngIf="typList">
-        <ion-list *ngIf="typListSys.length == 0 && typListSet.length == 0 && typListPrt.length == 0">
+        <ion-list *ngIf="display && listItem.length == 0">
             <ion-card>
                 <ion-card-header>No Data Found</ion-card-header>
             </ion-card>
         </ion-list>
-        <div *ngIf="typListSys.length">
-            <div>System</div>
-            <ion-card *ngFor="let item of typListSys" (click)="itemTapped(item)">
-                <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
-                    <ion-card-header>{{item.ID}}</ion-card-header>
-                    <ion-card-content>
-                        {{item?.Name}}
-                    </ion-card-content>
-                </div>
-                <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                    <img src="{{item?.url}}" *ngIf="item.url">
-                </div>
+        <ion-list *ngIf="!nomedia; else list">
+            <ion-card *ngFor="let item of listItem; let i = index" (click)="itemTapped(item)">
+                <ion-card-header>{{item.title}}</ion-card-header>
+                <ion-card-content>
+                    <div (click)="viewMedia(item.url)">View</div>
+                    <div (click)="shareMedia(item, i)"><span *ngIf="item.share != true; else shared">Share</span></div>
+                </ion-card-content>
             </ion-card>
-        </div>
-        <div *ngIf="typListSet.length">
-            <div>Set</div>
-            <ion-card *ngFor="let item of typListSet" (click)="itemTapped(item)">
-                <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
-                    <ion-card-header>{{item.ID}}</ion-card-header>
-                    <ion-card-content>
-                        {{item?.Name}}
-                    </ion-card-content>
-                </div>
-                <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                    <img src="{{item?.url}}" *ngIf="item.url">
-                </div>
-            </ion-card>
-        </div>
-        <div *ngIf="typListPrt.length">
-            <div>Part</div>
-            <ion-card *ngFor="let item of typListPrt" (click)="itemTapped(item)">
-                <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
-                    <ion-card-header>{{item.ID}}</ion-card-header>
-                    <ion-card-content>
-                        {{item?.Name}}
-                    </ion-card-content>
-                </div>
-                <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                    <img src="{{item?.url}}" *ngIf="item.url">
-                </div>
-            </ion-card>
-        </div>
-    </ion-list>
+        </ion-list>
+
+        <ion-list *ngIf="typList">
+            <ion-list *ngIf="typListSys.length == 0 && typListSet.length == 0 && typListPrt.length == 0">
+                <ion-card>
+                    <ion-card-header>No Data Found</ion-card-header>
+                </ion-card>
+            </ion-list>
+            <div *ngIf="typListSys.length">
+                <div>System</div>
+                <ion-card *ngFor="let item of typListSys" (click)="itemTapped(item)">
+                    <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                        <ion-card-header>{{item.ID}}</ion-card-header>
+                        <ion-card-content>
+                            {{item?.Name}}
+                        </ion-card-content>
+                    </div>
+                    <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                        <img src="{{g.file.dataDirectory}}salesrepapp/{{item?.url}}" *ngIf="item.url">
+                    </div>
+                </ion-card>
+            </div>
+            <div *ngIf="typListSet.length">
+                <div>Set</div>
+                <ion-card *ngFor="let item of typListSet" (click)="itemTapped(item)">
+                    <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                        <ion-card-header>{{item.ID}}</ion-card-header>
+                        <ion-card-content>
+                            {{item?.Name}}
+                        </ion-card-content>
+                    </div>
+                    <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                        <img src="{{g.file.dataDirectory}}salesrepapp/{{item?.url}}" *ngIf="item.url">
+                    </div>
+                </ion-card>
+            </div>
+            <div *ngIf="typListPrt.length">
+                <div>Part</div>
+                <ion-card *ngFor="let item of typListPrt" (click)="itemTapped(item)">
+                    <div class="ptsW80pr ptsDipsIB ptsVerticalTop">
+                        <ion-card-header>{{item.ID}}</ion-card-header>
+                        <ion-card-content>
+                            {{item?.Name}}
+                        </ion-card-content>
+                    </div>
+                    <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
+                        <img src="{{g.file.dataDirectory}}salesrepapp/{{item?.url}}" *ngIf="item.url">
+                    </div>
+                </ion-card>
+            </div>
+        </ion-list>
+    </div>
 </ion-content>
 
 <ng-template #list>
@@ -126,7 +128,7 @@
                 </ion-card-content>
             </div>
             <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                <img src="{{item?.url}}" *ngIf="item.url">
+                <img src="{{g.file.dataDirectory}}salesrepapp/{{item?.url}}" *ngIf="item.url">
             </div>
         </ion-card>
     </ion-list>

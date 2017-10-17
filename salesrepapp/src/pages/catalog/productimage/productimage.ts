@@ -1,8 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { PhotoViewer } from '@ionic-native/photo-viewer';
-import { File } from '@ionic-native/file';
-import { EmailComposer } from '@ionic-native/email-composer';
 
 import { Global } from '../../../providers/global';
 
@@ -30,8 +27,6 @@ headerIpt = {
   shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private photoViewer: PhotoViewer, private file: File,
-  private mail: EmailComposer,
   private g: Global
   ) {
     console.log('ProductImagePage IN----------------------')
@@ -102,10 +97,10 @@ headerIpt = {
     let filenm = url.split('/')[(url.split('/').length - 1)]
     console.log(path);
     console.log(filenm);
-    this.file.readAsDataURL(this.file.applicationDirectory  + 'www/' + path, filenm)
+    this.g.file.readAsDataURL(this.g.file.dataDirectory + 'salesrepapp/' + path, filenm)
     .then((dataURL:string) => { 
       // console.log(dataURL);
-      this.photoViewer.show(dataURL)
+      this.g.photoViewer.show(dataURL)
     })
   }
 
