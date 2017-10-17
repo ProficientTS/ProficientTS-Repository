@@ -169,93 +169,93 @@ headerIpt = {
   resetdata(){
     var db = this.g.db;
     var that = this;
-    if(this.g.platform.is('cordova')){
-      this.g.file.removeDir(this.g.file.dataDirectory, 'salesrepapp')
-      .then((success: any) => {
-        console.log("Directory Removed");
-        console.log(success);
-        this.hc.msg = "App Data Reset Successful";
-      })
-      .catch((err: any) => {
-        console.log("Error Removing Directory");
-        console.log(err);
-      })
-    }
-    else{
-          db.part.remove({}, { multi: true }, function (err, numRemoved) {
+    db.part.remove({}, { multi: true }, function (err, numRemoved) {
+      if(err)
+        console.log("Part Reset Failed");
+      else{
+        console.log("Part Reset Successful");
+        console.log(numRemoved);
+      }
+      db.set.remove({}, { multi: true }, function (err, numRemoved) {
+        if(err)
+          console.log("Set Reset Failed");
+        else{
+          console.log("Set Reset Successful");
+          console.log(numRemoved);
+        }
+        db.system.remove({}, { multi: true }, function (err, numRemoved) {
+          if(err)
+            console.log("System Reset Failed");
+          else{
+            console.log("System Reset Successful");
+            console.log(numRemoved);
+          }
+          db.technique.remove({}, { multi: true }, function (err, numRemoved) {
             if(err)
-              console.log("Part Reset Failed");
+              console.log("Technique Reset Failed");
             else{
-              console.log("Part Reset Successful");
+              console.log("Technique Reset Successful");
               console.log(numRemoved);
             }
-            db.set.remove({}, { multi: true }, function (err, numRemoved) {
+            db.devicesync.remove({}, { multi: true }, function (err, numRemoved) {
               if(err)
-                console.log("Set Reset Failed");
+                console.log("Devicesync Reset Failed");
               else{
-                console.log("Set Reset Successful");
+                console.log("Devicesync Reset Successful");
                 console.log(numRemoved);
               }
-              db.system.remove({}, { multi: true }, function (err, numRemoved) {
+              db.fav.remove({}, { multi: true }, function (err, numRemoved) {
                 if(err)
-                  console.log("System Reset Failed");
+                  console.log("Fav Reset Failed");
                 else{
-                  console.log("System Reset Successful");
+                  console.log("Fav Reset Successful");
                   console.log(numRemoved);
                 }
-                db.technique.remove({}, { multi: true }, function (err, numRemoved) {
+                db.recent.remove({}, { multi: true }, function (err, numRemoved) {
                   if(err)
-                    console.log("Technique Reset Failed");
+                    console.log("Recent Reset Failed");
                   else{
-                    console.log("Technique Reset Successful");
+                    console.log("Recent Reset Successful");
                     console.log(numRemoved);
                   }
-                  db.devicesync.remove({}, { multi: true }, function (err, numRemoved) {
+                  db.share.remove({}, { multi: true }, function (err, numRemoved) {
                     if(err)
-                      console.log("Devicesync Reset Failed");
+                      console.log("Share Reset Failed");
                     else{
-                      console.log("Devicesync Reset Successful");
+                      console.log("Share Reset Successful");
                       console.log(numRemoved);
                     }
-                    db.fav.remove({}, { multi: true }, function (err, numRemoved) {
+                    db.file.remove({}, { multi: true }, function (err, numRemoved) {
                       if(err)
-                        console.log("Fav Reset Failed");
+                        console.log("File Reset Failed");
                       else{
-                        console.log("Fav Reset Successful");
+                        console.log("File Reset Successful");
                         console.log(numRemoved);
-                      }
-                      db.recent.remove({}, { multi: true }, function (err, numRemoved) {
-                        if(err)
-                          console.log("Recent Reset Failed");
-                        else{
-                          console.log("Recent Reset Successful");
-                          console.log(numRemoved);
+                        if(that.g.platform.is('cordova')){
+                          that.g.file.removeRecursively(that.g.file.dataDirectory, 'salesrepapp')
+                          .then((success: any) => {
+                            console.log("Directory Removed");
+                            console.log(success);
+                            that.hc.msg = "App Data Reset Successful";
+                          })
+                          .catch((err: any) => {
+                            console.log("Error Removing Directory");
+                            console.log(err);
+                          })
                         }
-                        db.share.remove({}, { multi: true }, function (err, numRemoved) {
-                          if(err)
-                            console.log("Share Reset Failed");
-                          else{
-                            console.log("Share Reset Successful");
-                            console.log(numRemoved);
-                          }
-                          db.file.remove({}, { multi: true }, function (err, numRemoved) {
-                            if(err)
-                              console.log("File Reset Failed");
-                            else{
-                              console.log("File Reset Successful");
-                              console.log(numRemoved);
-                              that.hc.msg = "App Data Reset Successful";
-                            }
-                          });
-                        });
-                      });
+                        else{
+                          that.hc.msg = "App Data Reset Successful";
+                        }
+                      }
                     });
                   });
                 });
               });
             });
           });
-    }
+        });
+      });
+    });
   }
 
 

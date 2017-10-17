@@ -10,7 +10,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { Network } from '@ionic-native/network';
 import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
-import { File } from '@ionic-native/file';
+import { File, DirectoryEntry } from '@ionic-native/file';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 // import { Http } from '@angular/http';
 // import 'rxjs/add/operator/map';
@@ -29,7 +29,6 @@ deviceId: any;
 Network: any;
 disconnectSubscription: any;
 connectSubscription: any;
-file_System_URL: any = "192.169.169.6:3000/filesystem";
 docVOptions: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
@@ -56,16 +55,46 @@ fileCnt: any = 0;
     this.Network = this.network.type;
     this.fileTransfer = transfer.create();
     this.db = {};
-    this.db.user = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/user.db', autoload: true});
-    this.db.part = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/part.db', autoload: true});
-    this.db.set = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/set.db', autoload: true});
-    this.db.system = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/system.db', autoload: true});
-    this.db.technique = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/technique.db', autoload: true});
-    this.db.file = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/file.db', autoload: true});
-    this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/devicesync.db', autoload: true});
-    this.db.fav = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/favorites.db', autoload: true});
-    this.db.recent = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/recent.db', autoload: true});
-    this.db.share = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/share.db', autoload: true});
+    this.file.resolveDirectoryUrl(this.file.dataDirectory)
+      .then((directoryEntry: DirectoryEntry) => {
+        console.log("Directory entry created")
+        console.log(directoryEntry);
+        this.file.getDirectory(directoryEntry, 'salesrepapp', { create: true })
+        .then((dir: any) => {
+          console.log("Directory created successfully")
+          console.log(dir);
+          this.db.user = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/user.db', autoload: true});
+          this.db.part = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/part.db', autoload: true});
+          this.db.set = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/set.db', autoload: true});
+          this.db.system = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/system.db', autoload: true});
+          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/technique.db', autoload: true});
+          this.db.file = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/file.db', autoload: true});
+          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/devicesync.db', autoload: true});
+          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/favorites.db', autoload: true});
+          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/recent.db', autoload: true});
+          this.db.share = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/share.db', autoload: true});
+        })
+        .catch((direrr: any) => {
+          console.log("Error Creating Directory")
+          console.log(direrr)
+        })
+      })
+      .catch((err:any) => {
+        console.log("Error Creating directory entry");
+        console.log(err)
+        if(!this.platform.is('cordova')){
+          this.db.user = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/user.db', autoload: true});
+          this.db.part = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/part.db', autoload: true});
+          this.db.set = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/set.db', autoload: true});
+          this.db.system = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/system.db', autoload: true});
+          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/technique.db', autoload: true});
+          this.db.file = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/file.db', autoload: true});
+          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/devicesync.db', autoload: true});
+          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/favorites.db', autoload: true});
+          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/recent.db', autoload: true});
+          this.db.share = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/share.db', autoload: true});
+        }
+      });
     
     this.uid.get()
     .then((uuid: any) => {console.log(uuid); this.deviceId = uuid;})
@@ -208,23 +237,24 @@ fileCnt: any = 0;
     const url = 'http://192.169.169.6:3000/filesystem/' + path;
     this.fileTransfer.download(encodeURI(url), this.file.dataDirectory + 'salesrepapp/' + path).then((entry) => {
       console.log('download complete: ' + entry.toURL());
-      complete();
+      this.complete(callback);
     }, (error) => {
       // handle error
       console.log(error)
-      complete();
+      this.complete(callback);
     });
 
-    function complete(){
-      ++this.fileCnt;
-      if(this.totalFileCnt == this.fileCnt){
-        this.totalFileCnt = 0;
-        this.fileCnt = 0;
-        if(callback)
-          callback()
-      }
-      
+  }
+
+  complete(callback: any){
+    ++this.fileCnt;
+    if(this.totalFileCnt == this.fileCnt){
+      this.totalFileCnt = 0;
+      this.fileCnt = 0;
+      if(callback)
+        callback()
     }
+    
   }
 
 }

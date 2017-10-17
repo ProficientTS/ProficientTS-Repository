@@ -76,7 +76,7 @@ review: any = "";
   setToAddr(e: any){
     console.log(e);
     this.toaddr = this.toaddr.trim();
-    if(this.toaddr.length && (e.code == "Enter" || e.code == "Space") && this.toArr.length < 6){
+    if(this.toaddr.length && (e.key == "Enter" || e.key == "Space") && this.toArr.length < 6){
       var val = JSON.parse(JSON.stringify(this.toaddr));
       console.log(val);
       this.toArr.push(val);
