@@ -173,6 +173,7 @@ headerIpt = {
       console.log(rst);
       if(rst){
         that.fav = !that.fav;
+        that.hc.setMsg((that.fav) ? 20000003 : 20000004);
       }
     })
   }

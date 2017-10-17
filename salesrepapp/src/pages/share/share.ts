@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, forwardRef } from '@angular/core';
 import { NavController, App } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../providers/webservice/webservice';
@@ -19,7 +19,8 @@ import { HeaderComponent } from '../header/header.component';
   templateUrl: 'share.html'
 })
 export class SharePage implements OnInit {
-  // @ViewChild(HeaderComponent) hc: HeaderComponent;
+  @ViewChild(forwardRef(() => HeaderComponent))
+private hc: HeaderComponent
 shareD = {
   img: [],
   video: [],
@@ -85,7 +86,6 @@ review: any = "";
   }
 
   setCCAddr(e: any){
-    console.log(e);
     this.ccaddr = this.ccaddr.trim();
     if(this.ccaddr.length && (e.code == "Enter" || e.code == "Space") && this.ccArr.length < 6){
       var val = JSON.parse(JSON.stringify(this.ccaddr));
@@ -131,8 +131,8 @@ review: any = "";
       })
     }
     else if(type == "video"){
-    //   this.hc.videosrc = url;
-    // this.hc.playvideo = true;
+      this.hc.videosrc = url;
+      this.hc.playvideo = true;
     }
   }
 
@@ -158,7 +158,7 @@ review: any = "";
 
   sendMail(){
     if(this.toArr.length < 1){
-      // this.hc.msg = "Provide To addr";
+      this.hc.setMsg(50000002);
       console.log("Provide To addr");
       return;
     }
@@ -180,6 +180,7 @@ review: any = "";
         this.g.removeQ(this.g.db.share, {}, (status, numRemoved) => {
           if(status){
             console.log("share Reset Successful");
+            this.hc.setMsg(20000007);
             console.log(numRemoved);
             this.shareD = {
                             img: [],
@@ -188,7 +189,8 @@ review: any = "";
                           };
           }
           else{
-             console.log("share Reset Failed");
+            this.hc.setMsg(50000003);
+            console.log("share Reset Failed");
           }
         });
       }

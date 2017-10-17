@@ -83,7 +83,7 @@ headerOpt: any;
         }
         else{
           this.sync = true;
-          this.hc.msg = "Initial Sync Setup";
+          this.hc.setMsg(10000002);
           this.freshsync();
         }
       });
@@ -178,14 +178,14 @@ headerOpt: any;
           _.each(doc, (file) => {
             this.g.download(file.url, () => {
               this.sync = false;
-              this.hc.msg = "Initial Sync Setup Completed";
+              this.hc.setMsg(20000002);
               this.g.otherFileSync();
             });
           });
         }
         else{
           this.sync = false;
-          this.hc.msg = "Initial Sync Setup Completed";
+          this.hc.setMsg(20000002);
         }
       });
   }

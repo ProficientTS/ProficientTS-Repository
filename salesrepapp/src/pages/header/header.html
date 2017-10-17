@@ -12,7 +12,7 @@
         </ion-buttons>
 
     </ion-navbar>
-    <div class="notification-bar">{{msg}}</div>
+    <div class="notification-bar" [ngStyle]="{backgroundColor: color, color: font}">{{msg}}</div>
 
     <div *ngIf="headerIpt.catalogfacility" class="catalog-facility-bar ptsDMiddle">
         <input placeholder="Search by Criteria" class="search-text" (click)="goToCatalog('search')">

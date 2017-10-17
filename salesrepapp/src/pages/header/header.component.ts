@@ -6,6 +6,8 @@ import { Global } from '../../providers/global';
 import { CatalogPage } from '../catalog/catalog';
 import { SharePage } from '../share/share';
 
+import * as _ from 'underscore';
+
 @Component({
   selector: 'pts-header',
   templateUrl: 'header.html',
@@ -21,6 +23,9 @@ back: boolean = false;
 playvideo = false;
 videosrc = "";
 catalogfacility: false;
+color: string = "#dddddd";
+font: string = "black";
+timeOut: any = 0;
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private g: Global, private app: App) {
     console.log(this.headerIpt);
@@ -30,7 +35,71 @@ catalogfacility: false;
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     this.setShareCount();
+  }
+
+  setMsg(code: any){
+    /*
+      series:
+      1 - In Progress
+      2 - Success
+      3 - General Notification
+      4 - Others like validations
+      5 - Failure
+    */
+    let msgArr = _.filter(this.g.validations(), (v) => {
+      return v.code == code;
+    });
     
+    this.msg = msgArr[0]["En"];   // Lang as selected
+    console.log(this.msg)
+    var series = code.toString()[0];
+    console.log(code);
+    console.log(series)
+    
+    switch(parseInt(series)){
+      case 1:
+        this.color = "yellow";
+        this.font = "green";
+        clearTimeout(this.timeOut);
+      break;
+      case 2:
+        this.color = "green";
+        this.font = "yellow";
+        this.setTime();
+      break;
+      case 3:
+        this.color = "blue";
+        this.font = "yellow";
+        this.setTime();
+      break;
+      case 4:
+        this.color = "orange";
+        this.font = "yellow";
+        this.setTime();
+      break;
+      case 5:
+        this.color = "red";
+        this.font = "yellow";
+        this.setTime();
+      break;
+      default:
+        this.resetMsg();
+    }
+  }
+
+  setTime(){
+    clearTimeout(this.timeOut);
+    this.timeOut = setTimeout(() => {
+          console.log("Time Out");
+          this.resetMsg();
+      }, 3000);
+  }
+
+  resetMsg(){
+    clearTimeout(this.timeOut);
+    this.color = "#dddddd";
+    this.font = "black";
+    this.msg = "";
   }
 
   setShareCount(){

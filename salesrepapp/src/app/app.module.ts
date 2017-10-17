@@ -46,8 +46,8 @@ import { FileTransfer } from '@ionic-native/file-transfer';
     ProductSetPage,
     PartDetailPage,
     SetDetailPage,
-    HeaderComponent,
-    SharePage
+    SharePage,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -71,8 +71,8 @@ import { FileTransfer } from '@ionic-native/file-transfer';
     ProductSetPage,
     PartDetailPage,
     SetDetailPage,
-    HeaderComponent,
-    SharePage
+    SharePage,
+    HeaderComponent
   ],
   providers: [
     StatusBar,

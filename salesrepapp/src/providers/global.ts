@@ -257,4 +257,57 @@ fileCnt: any = 0;
     
   }
 
+  validations(){
+    return [
+              {
+                  "code": 10000002,
+                  "En": "Initial Sync Setup",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 20000002,
+                  "En": "Initial Sync Setup Completed",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 20000003,
+                  "En": "Marked as a favorite",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 20000004,
+                  "En": "Removed from favorites",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 20000007,
+                  "En": "Mail Sent Successfully",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 50000002,
+                  "En": "Provide a To address to send mail",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 50000003,
+                  "En": "Failed to send mail",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 20000006,
+                  "En": "App Data Reset Successful",
+                  "Frn": "",
+                  "Dut": ""
+              }
+          ];
+  }
+
 }
