@@ -52,6 +52,24 @@ headerIpt = {
                       d_fn: "System",
                       c_fn: "System",
                       val: this.system
+                    },
+                    {
+                      f: 2,
+                      d_fn: "Tray 1",
+                      c_fn: "Tray 1",
+                      val: this.system
+                    },
+                    {
+                      f: 3,
+                      d_fn: "Tray 2",
+                      c_fn: "Tray 2",
+                      val: this.system
+                    },
+                    {
+                      f: 4,
+                      d_fn: "Tray 3",
+                      c_fn: "Tray 3",
+                      val: this.system
                     }
                   ];
   }

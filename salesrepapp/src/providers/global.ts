@@ -59,20 +59,20 @@ fileCnt: any = 0;
       .then((directoryEntry: DirectoryEntry) => {
         console.log("Directory entry created")
         console.log(directoryEntry);
-        this.file.getDirectory(directoryEntry, 'salesrepapp', { create: true })
+        this.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
         .then((dir: any) => {
           console.log("Directory created successfully")
           console.log(dir);
-          this.db.user = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/user.db', autoload: true});
-          this.db.part = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/part.db', autoload: true});
-          this.db.set = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/set.db', autoload: true});
-          this.db.system = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/system.db', autoload: true});
-          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/technique.db', autoload: true});
-          this.db.file = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/file.db', autoload: true});
-          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/devicesync.db', autoload: true});
-          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/favorites.db', autoload: true});
-          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/recent.db', autoload: true});
-          this.db.share = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/share.db', autoload: true});
+          this.db.user = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/user.db', autoload: true});
+          this.db.part = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/part.db', autoload: true});
+          this.db.set = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/set.db', autoload: true});
+          this.db.system = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/system.db', autoload: true});
+          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/technique.db', autoload: true});
+          this.db.file = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/file.db', autoload: true});
+          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/devicesync.db', autoload: true});
+          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/favorites.db', autoload: true});
+          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/recent.db', autoload: true});
+          this.db.share = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/share.db', autoload: true});
         })
         .catch((direrr: any) => {
           console.log("Error Creating Directory")
@@ -83,16 +83,16 @@ fileCnt: any = 0;
         console.log("Error Creating directory entry");
         console.log(err)
         if(!this.platform.is('cordova')){
-          this.db.user = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/user.db', autoload: true});
-          this.db.part = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/part.db', autoload: true});
-          this.db.set = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/set.db', autoload: true});
-          this.db.system = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/system.db', autoload: true});
-          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/technique.db', autoload: true});
-          this.db.file = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/file.db', autoload: true});
-          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/devicesync.db', autoload: true});
-          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/favorites.db', autoload: true});
-          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/recent.db', autoload: true});
-          this.db.share = new Nedb({filename: this.file.dataDirectory + 'salesrepapp/' + 'database/share.db', autoload: true});
+          this.db.user = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/user.db', autoload: true});
+          this.db.part = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/part.db', autoload: true});
+          this.db.set = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/set.db', autoload: true});
+          this.db.system = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/system.db', autoload: true});
+          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/technique.db', autoload: true});
+          this.db.file = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/file.db', autoload: true});
+          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/devicesync.db', autoload: true});
+          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/favorites.db', autoload: true});
+          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/recent.db', autoload: true});
+          this.db.share = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/share.db', autoload: true});
         }
       });
     
@@ -235,7 +235,7 @@ fileCnt: any = 0;
     // console.log(path);
     console.log(this.file.dataDirectory)
     const url = 'http://192.169.169.6:3000/filesystem/' + path;
-    this.fileTransfer.download(encodeURI(url), this.file.dataDirectory + 'salesrepapp/' + path).then((entry) => {
+    this.fileTransfer.download(encodeURI(url), this.file.dataDirectory + 'ProficientTS Test Folder/' + path).then((entry) => {
       console.log('download complete: ' + entry.toURL());
       this.complete(callback);
     }, (error) => {

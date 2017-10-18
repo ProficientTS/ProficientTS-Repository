@@ -97,7 +97,7 @@ headerIpt = {
     let filenm = url.split('/')[(url.split('/').length - 1)]
     console.log(path);
     console.log(filenm);
-    this.g.file.readAsDataURL(this.g.file.dataDirectory + 'salesrepapp/' + path, filenm)
+    this.g.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
     .then((dataURL:string) => { 
       // console.log(dataURL);
       this.g.photoViewer.show(dataURL)

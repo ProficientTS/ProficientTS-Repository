@@ -853,7 +853,7 @@ headerOpt: any;
     console.log(url);
     console.log(this.g.file.dataDirectory  + 'www/'+ url);
     if(this.tabs.doctab){
-      this.g.document.viewDocument(this.g.file.dataDirectory + 'salesrepapp/' + url, 'application/pdf', this.g.docVOptions)
+      this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
     }
     else if(this.tabs.imgtab){
       let path: any = url.split('/');
@@ -863,7 +863,7 @@ headerOpt: any;
       console.log("Image ----------")
       console.log(path);
       console.log(filenm);
-      this.g.file.readAsDataURL(this.g.file.dataDirectory + 'salesrepapp/' + path, filenm)
+      this.g.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
       .then((dataURL:string) => { 
         console.log("dataURL -------------");
         // console.log(dataURL);

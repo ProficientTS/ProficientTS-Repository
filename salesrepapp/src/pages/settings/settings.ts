@@ -7,6 +7,7 @@ import { Global } from '../../providers/global';
 import * as _ from 'underscore';
 import { LoginPage } from '../login/login';
 import { HeaderComponent } from '../header/header.component';
+import { DirectoryEntry } from '@ionic-native/file';
 
 @Component({
   selector: 'page-settings',
@@ -44,6 +45,42 @@ headerIpt = {
           console.log("No Files to Download!")
         }
       });
+  }
+
+  createdir(){
+    console.log("Test Folder name: ProficientTS Test Folder");
+    console.log("This is the platform's dataDirectory ----> " + this.g.file.dataDirectory);
+    this.g.file.resolveDirectoryUrl(this.g.file.dataDirectory)
+    .then((directoryEntry: DirectoryEntry) => {
+      console.log("Directory entry created")
+      console.log(directoryEntry);
+      this.g.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
+      .then((dir: any) => {
+        console.log("Directory created successfully")
+        console.log(dir);
+      })
+      .catch((direrr: any) => {
+        console.log("Error Creating Directory")
+        console.log(direrr)
+      })
+    })
+    .catch((err:any) => {
+      console.log("Error Creating directory entry");
+      console.log(err)
+    });
+  }
+
+  deletedir(){
+    console.log("Test Folder name: ProficientTS Test Folder");
+    this.g.file.removeRecursively(this.g.file.dataDirectory, 'ProficientTS Test Folder')
+        .then((success: any) => {
+          console.log("Directory Removed");
+          console.log(success);
+        })
+        .catch((err: any) => {
+          console.log("Error Removing Directory");
+          console.log(err);
+        })
   }
 
   freshsync(){
@@ -232,7 +269,7 @@ headerIpt = {
                         console.log(numRemoved);
                       }
                       if(this.g.platform.is('cordova')){
-                        this.g.file.removeRecursively(this.g.file.dataDirectory, 'salesrepapp')
+                        this.g.file.removeRecursively(this.g.file.dataDirectory, 'ProficientTS Test Folder')
                         .then((success: any) => {
                           console.log("Directory Removed");
                           console.log(success);
