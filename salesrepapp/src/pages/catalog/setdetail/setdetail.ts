@@ -3,6 +3,7 @@ import { NavController, NavParams, App } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { ProductTabPage } from '../producttab/producttab';  
+import { PartDetailPage } from '../partdetail/partdetail';  
 
 import { Global } from '../../../providers/global';
 import * as _ from 'underscore';
@@ -46,32 +47,33 @@ headerIpt = {
       element["Name"] = element.system_nm;
       element["ID"] = element.system_id;
     });
+    _.each(this.data.part, function(element, i){
+      element["Name"] = element.part_nm;
+      element["ID"] = element.part_id;
+    });
+    var locations = _.uniq(_.pluck(this.data.part, 'location'))
+    console.log(locations);
     this.header = [
                     {
                       f: 1,
                       d_fn: "System",
                       c_fn: "System",
                       val: this.system
-                    },
-                    {
-                      f: 2,
-                      d_fn: "Tray 1",
-                      c_fn: "Tray 1",
-                      val: this.system
-                    },
-                    {
-                      f: 3,
-                      d_fn: "Tray 2",
-                      c_fn: "Tray 2",
-                      val: this.system
-                    },
-                    {
-                      f: 4,
-                      d_fn: "Tray 3",
-                      c_fn: "Tray 3",
-                      val: this.system
                     }
                   ];
+    var cnt = this.header.length;  
+    _.each(locations, (v) => {
+      ++cnt;
+      this.header.push({
+        f: cnt,
+        d_fn: v,
+        c_fn: v,
+        val: _.filter(this.data.part, (val) => {
+          return val.location == v;
+        })
+      })
+    });                
+    console.log(this.header);
   }
 
   ngOnInit() {
@@ -101,6 +103,9 @@ headerIpt = {
 
   fnDisplay(t: any, v: any){
     console.log(t);
+    if(t !== "System"){
+      t = "part";
+    }
     console.log(v);
     t = t.toLowerCase();
     if(v){
@@ -124,7 +129,13 @@ headerIpt = {
             data: data.data,
             type: t
           });
-          break;
+        break;
+        case "part":
+          this.navCtrl.push(PartDetailPage, {
+            data: data.data,
+            type: t
+          });
+        break;
       }
     }   
   }
