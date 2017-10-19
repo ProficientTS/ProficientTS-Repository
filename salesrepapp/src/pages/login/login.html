@@ -15,11 +15,11 @@
 
 <ion-content padding class="loginpage">
     <div>
-        <ion-select (ionChange)="selectLang($event)"> Select Language
-            <ion-option *ngFor="let l of lang" value="{{ l.val }}">
+        <select (change)="selectLang($event.target.value)"> Select Language
+            <option *ngFor="let l of lang" value="{{ l.val }}">
                 {{ l.desc }}
-            </ion-option>
-        </ion-select>
+            </option>
+        </select>
     </div>
     <div id="div-login">
         <div id="div-logo">
