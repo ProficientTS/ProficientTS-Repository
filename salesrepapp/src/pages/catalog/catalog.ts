@@ -12,6 +12,8 @@ import * as _ from 'underscore';
 
 import { HeaderComponent } from '../header/header.component';
 
+
+
 @Component({
   selector: 'page-catalog',
   templateUrl: 'catalog.html',
@@ -69,6 +71,7 @@ headerOpt: any;
     console.log(this.g.deviceId)
     console.log(this.g.Network)
     this.headerOpt = this.navParams.get('header');
+    
     // this.g.Network = true;
   }
 

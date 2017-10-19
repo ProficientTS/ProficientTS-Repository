@@ -87,7 +87,7 @@ review: any = "";
 
   setCCAddr(e: any){
     this.ccaddr = this.ccaddr.trim();
-    if(this.ccaddr.length && (e.code == "Enter" || e.code == "Space") && this.ccArr.length < 6){
+    if(this.ccaddr.length && (e.key == "Enter" || e.key == "Space") && this.ccArr.length < 6){
       var val = JSON.parse(JSON.stringify(this.ccaddr));
       console.log(val);
       this.ccArr.push(val);

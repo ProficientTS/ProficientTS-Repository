@@ -14,6 +14,13 @@
 
 
 <ion-content padding class="loginpage">
+    <div>
+        <ion-select (ionChange)="selectLang($event)"> Select Language
+            <ion-option *ngFor="let l of lang" value="{{ l.val }}">
+                {{ l.desc }}
+            </ion-option>
+        </ion-select>
+    </div>
     <div id="div-login">
         <div id="div-logo">
 
@@ -22,7 +29,7 @@
 
             <!--Replace this value with dynamic data from the db. Call it {{company-name}}-->
             <!-- <div id="div-company-name">Proficient</div> -->
-            <div id="div-company-name" class="arabic">برفيشيانت</div>
+            <div id="div-company-name" class="arabic">{{ 'Login Title' | translate }}</div>
 
         </div>
         <ul id="ul-login">
@@ -32,7 +39,7 @@
                 </div>
                 <div class="div-login-item">
                     <!-- <input type="text" placeholder="Username"> -->
-                    <input type="text" placeholder="كيف حالك" class="arabic" [(ngModel)]="email">
+                    <input type="text" placeholder="{{ 'Login account' | translate }}" class="arabic" [(ngModel)]="email">
                 </div>
             </li>
             <li>
@@ -40,11 +47,11 @@
                     <i class="fa fa-key" aria-hidden="true"></i>
                 </div>
                 <div class="div-login-item">
-                    <input type="password" placeholder="Password" [(ngModel)]="pwd">
+                    <input type="password" placeholder="{{ 'Login pwd' | translate }}" [(ngModel)]="pwd">
                 </div>
             </li>
             <div id="btn-login" class="pts-button" (touchend)="clickLogin()">
-                تسجيل الدخول
+                {{ 'Login submit' | translate }}
             </div>
             <div id="div-login-msg">
                 {{msg}}

@@ -12,6 +12,8 @@ import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-vi
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { File, DirectoryEntry } from '@ionic-native/file';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+
+import { TranslateService } from '@ngx-translate/core';
 // import { Http } from '@angular/http';
 // import 'rxjs/add/operator/map';
 
@@ -49,10 +51,12 @@ fileCnt: any = 0;
     public document: DocumentViewer,
     public photoViewer: PhotoViewer,
     public file: File,
-    public transfer: FileTransfer) {
+    public transfer: FileTransfer,
+    public translate: TranslateService) {
     console.log('Hello Global Provider');
     console.log(Nedb);
     this.Network = this.network.type;
+    translate.setDefaultLang('eu');
     this.fileTransfer = transfer.create();
     this.db = {};
     this.file.resolveDirectoryUrl(this.file.dataDirectory)

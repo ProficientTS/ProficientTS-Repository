@@ -3,6 +3,8 @@ import { NavController, NavParams } from 'ionic-angular';
 import { CatalogPage } from '../catalog/catalog';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 
+import { Global } from '../../providers/global';
+
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
@@ -12,9 +14,25 @@ export class LoginPage {
   pwd = '';
   msg = '';
   auth = '';
+  lang = [
+    {
+      val: 'eu',
+      desc: 'German'
+    },
+    {
+      val: 'en',
+      desc: 'English'
+    }
+  ]
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private ws: WebserviceProvider) {
+  private ws: WebserviceProvider,
+  private g: Global) {
+  }
+
+  selectLang(lang: any){
+    console.log(lang);
+    this.g.translate.use(lang);
   }
 
   ionViewWillEnter(){
