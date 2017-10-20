@@ -7,6 +7,8 @@ import { ProductVideoPage } from '../productvideo/productvideo';
 import { ProductSetPage } from '../productset/productset';
 import { ProductPartPage } from '../productpart/productpart';
 
+import { Global } from '../../../providers/global';
+
 @Component({
   selector: 'page-producttab',
   templateUrl: 'producttab.html',
@@ -22,9 +24,15 @@ data: any;
 type: any;
 info: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+  private g: Global) {
     this.data = navParams.get('data');
     this.type = navParams.get('type');
+    if(this.data.length && this.data[0][g.Lang]){
+      for(var key in this.data[0][g.Lang]){
+        this.data[0][key] = this.data[0][g.Lang][key];
+      }
+    }
     this.info = {data: this.data, type: this.type}
     console.log(this.data);
     console.log(this.type);

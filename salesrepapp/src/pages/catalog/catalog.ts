@@ -72,10 +72,10 @@ headerOpt: any;
     console.log(this.g.Network)
     this.headerOpt = this.navParams.get('header');
     
-    // this.g.Network = true;
   }
 
   ngOnInit() {
+    console.log(this.g.Lang)
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     var that = this;
@@ -263,26 +263,31 @@ headerOpt: any;
     this.typList = false;
     console.log(this.g.Network)
     this.setTab('systab');
-    this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_nm: 1}, 0, 0)
+    this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_id: 1}, 0, 0)
       .then((docs: any) => {
           console.log(docs);
           var len = docs.length;
           if(len){
-            _.each(docs, function(element, i){
+            _.each(docs, (element, i) => {
+              if(element[this.g.Lang]){
+                for(var key in element[this.g.Lang]){
+                  element[key] = element[this.g.Lang][key];
+                }
+              }
               element["Name"] = element.system_nm;
               element["ID"] = element.system_id;
               if(element.img.length){
                 element["url"] = element.img[0].url;
               }
               if(i == (len-1)){
-                that.listItem = docs;
-                that.syslen = docs.length;
+                this.listItem = docs;
+                this.syslen = docs.length;
               }
             });
           }
           else{
-            that.listItem = [];
-            that.syslen = 0;
+            this.listItem = [];
+            this.syslen = 0;
           }
           
         }) // here you will get it

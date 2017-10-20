@@ -16,8 +16,8 @@ export class LoginPage {
   auth = '';
   lang = [
     {
-      val: 'eu',
-      desc: 'German'
+      val: 'de',
+      desc: 'Deutsch'
     },
     {
       val: 'en',
@@ -33,6 +33,7 @@ export class LoginPage {
   selectLang(lang: any){
     console.log(lang);
     this.g.translate.use(lang);
+    this.g.Lang = lang;
   }
 
   ionViewWillEnter(){

@@ -19,7 +19,6 @@ img: any;
 desc: any;
 type: any;
 info: any;
-tit: any;
 fav: boolean;
 time: any;
 headerIpt = {
@@ -34,8 +33,7 @@ headerIpt = {
     this.info = navParams.data;
     this.data = this.info.data[0];
     // this.title = this.data["system_nm"];
-    this.tit = "system_nm";
-    this.title = this.data[this.tit];
+    this.title = this.data.system_nm;
     this.desc = this.data.desc;
     this.img = this.data.img;
   }

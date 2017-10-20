@@ -34,6 +34,7 @@ connectSubscription: any;
 docVOptions: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
+Lang: any = "en";
 fileTransfer: FileTransferObject;
 totalFileCnt: any = 0;
 fileCnt: any = 0;
@@ -56,7 +57,8 @@ fileCnt: any = 0;
     console.log('Hello Global Provider');
     console.log(Nedb);
     this.Network = this.network.type;
-    translate.setDefaultLang('eu');
+    translate.setDefaultLang('de');
+    this.Lang = 'de';
     this.fileTransfer = transfer.create();
     this.db = {};
     this.file.resolveDirectoryUrl(this.file.dataDirectory)
