@@ -5,7 +5,9 @@
         <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
         <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
         <div>
-            <b>Techniques Used</b> - <span *ngIf="data.technique.length; else nodata"><span *ngFor="let t of data.technique" class = "ptsSpanItem" (click) = "listTechniqueSys(t.technique_nm)">{{t.technique_nm}} </span></span>
+            <button class="ptsMarginR15p ptsFloatR" (click)="showTechnique()">
+                Techniques Used ({{data.technique.length}})
+            </button>
         </div>
         <div class="product-image">
             <ion-slides class="image-slider" slidesPerView="2">

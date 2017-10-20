@@ -70,7 +70,9 @@ review: any = "";
       })
     })
     .catch((err: any) => {
-
+      console.log("Error fetching Share DB")
+      console.log("Create Directory 1st")
+      console.log(err);
     });
   }
 

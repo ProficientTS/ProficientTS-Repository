@@ -30,58 +30,81 @@ headerIpt = {
     var that = this;
     this.g.totalFileCnt = 0;
     this.g.fileCnt = 0;
-    this.g.findQSSL(this.g.db.file, {voidfl : {$ne : 'Y'}}, {"file_type": 1}, 0, 0)
-      .then((doc: any) => {
-        console.log(doc);
-        this.g.totalFileCnt = doc.length;
-        if(doc.length){
-          _.each(doc, (file) => {
-            this.g.download(file.url, () => {
-              console.log("All Files Download Complete");
-            });
+    this.g.file.resolveDirectoryUrl(this.g.file.dataDirectory)
+      .then((directoryEntry: DirectoryEntry) => {
+        console.log("Directory entry created")
+        console.log(directoryEntry);
+        this.g.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
+        .then((dir: any) => {
+          console.log("Directory created successfully")
+          console.log(dir);
+          this.g.findQSSL(this.g.db.file, {voidfl : {$ne : 'Y'}}, {"file_type": 1}, 0, 0)
+          .then((doc: any) => {
+            console.log(doc);
+            this.g.totalFileCnt = doc.length;
+            if(doc.length){
+              _.each(doc, (file) => {
+                this.g.download(file.url, () => {
+                  console.log("All Files Download Complete");
+                });
+              });
+            }
+            else{
+              console.log("No Files to Download!")
+            }
+          })
+          .catch((err: any) => {
+            console.log("Error fetching File DB")
+            console.log("Create Directory 1st")
+            console.log(err);
           });
-        }
-        else{
-          console.log("No Files to Download!")
-        }
+        })
+        .catch((direrr: any) => {
+          console.log("Error Creating Directory")
+          console.log(direrr)
+        })
+      })
+      .catch((err:any) => {
+        console.log("Error Creating directory entry");
+        console.log(err);
       });
   }
 
-  createdir(){
-    console.log("Test Folder name: ProficientTS Test Folder");
-    console.log("This is the platform's dataDirectory ----> " + this.g.file.dataDirectory);
-    this.g.file.resolveDirectoryUrl(this.g.file.dataDirectory)
-    .then((directoryEntry: DirectoryEntry) => {
-      console.log("Directory entry created")
-      console.log(directoryEntry);
-      this.g.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
-      .then((dir: any) => {
-        console.log("Directory created successfully")
-        console.log(dir);
-      })
-      .catch((direrr: any) => {
-        console.log("Error Creating Directory")
-        console.log(direrr)
-      })
-    })
-    .catch((err:any) => {
-      console.log("Error Creating directory entry");
-      console.log(err)
-    });
-  }
+  // createdir(){
+  //   console.log("Test Folder name: ProficientTS Test Folder");
+  //   console.log("This is the platform's dataDirectory ----> " + this.g.file.dataDirectory);
+  //   this.g.file.resolveDirectoryUrl(this.g.file.dataDirectory)
+  //   .then((directoryEntry: DirectoryEntry) => {
+  //     console.log("Directory entry created")
+  //     console.log(directoryEntry);
+  //     this.g.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
+  //     .then((dir: any) => {
+  //       console.log("Directory created successfully")
+  //       console.log(dir);
+  //     })
+  //     .catch((direrr: any) => {
+  //       console.log("Error Creating Directory")
+  //       console.log(direrr)
+  //     })
+  //   })
+  //   .catch((err:any) => {
+  //     console.log("Error Creating directory entry");
+  //     console.log(err)
+  //   });
+  // }
 
-  deletedir(){
-    console.log("Test Folder name: ProficientTS Test Folder");
-    this.g.file.removeRecursively(this.g.file.dataDirectory, 'ProficientTS Test Folder')
-        .then((success: any) => {
-          console.log("Directory Removed");
-          console.log(success);
-        })
-        .catch((err: any) => {
-          console.log("Error Removing Directory");
-          console.log(err);
-        })
-  }
+  // deletedir(){
+  //   console.log("Test Folder name: ProficientTS Test Folder");
+  //   this.g.file.removeRecursively(this.g.file.dataDirectory, 'ProficientTS Test Folder')
+  //       .then((success: any) => {
+  //         console.log("Directory Removed");
+  //         console.log(success);
+  //       })
+  //       .catch((err: any) => {
+  //         console.log("Error Removing Directory");
+  //         console.log(err);
+  //       })
+  // }
 
   freshsync(){
     var that = this;
@@ -102,6 +125,11 @@ headerIpt = {
         else{
           console.log("Already Synced!")
         }
+      })
+      .catch((err: any) => {
+        console.log("Error fetching Device Sync DB")
+        console.log("Create Directory 1st")
+        console.log(err);
       });
     
   }

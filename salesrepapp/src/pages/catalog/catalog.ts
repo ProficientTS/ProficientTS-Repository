@@ -12,7 +12,7 @@ import * as _ from 'underscore';
 
 import { HeaderComponent } from '../header/header.component';
 
-
+import { File, DirectoryEntry } from '@ionic-native/file';
 
 @Component({
   selector: 'page-catalog',
@@ -90,6 +90,13 @@ headerOpt: any;
           this.hc.setMsg(10000002);
           this.freshsync();
         }
+      })
+      .catch((err: any) => {
+        console.log("Error fetching Device Sync DB")
+        console.log("Create Directory at Settings Page 1st")
+        console.log(err);
+        this.sync = true;
+        this.hc.menu = true;
       });
   }
 
@@ -160,7 +167,28 @@ headerOpt: any;
                   else{
                     console.log("Insert Failed");
                   }
-                  this.primaryFileSync();
+                  this.g.file.resolveDirectoryUrl(this.g.file.dataDirectory)
+                  .then((directoryEntry: DirectoryEntry) => {
+                    console.log("Directory entry created")
+                    console.log(directoryEntry);
+                    this.g.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
+                    .then((dir: any) => {
+                      console.log("Directory created successfully")
+                      console.log(dir);
+                      this.primaryFileSync();
+                    })
+                    .catch((direrr: any) => {
+                      console.log("Error Creating Directory")
+                      console.log(direrr)
+                    })
+                  })
+                  .catch((err:any) => {
+                    console.log("Error Creating directory entry");
+                    console.log(err);
+                    this.sync = false;
+                    this.hc.menu = false;
+                    this.hc.setMsg(20000002);
+                  });
                 })
               })
             })

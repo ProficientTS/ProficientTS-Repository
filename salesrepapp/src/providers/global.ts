@@ -61,46 +61,16 @@ fileCnt: any = 0;
     this.Lang = 'de';
     this.fileTransfer = transfer.create();
     this.db = {};
-    this.file.resolveDirectoryUrl(this.file.dataDirectory)
-      .then((directoryEntry: DirectoryEntry) => {
-        console.log("Directory entry created")
-        console.log(directoryEntry);
-        this.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
-        .then((dir: any) => {
-          console.log("Directory created successfully")
-          console.log(dir);
-          this.db.user = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/user.db', autoload: true});
-          this.db.part = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/part.db', autoload: true});
-          this.db.set = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/set.db', autoload: true});
-          this.db.system = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/system.db', autoload: true});
-          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/technique.db', autoload: true});
-          this.db.file = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/file.db', autoload: true});
-          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/devicesync.db', autoload: true});
-          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/favorites.db', autoload: true});
-          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/recent.db', autoload: true});
-          this.db.share = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/share.db', autoload: true});
-        })
-        .catch((direrr: any) => {
-          console.log("Error Creating Directory")
-          console.log(direrr)
-        })
-      })
-      .catch((err:any) => {
-        console.log("Error Creating directory entry");
-        console.log(err)
-        if(!this.platform.is('cordova')){
-          this.db.user = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/user.db', autoload: true});
-          this.db.part = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/part.db', autoload: true});
-          this.db.set = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/set.db', autoload: true});
-          this.db.system = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/system.db', autoload: true});
-          this.db.technique = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/technique.db', autoload: true});
-          this.db.file = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/file.db', autoload: true});
-          this.db.devicesync = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/devicesync.db', autoload: true});
-          this.db.fav = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/favorites.db', autoload: true});
-          this.db.recent = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/recent.db', autoload: true});
-          this.db.share = new Nedb({filename: this.file.dataDirectory + 'ProficientTS Test Folder/' + 'database/share.db', autoload: true});
-        }
-      });
+    this.db.user = new Nedb({filename: './assets/database/user.db', autoload: true});
+    this.db.part = new Nedb({filename: './assets/database/part.db', autoload: true});
+    this.db.set = new Nedb({filename: './assets/database/set.db', autoload: true});
+    this.db.system = new Nedb({filename: './assets/database/system.db', autoload: true});
+    this.db.technique = new Nedb({filename: './assets/database/technique.db', autoload: true});
+    this.db.file = new Nedb({filename: './assets/database/file.db', autoload: true});
+    this.db.devicesync = new Nedb({filename: './assets/database/devicesync.db', autoload: true});
+    this.db.fav = new Nedb({filename: './assets/database/favorites.db', autoload: true});
+    this.db.recent = new Nedb({filename: './assets/database/recent.db', autoload: true});
+    this.db.share = new Nedb({filename: './assets/database/share.db', autoload: true});
     
     this.uid.get()
     .then((uuid: any) => {console.log(uuid); this.deviceId = uuid;})
