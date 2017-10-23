@@ -111,7 +111,7 @@ review: any = "";
     console.log(type);
     console.log(url);
     if(type == "doc"){
-      this.document.viewDocument('file:///data/data/io.ionic.starter/files/'+ url, 'application/pdf', this.options)
+      this.document.viewDocument(this.g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options)
     }
     else if(type == "img"){
       let path: any = url.split('/');
@@ -121,7 +121,7 @@ review: any = "";
       console.log("Image ----------")
       console.log(path);
       console.log(filenm);
-      this.file.readAsDataURL('file:///data/data/io.ionic.starter/files/' + path, filenm)
+      this.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
       .then((dataURL:string) => { 
         console.log("dataURL -------------");
         // console.log(dataURL);

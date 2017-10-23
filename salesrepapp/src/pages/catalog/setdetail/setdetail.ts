@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NavController, NavParams, App } from 'ionic-angular';
+import { NavController, NavParams, App, Modal, ModalController } from 'ionic-angular';
 
 import { WebserviceProvider } from '../../../providers/webservice/webservice';
 import { ProductTabPage } from '../producttab/producttab';  
@@ -9,6 +9,7 @@ import { Global } from '../../../providers/global';
 import * as _ from 'underscore';
 
 import { LoginPage } from '../../login/login';
+import { ModalPage } from '../../modal/modal';
 import { HeaderComponent } from '../../header/header.component';
 
 @Component({
@@ -22,19 +23,22 @@ title: any;
 img: any;
 desc: any;
 type: any;
+show: any = 'part';
+partURL: any = "";
+partList: any = [];
 info: any;
 tit: any;
 header: any;
 system: any;
 fav: boolean;
-time: any;
 headerIpt = {
   catalogfacility: true,
   shareCnt: 0
-}
+};
+location: any = [];
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private ws: WebserviceProvider, private g: Global,
-  private app: App) {
+  private app: App, private modalCtrl: ModalController) {
     console.log('SetDetailPage ----------------------')
     console.log(navParams.data);
     this.info = navParams.data;
@@ -43,6 +47,11 @@ headerIpt = {
     this.desc = this.data.desc;
     this.img = this.data.img;
     this.system = this.data.system;
+    this.partList = this.data.part;
+    if(this.data.part.length){
+      this.partURL = this.data.part[0].url;
+      console.log("partURL", this.partURL);
+    }
     _.each(this.system, function(element, i){
       element["Name"] = element.system_nm;
       element["ID"] = element.system_id;
@@ -51,8 +60,7 @@ headerIpt = {
       element["Name"] = element.part_nm;
       element["ID"] = element.part_id;
     });
-    var locations = _.uniq(_.pluck(this.data.part, 'location'))
-    console.log(locations);
+    
     this.header = [
                     {
                       f: 1,
@@ -61,24 +69,15 @@ headerIpt = {
                       val: this.system
                     }
                   ];
-    var cnt = this.header.length;  
-    _.each(locations, (v) => {
-      ++cnt;
-      this.header.push({
-        f: cnt,
-        d_fn: v,
-        c_fn: v,
-        val: _.filter(this.data.part, (val) => {
-          return val.location == v;
-        })
-      })
-    });                
     console.log(this.header);
+    // g.Network = true;
   }
 
   ngOnInit() {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
+    this.location = _.uniq(_.pluck(this.data.part, 'location'))
+    console.log(this.location);
     var that = this;
     this.g.findQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.set_id, type: 'set', fav: true})
     .then((docs: any) => {
@@ -91,14 +90,25 @@ headerIpt = {
       }
     })
     .catch((err)=> console.log(err));
-    this.time = Number(new Date());
     var url = "";
     if(this.data && this.data.img && this.data.img.length){
       url = this.data.img[0].url;
     }
-    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: {time: this.time}}, function(rst){
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), ID: this.data.set_id, Name: this.data.set_nm, type: 'set', url: url }, {$set: {time: Number(new Date())}}, function(rst){
       console.log(rst);
     });
+  }
+
+  filterByLocation(val: any){
+    console.log(val);
+    if(val.length){
+      this.partList = _.filter(this.data.part, (v) => {
+        return v.location == val;
+      })
+    }
+    else{
+      this.partList = this.data.part;
+    }
   }
 
   fnDisplay(t: any, v: any){
@@ -146,6 +156,32 @@ headerIpt = {
 
   ionViewDidEnter() {
     console.log('ionViewDidEnter SetDetailPage');
+  }
+
+  showSystem() {
+    let system = [];
+    _.each(this.data.system, (v) => {
+      system.push({Name: v.system_nm, ID: v.system_id})
+    })
+    let modal: Modal = this.modalCtrl.create(ModalPage, { data: system, title: "Systems Used" });
+    modal.onDidDismiss((data: any) => {
+      console.log("Modal Reply", data);
+      if(data != null){
+        this.g.findQSSL(this.g.db.system, { system_id: data.ID, voidfl : {$ne : 'Y'} }, { system_id: 1}, 0, 0)
+        .then((docs: any) => {
+            console.log(docs);
+            if(docs.length){
+              this.navCtrl.push(ProductTabPage, {
+                data: docs
+              });
+            }
+        })
+        .catch((err: any) => {
+          console.log(err);
+        })
+      }
+    });
+    modal.present();
   }
 
   fnFav(fav: boolean){

@@ -28,4 +28,11 @@
             </li>
         </ul>
     </div>
+    <div>
+        <select (change)="selectLang($event.target.value)"> Select Language
+            <option *ngFor="let l of lang" value="{{ l.val }}">
+                {{ l.desc }}
+            </option>
+        </select>
+    </div>
 </ion-content>

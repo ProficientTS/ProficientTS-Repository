@@ -90,7 +90,7 @@ headerIpt = {
 
   viewDoc(url : string){
     console.log(url);
-    this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
+    this.g.document.viewDocument(this.g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
   }
 
   shareDoc(item: any, index: any){

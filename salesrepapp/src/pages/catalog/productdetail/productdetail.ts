@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Modal, ModalController } from 'ionic-angular';
 import * as _ from 'underscore';
 import { Global } from '../../../providers/global';
 
 import { CatalogPage } from '../catalog';
 
 import { HeaderComponent } from '../../header/header.component';
+import { ModalPage } from '../../modal/modal';
 
 @Component({
   selector: 'page-productdetail',
@@ -26,7 +27,7 @@ headerIpt = {
   shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private g: Global
+  private g: Global, private modalCtrl: ModalController
   ) {
     console.log('ProductDetailPage ----------------------')
     console.log(navParams.data);
@@ -62,6 +63,20 @@ headerIpt = {
       console.log(rst);
     });
     
+  }
+
+  showTechnique(){
+    let techs = [];
+    _.each(this.data.technique, (v) => {
+      techs.push({Name: v.technique_nm})
+    })
+    let modal: Modal = this.modalCtrl.create(ModalPage, { data: techs, title: "Techniques Used" });
+    modal.onDidDismiss((data: any) => {
+      console.log("Modal Reply", data);
+      if(data != null)
+      this.listTechniqueSys(data.Name)
+    });
+    modal.present();
   }
 
   listTechniqueSys(technm: any){

@@ -418,7 +418,13 @@ headerOpt: any;
         .then((system: any) => {
           console.log(system);
             var sys = [];
+            
             for (var j = 0; j < system.length; j++) {
+                if(system[j][this.g.Lang]){
+                  for(var key in system[j][this.g.Lang]){
+                    system[j][key] = system[j][this.g.Lang][key];
+                  }
+                }
                 if(system[j].img.length){
                   sys.push({Name: system[j].system_nm, ID: system[j].system_id, url: system[j].img[0].url});
                 }
@@ -889,7 +895,7 @@ headerOpt: any;
     console.log(url);
     console.log(this.g.file.dataDirectory  + 'www/'+ url);
     if(this.tabs.doctab){
-      this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
+      this.g.document.viewDocument(this.g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
     }
     else if(this.tabs.imgtab){
       let path: any = url.split('/');

@@ -6,6 +6,7 @@ import { HttpClient, HttpClientModule  } from '@angular/common/http';
 
 import { MyApp } from './app.component';
 import { CatalogPage } from '../pages/catalog/catalog';
+import { ModalPage } from '../pages/modal/modal';
 import { SharePage } from '../pages/share/share';
 import { SettingsPage } from '../pages/settings/settings';
 import { LoginPage } from '../pages/login/login';
@@ -57,7 +58,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     PartDetailPage,
     SetDetailPage,
     SharePage,
-    HeaderComponent
+    HeaderComponent,
+    ModalPage
   ],
   imports: [
     BrowserModule,
@@ -90,7 +92,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     PartDetailPage,
     SetDetailPage,
     SharePage,
-    HeaderComponent
+    HeaderComponent,
+    ModalPage
   ],
   providers: [
     StatusBar,

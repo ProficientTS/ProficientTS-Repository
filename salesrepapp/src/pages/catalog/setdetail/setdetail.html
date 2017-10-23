@@ -5,16 +5,54 @@
         <div class="product-title">{{title}}</div>
         <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
         <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
-        <div class="product-image">
-            <ion-slides class="image-slider" slidesPerView="2">
-                <ion-slide *ngFor="let i of img">
-                    <img src="{{g.file.dataDirectory}}ProficientTS Test Folder/{{i.url}}" class="thumb-img" imageViewer/>
-                </ion-slide>
-            </ion-slides>
+        <div>
+            <button class="ptsMarginR15p ptsFloatR ptsPad10p ptsBorderR3p" (click)="showSystem()">
+                System Used ({{data.system.length}})
+            </button>
         </div>
-        <ul *ngFor="let h of header" class="ul-partdetail">
-            <li class="ptsPadTB5p">{{h.c_fn}}</li>
-            <li class="li-partdetail" *ngFor="let v of h.val" (click)="fnDisplay(h.d_fn, v.ID)">{{v.ID}} {{v.Name}} {{v.desc}}</li>
-        </ul>
+        <div id="div-set-tabs">
+            <div (click)="show = 'part'">Parts</div>
+            <div (click)="show = 'img'">Images</div>
+        </div>
+        <div id="div-set-container">
+            <div id="div-set-parts" *ngIf="show == 'part'">
+                <div id="div-part-location"> Filter by Location
+                    <select (change)="filterByLocation($event.target.value)">
+                        <option value="">All</option>
+                        <option *ngFor="let l of location" value="{{ l }}">
+                            {{ l }}
+                        </option>
+                    </select>
+                </div>
+                <div id="div-set-parts-preview-container">
+                    <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + partURL : g.file.dataDirectory + 'ProficientTS Test Folder/' + partURL }}">
+                </div>
+                <div id="div-set-parts-list-container">
+                    <ion-list>
+                        <ion-card *ngFor="let p of partList; let i = index">
+                            <ion-card-header>{{p.part_id}} {{p.part_nm}}</ion-card-header>
+                            <ion-card-content>
+                                {{p.location}}
+                                <div class="ptsDipsIB">
+                                    <ion-icon name="eye" (click)="partURL = p.url"></ion-icon>
+                                </div>
+                                <div class="ptsDipsIB">
+                                    <ion-icon name="open" (click)="fnDisplay('part', p.part_id)"></ion-icon>
+                                </div>
+                            </ion-card-content>
+                        </ion-card>
+                    </ion-list>
+                </div>
+            </div>
+            <div id="div-set-images" *ngIf="show == 'img'">
+                <div class="product-image">
+                    <ion-slides class="image-slider" slidesPerView="2">
+                        <ion-slide *ngFor="let i of img">
+                            <img src="{{ g.Network === true ? 'http://192.169.169.6:3000/filesystem/' + i.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + i.url }}" class="thumb-img" imageViewer/>
+                        </ion-slide>
+                    </ion-slides>
+                </div>
+            </div>
+        </div>
     </div>
 </ion-content>

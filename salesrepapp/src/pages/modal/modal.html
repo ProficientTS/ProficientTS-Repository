@@ -1,0 +1,25 @@
+<ion-content padding>
+    <div>{{ title }}</div>
+    <ion-list *ngIf="data.length; else nodata">
+        <ion-item *ngFor="let d of data; let idx = index" [class.selected]="idx === currentSelected" (click)="selectedItem(d, idx)">
+            <span *ngIf="d.ID">{{d.ID}} </span> {{d.Name}}
+            <div *ngIf="d.url">
+                <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + d.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + d.url }}">
+            </div>
+        </ion-item>
+    </ion-list>
+</ion-content>
+<ion-footer>
+    <ion-buttons>
+        <button ion-button (click)="closeModal(true)">Submit</button>
+        <button ion-button (click)="closeModal()">Cancel</button>
+    </ion-buttons>
+</ion-footer>
+
+<ng-template #nodata>
+    <ion-list>
+        <ion-card>
+            <ion-card-header>No Data Found</ion-card-header>
+        </ion-card>
+    </ion-list>
+</ng-template>

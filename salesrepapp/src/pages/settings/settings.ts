@@ -19,7 +19,17 @@ headerIpt = {
   // catalogfacility: true,
   shareCnt: 0,
   title: "Settings"
-}
+};
+lang = [
+    {
+      val: 'de',
+      desc: 'Deutsch'
+    },
+    {
+      val: 'en',
+      desc: 'English'
+    }
+  ];
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
   private g: Global,
@@ -105,6 +115,12 @@ headerIpt = {
   //         console.log(err);
   //       })
   // }
+
+  selectLang(lang: any){
+    console.log(lang);
+    this.g.translate.use(lang);
+    this.g.Lang = lang;
+  }
 
   freshsync(){
     var that = this;

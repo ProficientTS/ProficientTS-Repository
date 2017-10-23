@@ -5,14 +5,14 @@
         <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
         <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
         <div>
-            <button class="ptsMarginR15p ptsFloatR" (click)="showTechnique()">
+            <button class="ptsMarginR15p ptsFloatR ptsPad10p ptsBorderR3p" (click)="showTechnique()">
                 Techniques Used ({{data.technique.length}})
             </button>
         </div>
         <div class="product-image">
             <ion-slides class="image-slider" slidesPerView="2">
                 <ion-slide *ngFor="let i of img">
-                    <img src="{{g.file.dataDirectory}}ProficientTS Test Folder/{{i.url}}" class="thumb-img" imageViewer/>
+                    <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + i.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + i.url }}" class="thumb-img" imageViewer/>
                 </ion-slide>
             </ion-slides>
         </div>
