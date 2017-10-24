@@ -42,7 +42,7 @@ headerIpt = {
     this.data = this.info.data[0];
     this.type = this.info.type;
     this.tit = this.type + "_nm";
-    this.title = this.data[this.tit];
+    this.title = this.data.system_nm;
     this.set = this.data.set;
     this.header = [
                     {
@@ -128,7 +128,7 @@ headerIpt = {
   setDetail(h: any, v: any) {
     console.log(h);
     console.log(v);
-    if(h == "View"){
+    if(h == "Action" || h == "Set ID"){
       this.g.findQ(this.g.db.set, {set_id: v, voidfl : {$ne : 'Y'}})
       .then((docs: any) => {
           console.log(docs);

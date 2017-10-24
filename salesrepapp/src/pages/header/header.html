@@ -1,7 +1,7 @@
 <ion-header>
 
-    <ion-navbar transparent no-border [ngClass]="{'force-back-button' : back}">
-        <button ion-button icon-only menuToggle [ngClass]="{'force-menu-button' : menu}">
+    <ion-navbar transparent no-border [ngClass]="{'force-back-button' : back}" class="ionnavbar">
+        <button ion-button icon-only menuToggle [ngClass]="{'force-menu-button' : menu, 'force-menu-button-show': !menu}">
             <ion-icon name="menu"></ion-icon>
         </button>
         <ion-title>{{headerIpt.title? headerIpt.title : "Catalog"}}</ion-title>

@@ -111,20 +111,20 @@ location: any = [];
     }
   }
 
-  fnDisplay(t: any, v: any){
-    console.log(t);
-    if(t !== "System"){
-      t = "part";
-    }
+  fnDisplay(v: any){
     console.log(v);
-    t = t.toLowerCase();
     if(v){
       var query = {voidfl : {$ne : 'Y'}};
-      query[t + '_id'] = v;
-      this.g.findQ(this.g.db[t], query)
+      query['part_id'] = v;
+      this.g.findQ(this.g.db.part, query)
         .then((docs: any) => {
           console.log(docs);
-          this.handleData(t, {data: docs, success: true});
+          if(docs.length){
+            this.navCtrl.push(PartDetailPage, {
+              data: docs,
+              type: 'part'
+            });
+          }
         }) // here you will get it
         .catch((err) => console.error(err));
     }

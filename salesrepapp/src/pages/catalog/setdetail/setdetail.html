@@ -30,14 +30,14 @@
                 <div id="div-set-parts-list-container">
                     <ion-list>
                         <ion-card *ngFor="let p of partList; let i = index">
-                            <ion-card-header>{{p.part_id}} {{p.part_nm}}</ion-card-header>
+                            <ion-card-header (click)="fnDisplay(p.part_id)">{{p.part_id}} {{p.part_nm}}</ion-card-header>
                             <ion-card-content>
                                 {{p.location}}
                                 <div class="ptsDipsIB">
                                     <ion-icon name="eye" (click)="partURL = p.url"></ion-icon>
                                 </div>
                                 <div class="ptsDipsIB">
-                                    <ion-icon name="open" (click)="fnDisplay('part', p.part_id)"></ion-icon>
+                                    <ion-icon name="open" (click)="fnDisplay(p.part_id)"></ion-icon>
                                 </div>
                             </ion-card-content>
                         </ion-card>

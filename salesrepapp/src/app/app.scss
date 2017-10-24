@@ -155,12 +155,16 @@ input[type="password"] {
   display: inline-block;
 }
 
-.force-back-button .back-button-text {
+.ionnavbar .back-button-text {
     display: none;
 }
 
 .force-menu-button{
     display: none;
+}
+
+.force-menu-button-show{
+    display: inline-block!important;
 }
 
 .ptsBorderR3p{

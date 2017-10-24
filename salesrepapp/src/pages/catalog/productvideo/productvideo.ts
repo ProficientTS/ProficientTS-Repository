@@ -34,7 +34,7 @@ headerIpt = {
     this.data = this.info.data[0];
     this.type = this.info.type;
     this.tit = this.type + "_nm";
-    this.title = this.data[this.tit];
+    this.title = this.data.system_nm;
     this.video = this.data.video;
     if(this.video.length){
       this.videoType = _.uniq(_.pluck(this.video, 'type'));

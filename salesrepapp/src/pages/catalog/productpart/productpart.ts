@@ -42,7 +42,7 @@ headerIpt = {
     this.data = this.info.data[0];
     this.type = this.info.type;
     this.tit = this.type + "_nm";
-    this.title = this.data[this.tit];
+    this.title = this.data.system_nm;
     this.part = this.data.part;
     this.header = [
                     {
@@ -117,7 +117,7 @@ headerIpt = {
   partDetail(h: any, v: any) {
     console.log(h)
     console.log(v);
-    if(h == "View"){
+    if(h == "Action" || h == "Part ID"){
       this.g.findQ(this.g.db.part, {part_id: v, voidfl : {$ne : 'Y'}})
         .then((docs: any) => {
             console.log(docs);

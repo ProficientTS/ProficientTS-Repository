@@ -34,7 +34,7 @@ headerIpt = {
     this.data = this.info.data[0];
     this.type = this.info.type;
     this.tit = this.type + "_nm";
-    this.title = this.data[this.tit];
+    this.title = this.data.system_nm;
     this.doc = this.data.doc;
     if(this.doc.length){
       this.docType = _.uniq(_.pluck(this.doc, 'type'));
@@ -90,7 +90,10 @@ headerIpt = {
 
   viewDoc(url : string){
     console.log(url);
-    this.g.document.viewDocument(this.g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
+    this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
+      console.log(err);
+      this.hc.setMsg(50000004);
+    })
   }
 
   shareDoc(item: any, index: any){

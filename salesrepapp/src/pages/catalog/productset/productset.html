@@ -12,7 +12,7 @@
                 <li *ngFor="let h of header" class="ptsPadTB5p ptsW23pr">{{h.c_fn}}</li>
             </ul>
             <ul *ngFor="let v of srh">
-                <li class="ptsPadTB5p ptsDipsIB ptsW23pr" *ngFor="let k of header" (click)="setDetail(v[k.val], v.set_id)">{{v[k.val]}}</li>
+                <li class="ptsPadTB5p ptsDipsIB ptsW23pr" *ngFor="let k of header" (click)="setDetail(k.c_fn, v.set_id)">{{v[k.val]}}</li>
             </ul>
         </div>
 

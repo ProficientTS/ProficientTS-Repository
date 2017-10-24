@@ -71,7 +71,7 @@ headerOpt: any;
     console.log(this.g.deviceId)
     console.log(this.g.Network)
     this.headerOpt = this.navParams.get('header');
-    
+    // g.Network=true;
   }
 
   ngOnInit() {
@@ -167,28 +167,11 @@ headerOpt: any;
                   else{
                     console.log("Insert Failed");
                   }
-                  this.g.file.resolveDirectoryUrl(this.g.file.dataDirectory)
-                  .then((directoryEntry: DirectoryEntry) => {
-                    console.log("Directory entry created")
-                    console.log(directoryEntry);
-                    this.g.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
-                    .then((dir: any) => {
-                      console.log("Directory created successfully")
-                      console.log(dir);
-                      this.primaryFileSync();
-                    })
-                    .catch((direrr: any) => {
-                      console.log("Error Creating Directory")
-                      console.log(direrr)
-                    })
-                  })
-                  .catch((err:any) => {
-                    console.log("Error Creating directory entry");
-                    console.log(err);
-                    this.sync = false;
-                    this.hc.menu = false;
-                    this.hc.setMsg(20000002);
-                  });
+                  this.sync = false;
+                  this.hc.menu = false;
+                  this.hc.setMsg(20000002);
+                  if(this.platform.is('cordova'))
+                    this.g.FileSync();
                 })
               })
             })
@@ -196,32 +179,6 @@ headerOpt: any;
         })
       })
     }
-  }
-
-  primaryFileSync(){
-    this.g.totalFileCnt = 0;
-    this.g.fileCnt = 0;
-    this.g.findQSSL(this.g.db.file, {voidfl : {$ne : 'Y'}, "file_type": "img", "primary": "Y"}, {"url": 1}, 0, 0)
-      .then((doc: any) => {
-        console.log(doc);
-        console.log(doc.length);
-        this.g.totalFileCnt = doc.length;
-        if(doc.length && this.platform.is('cordova')){
-          _.each(doc, (file) => {
-            this.g.download(file.url, () => {
-              this.sync = false;
-              this.hc.menu = false;
-              this.hc.setMsg(20000002);
-              this.g.otherFileSync();
-            });
-          });
-        }
-        else{
-          this.sync = false;
-          this.hc.menu = false;
-          this.hc.setMsg(20000002);
-        }
-      });
   }
 
   ionViewWillEnter(){
@@ -579,7 +536,6 @@ headerOpt: any;
     if(data.data){
       console.log(0)
       if(this.type == "key"){
-        console.log(console.log(data.data))
 
         this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), share: true})
         .then((docs: any) => {
@@ -602,29 +558,29 @@ headerOpt: any;
             }
           }
 
-          if(that.g.Network){
-            if(data.data.system.length){
-              _.each(data.data.system, function(element, i){
-                  if(element.img.length){
-                    element["url"] = element.img[0].url;
-                  }
-              });
-            }
-            if(data.data.set.length){
-              _.each(data.data.set, function(element, i){
-                  if(element.img.length){
-                    element["url"] = element.img[0].url;
-                  }
-              });
-            }
-            if(data.data.part.length){
-              _.each(data.data.part, function(element, i){
-                  if(element.img.length){
-                    element["url"] = element.img[0].url;
-                  }
-              });
-            }
-          }
+          // if(that.g.Network){
+          //   if(data.data.system.length){
+          //     _.each(data.data.system, function(element, i){
+          //         if(element.img.length){
+          //           element["url"] = element.img[0].url;
+          //         }
+          //     });
+          //   }
+          //   if(data.data.set.length){
+          //     _.each(data.data.set, function(element, i){
+          //         if(element.img.length){
+          //           element["url"] = element.img[0].url;
+          //         }
+          //     });
+          //   }
+          //   if(data.data.part.length){
+          //     _.each(data.data.part, function(element, i){
+          //         if(element.img.length){
+          //           element["url"] = element.img[0].url;
+          //         }
+          //     });
+          //   }
+          // }
           console.log(data.data);
           that.keyval = data.data;
           that.keyval.system = data.data.system;
@@ -841,7 +797,7 @@ headerOpt: any;
     this.type = "rec";
     this.tab = true;
     this.setTab('rectab');
-    this.g.findQSSL(this.g.db.recent, {accountID: localStorage.getItem('email')}, {type: -1, time: -1}, 0, 5)
+    this.g.findQSSL(this.g.db.recent, {accountID: localStorage.getItem('email')}, {time: -1}, 0, 5)
       .then((docs: any) => {
         console.log(docs);
         that.typList = true;
@@ -895,7 +851,10 @@ headerOpt: any;
     console.log(url);
     console.log(this.g.file.dataDirectory  + 'www/'+ url);
     if(this.tabs.doctab){
-      this.g.document.viewDocument(this.g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions)
+      this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
+        console.log(err);
+        this.hc.setMsg(50000004);
+      })
     }
     else if(this.tabs.imgtab){
       let path: any = url.split('/');
@@ -912,8 +871,8 @@ headerOpt: any;
         this.g.photoViewer.show(dataURL)
       })
       .catch((err: any) => {
-        console.log("Pic Err -------------");
         console.log(err);
+        this.hc.setMsg(50000004);
       })
     }
     else if(this.tabs.vidtab){

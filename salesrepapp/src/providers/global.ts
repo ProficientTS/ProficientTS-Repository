@@ -37,6 +37,7 @@ docVOptions: DocumentViewerOptions = {
 Lang: any = "en";
 fileTransfer: FileTransferObject;
 totalFileCnt: any = 0;
+// fileData: any = [];
 fileCnt: any = 0;
   ngOnDestroy() {
     //Called once, before the instance is destroyed.
@@ -189,20 +190,88 @@ fileCnt: any = 0;
       })
   }
 
-  otherFileSync(){
+  FileSync() {
+    this.file.resolveDirectoryUrl(this.file.dataDirectory)
+      .then((directoryEntry: DirectoryEntry) => {
+        console.log("Directory entry created")
+        console.log(directoryEntry);
+        this.file.getDirectory(directoryEntry, 'ProficientTS Test Folder', { create: true })
+        .then((dir: any) => {
+          console.log("Directory created successfully")
+          console.log(dir);
+          this.primaryFileSync();
+        })
+        .catch((direrr: any) => {
+          console.log("Error Creating Directory")
+          console.log(direrr)
+        })
+      })
+      .catch((err:any) => {
+        console.log("Error Creating directory entry");
+        console.log(err);
+      });
+  }
+
+  primaryFileSync(){
     this.totalFileCnt = 0;
     this.fileCnt = 0;
-    this.findQSSL(this.db.file, {voidfl : {$ne : 'Y'}, "primary": {$ne : 'Y'}}, {"url": 1}, 0, 0)
+    this.findQSSL(this.db.file, {voidfl : {$ne : 'Y'}, "file_type": "img", "primary": "Y"}, {"url": 1}, 0, 0)
       .then((doc: any) => {
         console.log(doc);
         console.log(doc.length);
         this.totalFileCnt = doc.length;
-        if(doc.length && this.platform.is('cordova')){
+        if(doc.length){
+          _.each(doc, (file) => {
+            this.download(file.url, () => {
+              console.log("Primary Files Download Complete");
+              this.otherSystemFileSync();
+            });
+          });
+        }
+        else{
+          this.otherSystemFileSync();
+        }
+      });
+  }
+
+  otherSystemFileSync(){
+    this.totalFileCnt = 0;
+    this.fileCnt = 0;
+    this.findQSSL(this.db.file, {voidfl : {$ne : 'Y'}, "primary": {$ne : 'Y'}, url: { $regex: new RegExp( 'system/')}}, {"url": 1}, 0, 0)
+      .then((doc: any) => {
+        console.log(doc);
+        console.log(doc.length);
+        this.totalFileCnt = doc.length;
+        if(doc.length){
+          _.each(doc, (file) => {
+            this.download(file.url, () => {
+              console.log("Remaining System Files Download Complete");
+            });
+          });
+        }
+        else{
+          this.otherRemainingFileSync();
+        }
+      });
+  }
+
+  otherRemainingFileSync() {
+    this.totalFileCnt = 0;
+    this.fileCnt = 0;
+    this.findQSSL(this.db.file, {voidfl : {$ne : 'Y'}, "primary": {$ne : 'Y'}, url: {$ne: { $regex: new RegExp( 'system/')}}}, {"url": 1}, 0, 0)
+      .then((doc: any) => {
+        console.log(doc);
+        console.log(doc.length);
+        this.totalFileCnt = doc.length;
+        if(doc.length){
           _.each(doc, (file) => {
             this.download(file.url, () => {
               console.log("Remaining Files Download Complete");
             });
           });
+        }
+        else{
+          console.log("Remaining Files Download Complete");
         }
       });
   }
@@ -232,6 +301,14 @@ fileCnt: any = 0;
     }
     
   }
+
+  // abortDownload() {
+  //   this.fileData = [];
+  //   this.fileTransfer.abort();
+  //   this.totalFileCnt = 0;
+  //   this.fileCnt = 0;
+  //   console.log("Abort Download")
+  // }
 
   validations(){
     return [
@@ -280,6 +357,30 @@ fileCnt: any = 0;
               {
                   "code": 20000006,
                   "En": "App Data Reset Successful",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 50000004,
+                  "En": "File not yet downloaded!",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 20000009,
+                  "En": "We have Internet Connection!",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 50000005,
+                  "En": "We Lost Internet Connection!",
+                  "Frn": "",
+                  "Dut": ""
+              },
+              {
+                  "code": 50000006,
+                  "En": "Internet Connection is Required!",
                   "Frn": "",
                   "Dut": ""
               }

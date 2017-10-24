@@ -35,7 +35,7 @@ headerIpt = {
     this.data = this.info.data[0];
     this.type = this.info.type;
     this.tit = this.type + "_nm";
-    this.title = this.data[this.tit];
+    this.title = this.data.system_nm;
     this.img = this.data.img;
     if(this.img.length){
       this.imgType = _.uniq(_.pluck(this.img, 'type'));
@@ -101,6 +101,10 @@ headerIpt = {
     .then((dataURL:string) => { 
       // console.log(dataURL);
       this.g.photoViewer.show(dataURL)
+    })
+    .catch((err: any) => {
+      console.log(err);
+      this.hc.setMsg(50000004);
     })
   }
 

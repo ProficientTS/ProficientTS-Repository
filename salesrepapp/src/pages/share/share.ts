@@ -111,7 +111,10 @@ review: any = "";
     console.log(type);
     console.log(url);
     if(type == "doc"){
-      this.document.viewDocument(this.g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options)
+      this.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options, undefined, undefined, undefined, (err) => {
+        console.log(err);
+        this.hc.setMsg(50000004);
+      })
     }
     else if(type == "img"){
       let path: any = url.split('/');
@@ -128,8 +131,8 @@ review: any = "";
         this.photoViewer.show(dataURL)
       })
       .catch((err: any) => {
-        console.log("Pic Err -------------");
         console.log(err);
+        this.hc.setMsg(50000004);
       })
     }
     else if(type == "video"){
