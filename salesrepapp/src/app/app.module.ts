@@ -32,6 +32,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { Network } from '@ionic-native/network';
 import { HeaderComponent } from '../pages/header/header.component';
 import { FileTransfer } from '@ionic-native/file-transfer';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -107,7 +108,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     Global,
     UniqueDeviceID,
     Network,
-    FileTransfer
+    FileTransfer,
+    InAppBrowser
   ]
 })
 export class AppModule {}

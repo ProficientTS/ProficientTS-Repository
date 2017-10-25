@@ -14,6 +14,7 @@ import { File, DirectoryEntry } from '@ionic-native/file';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 
 import { TranslateService } from '@ngx-translate/core';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 // import { Http } from '@angular/http';
 // import 'rxjs/add/operator/map';
 
@@ -54,10 +55,11 @@ fileCnt: any = 0;
     public photoViewer: PhotoViewer,
     public file: File,
     public transfer: FileTransfer,
-    public translate: TranslateService) {
+    public translate: TranslateService,
+    public iab: InAppBrowser) {
     console.log('Hello Global Provider');
     console.log(Nedb);
-    this.Network = this.network.type;
+    this.Network = (this.network.type !== null) ? true : false;
     if(localStorage.getItem('i18n') === null){
       translate.setDefaultLang('de');
       localStorage.setItem('i18n', 'de');
@@ -89,7 +91,7 @@ fileCnt: any = 0;
     // watch network for a disconnect
     this.disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       console.log('network was disconnected :-(');
-      this.Network = null;
+      this.Network = false;
     });
 
 
@@ -100,7 +102,7 @@ fileCnt: any = 0;
       // before we determine the connection type. Might need to wait.
       // prior to doing any api requests as well.
       setTimeout(() => {
-          this.Network = this.network.type;
+          this.Network = true;
           console.log('we got a net connection, woohoo!');
           console.log(this.Network)
       }, 3000);

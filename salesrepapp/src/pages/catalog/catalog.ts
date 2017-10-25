@@ -861,7 +861,7 @@ headerOpt: any;
     if(this.tabs.doctab){
       this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
         console.log(err);
-        this.hc.setMsg(50000004);
+        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url, '_system');
       })
     }
     else if(this.tabs.imgtab){
@@ -880,7 +880,7 @@ headerOpt: any;
       })
       .catch((err: any) => {
         console.log(err);
-        this.hc.setMsg(50000004);
+        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url);
       })
     }
     else if(this.tabs.vidtab){

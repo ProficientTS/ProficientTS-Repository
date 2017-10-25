@@ -58,7 +58,7 @@ export class LoginPage {
   }
 
   clickLogin() {
-    if(this.g.Network != null || !this.g.platform.is('cordova')){
+    if(this.g.Network || !this.g.platform.is('cordova')){
       if(this.email && this.pwd){
         this.ws.postCall("auth/", {
             email: this.email.toLowerCase(),

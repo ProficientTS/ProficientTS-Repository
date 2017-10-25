@@ -113,7 +113,7 @@ review: any = "";
     if(type == "doc"){
       this.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options, undefined, undefined, undefined, (err) => {
         console.log(err);
-        this.hc.setMsg(50000004);
+        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url, '_system');
       })
     }
     else if(type == "img"){
@@ -132,7 +132,7 @@ review: any = "";
       })
       .catch((err: any) => {
         console.log(err);
-        this.hc.setMsg(50000004);
+        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url);
       })
     }
     else if(type == "video"){
