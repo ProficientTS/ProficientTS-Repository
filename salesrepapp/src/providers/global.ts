@@ -58,8 +58,15 @@ fileCnt: any = 0;
     console.log('Hello Global Provider');
     console.log(Nedb);
     this.Network = this.network.type;
-    translate.setDefaultLang('de');
-    this.Lang = 'de';
+    if(localStorage.getItem('i18n') === null){
+      translate.setDefaultLang('de');
+      localStorage.setItem('i18n', 'de');
+      this.Lang = 'de';
+    }
+    else{
+      translate.setDefaultLang(localStorage.getItem('i18n'));
+      this.Lang = localStorage.getItem('i18n');
+    }
     this.fileTransfer = transfer.create();
     this.db = {};
     this.db.user = new Nedb({filename: './assets/database/user.db', autoload: true});
@@ -72,7 +79,7 @@ fileCnt: any = 0;
     this.db.fav = new Nedb({filename: './assets/database/favorites.db', autoload: true});
     this.db.recent = new Nedb({filename: './assets/database/recent.db', autoload: true});
     this.db.share = new Nedb({filename: './assets/database/share.db', autoload: true});
-    
+    // this.Network = true
     this.uid.get()
     .then((uuid: any) => {console.log(uuid); this.deviceId = uuid;})
     .catch((error: any) => this.deviceId = 'APP_ID_NO_CORDOVA');

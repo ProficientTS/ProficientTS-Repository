@@ -16,7 +16,7 @@
 <ion-content padding class="loginpage">
     <div>
         <select (change)="selectLang($event.target.value)"> Select Language
-            <option *ngFor="let l of lang" value="{{ l.val }}">
+            <option *ngFor="let l of lang" value="{{ l.val }}" [selected]="g.Lang === l.val">
                 {{ l.desc }}
             </option>
         </select>

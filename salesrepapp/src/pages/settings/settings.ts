@@ -28,6 +28,10 @@ lang = [
     {
       val: 'en',
       desc: 'English'
+    },
+    {
+      val: 'es',
+      desc: 'Español'
     }
   ];
   constructor(public navCtrl: NavController,
@@ -119,6 +123,7 @@ lang = [
   selectLang(lang: any){
     console.log(lang);
     this.g.translate.use(lang);
+    localStorage.setItem('i18n', lang);
     this.g.Lang = lang;
   }
 

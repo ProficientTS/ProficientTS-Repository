@@ -69,9 +69,7 @@ headerOpt: any;
     console.log(Nedb);
     console.dir(Nedb);
     console.log(this.g.deviceId)
-    console.log(this.g.Network)
     this.headerOpt = this.navParams.get('header');
-    // g.Network=true;
   }
 
   ngOnInit() {
@@ -228,7 +226,7 @@ headerOpt: any;
       case 'techsys':
         this.type = "technique";
         this.tab = true;
-        this.itemTapped({Name: this.headerOpt.hdrData});
+        this.itemTapped({id: this.headerOpt.hdrData});
       break;
     }
     console.log(typ);
@@ -246,7 +244,6 @@ headerOpt: any;
     this.display = true;
     this.tab = true;
     this.typList = false;
-    console.log(this.g.Network)
     this.setTab('systab');
     this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_id: 1}, 0, 0)
       .then((docs: any) => {
@@ -302,6 +299,7 @@ headerOpt: any;
           if(len){
             _.each(docs, function(element, i){
               element["Name"] = element.technique_nm;
+              element["id"] = element.technique_id;
               if(i == (len-1)){
                 that.listItem = docs;
                 that.techlen = docs.length;
@@ -484,7 +482,9 @@ headerOpt: any;
               _.each(docs, function(element, i){
                 element["Name"] = element[that.type + '_nm'];
                 if(that.type != 'technique')
-                element["ID"] = element[that.type + '_id'];
+                  element["ID"] = element[that.type + '_id'];
+                else
+                  element["id"] = element[that.type + '_id'];
                 if(that.type != 'technique' && element.img.length){
                   element["url"] = element.img[0].url;
                 }
@@ -689,12 +689,20 @@ headerOpt: any;
     if(this.type === "technique" && item.ID === undefined){
       this.setTab('systab');
       this.type = 'system';
-      this.g.findQSSL(this.g.db.system, { "technique.technique_nm": {$in: [item.Name]}, voidfl : {$ne : 'Y'} },{ system_nm: 1}, 0, 0)
+      var vector = {};
+      vector[this.g.Lang + '.technique.technique_id'] = {$in: [item.id]}
+      console.log("Vector", vector);
+      this.g.findQSSL(this.g.db.system, { $or: [{"technique.technique_id": {$in: [item.id]}}, vector], voidfl : {$ne : 'Y'} },{ system_nm: 1}, 0, 0)
         .then((docs: any) => {
             console.log(docs);
             var len = docs.length;
             if(len){
               _.each(docs, function(element, i){
+                if(element[that.g.Lang]){
+                  for(var key in element[that.g.Lang]){
+                    element[key] = element[that.g.Lang][key];
+                  }
+                }
                 element["Name"] = element.system_nm;
                 element["ID"] = element.system_id;
                 if(element.img.length){

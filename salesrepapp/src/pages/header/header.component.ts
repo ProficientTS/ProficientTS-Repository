@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { NavController, NavParams, Navbar, App } from 'ionic-angular';
 
 import { Global } from '../../providers/global';
@@ -12,7 +12,7 @@ import * as _ from 'underscore';
   selector: 'pts-header',
   templateUrl: 'header.html',
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @ViewChild(Navbar) navbar: Navbar
   @Input() headerIpt: any = {
     catalogfacility: false,
@@ -34,12 +34,34 @@ menu: boolean = false;
     this.tabBarElement = document.querySelector('#product-root-tab div:first-child');
     console.log("tabBarElement")
     console.log(this.tabBarElement);
+    // watch network for a disconnect
+    g.disconnectSubscription = g.network.onDisconnect().subscribe(() => {
+      this.setMsg(50000005);
+    });
+
+    // watch network for a connection
+    g.connectSubscription = g.network.onConnect().subscribe(() => {
+      console.log('network connected!');
+      // We just got a connection but we need to wait briefly
+      // before we determine the connection type. Might need to wait.
+      // prior to doing any api requests as well.
+      setTimeout(() => {
+          this.setMsg(20000009);
+      }, 3000);
+    });
   }
 
   ngOnInit() {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     this.setShareCount();
+  }
+
+  ngOnDestroy() {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.g.disconnectSubscription.unsubscribe();
+    this.g.connectSubscription.unsubscribe();
   }
 
   setMsg(code: any){

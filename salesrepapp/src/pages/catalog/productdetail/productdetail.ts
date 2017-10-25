@@ -68,13 +68,13 @@ headerIpt = {
   showTechnique(){
     let techs = [];
     _.each(this.data.technique, (v) => {
-      techs.push({Name: v.technique_nm})
+      techs.push({Name: v.technique_nm, id: v.technique_id})
     })
     let modal: Modal = this.modalCtrl.create(ModalPage, { data: techs, title: "Techniques Used" });
     modal.onDidDismiss((data: any) => {
       console.log("Modal Reply", data);
       if(data != null)
-      this.listTechniqueSys(data.Name)
+      this.listTechniqueSys(data.id)
     });
     modal.present();
   }

@@ -22,6 +22,10 @@ export class LoginPage {
     {
       val: 'en',
       desc: 'English'
+    },
+    {
+      val: 'es',
+      desc: 'Español'
     }
   ]
 
@@ -33,6 +37,7 @@ export class LoginPage {
   selectLang(lang: any){
     console.log(lang);
     this.g.translate.use(lang);
+    localStorage.setItem('i18n', lang);
     this.g.Lang = lang;
   }
 
@@ -53,16 +58,21 @@ export class LoginPage {
   }
 
   clickLogin() {
-    if(this.email && this.pwd){
-      this.ws.postCall("auth/", {
-          email: this.email.toLowerCase(),
-          password: this.pwd
-      }).then(data => {
-        this.fnhandlesignin(data);
-      });
+    if(this.g.Network != null || !this.g.platform.is('cordova')){
+      if(this.email && this.pwd){
+        this.ws.postCall("auth/", {
+            email: this.email.toLowerCase(),
+            password: this.pwd
+        }).then(data => {
+          this.fnhandlesignin(data);
+        });
+      }
+      else{
+        this.msg = 'Please provide all Login details'
+      }
     }
     else{
-      this.msg = 'Please provide all Login details'
+      this.msg = 'Network Connection is required to Login!'
     }
   }
 
