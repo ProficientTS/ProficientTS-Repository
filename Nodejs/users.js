@@ -4,7 +4,16 @@ var MongoClient = require('mongodb').MongoClient,
     jwt = require('jsonwebtoken');
 
 var client = nodemailer.createTransport({
-    service: 'Godaddy',
+    // service: 'Godaddy',
+    // auth: {
+    //     user: 'christson@proficientts.com',
+    //     pass: 'Fl)w3rd3nv3r'
+    // }
+    host: 'mail.proficientts.com',
+    port: 26,
+    ignoreTLS: true,
+    tls: { rejectUnauthorized: false },
+    secure: false,
     auth: {
         user: 'christson@proficientts.com',
         pass: 'Fl)w3rd3nv3r'

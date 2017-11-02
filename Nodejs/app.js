@@ -1,16 +1,13 @@
 "use strict";
 var express = require('express'),
     bodyParser = require('body-parser'),
-    MongoClient = require('mongodb').MongoClient,
+    mongodb = require('mongodb'),
+    MongoClient = mongodb.MongoClient,
     assert = require('assert'),
     UserDAO = require('./users').UserDAO,
     ItemDAO = require('./data').ItemDAO,
     jwt = require('jsonwebtoken'),
     fs = require('fs');
-var MongoOplog = require('mongo-oplog');
-
-const oplog = MongoOplog('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', { ns: 'cat.*' })
-
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,13 +16,40 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 process.env.SECRET_KEY = "IamProficient";
 process.env.ServerURL = "http://192.169.169.6:3000/filesystem/";
+var streamUpdates = false;
 
-MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', function(err, db) {
+MongoClient.connect('mongodb://cjchrist777:$cantransformya7@proficient-shard-00-00-kzsf6.mongodb.net:27017,proficient-shard-00-01-kzsf6.mongodb.net:27017,proficient-shard-00-02-kzsf6.mongodb.net:27017/catalog?ssl=true&replicaSet=Proficient-shard-0&authSource=admin', function(err, db) {
     "use strict";
 
     assert.equal(null, err);
-    console.log("Successfully connected to MongoDB.");
+    console.log("Successfully connected to MongoDB Catalog.");
+    MongoClient.connect('mongodb://cjchrist777:$cantransformya7@proficient-shard-00-00-kzsf6.mongodb.net:27017,proficient-shard-00-01-kzsf6.mongodb.net:27017,proficient-shard-00-02-kzsf6.mongodb.net:27017/local?ssl=true&replicaSet=Proficient-shard-0&authSource=admin', function(errL, dbL) {
+        "use strict";
 
+        assert.equal(null, err);
+        console.log("Successfully connected to MongoDB Local.");
+        var stream = dbL.collection('oplog.rs').find({ ns: { $regex: '^catalog.' }, ts: { "$gte": mongodb.Timestamp(1, Math.floor(Date.now() / 1000)) } }, {
+            tailable: true,
+            awaitData: true,
+            noCursorTimeout: true,
+            numberOfRetries: 100000
+        }).stream();
+        stream.on('data', (dataL) => {
+            console.log('dataL')
+            console.log(dataL);
+            //update
+            console.log("Operations -------------------")
+                // console.log(data);
+            if (dataL.ns == 'catalog.part' ||
+                dataL.ns == 'catalog.set' ||
+                dataL.ns == 'catalog.system' ||
+                dataL.ns == 'catalog.technique' ||
+                dataL.ns == 'catalog.file') {
+                console.log(dataL);
+                fnTrigger(dataL.op, (dataL.o2) ? dataL.o2 : dataL.o, dataL.ns.replace('catalog.', ''));
+            }
+        })
+    });
     var users = new UserDAO(db);
     var data = new ItemDAO(db);
 
@@ -44,7 +68,7 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
                 users.updateUserToken(userInfo, token, function(userTokenUpdate) {
                     res.json({
                         success: true,
-                        msg: 'Valid Account!',
+                        msg: 'Valid Credentials!',
                         data: user,
                         token: token
                     });
@@ -53,7 +77,7 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
             } else {
                 res.json({
                     success: false,
-                    msg: 'Invalid Account!'
+                    msg: 'Invalid Credentials!'
                 });
             }
         });
@@ -397,7 +421,7 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
             } else {
                 res.json({
                     success: false,
-                    msg: 'Invalid Account or Password!'
+                    msg: 'Invalid Credentials!'
                 });
             }
         });
@@ -428,22 +452,7 @@ MongoClient.connect('mongodb://cj777:cjchrist777@132.148.66.36:27017/cat', funct
     app.use('/', router);
 
     // Start the server listening
-    var server = app.listen(3000, "0.0.0.0");
-
-    oplog.tail();
-
-    oplog.on('op', data => {
-        console.log("Operations -------------------")
-            // console.log(data);
-        if (data.ns == 'cat.part' ||
-            data.ns == 'cat.set' ||
-            data.ns == 'cat.system' ||
-            data.ns == 'cat.technique' ||
-            data.ns == 'cat.file') {
-            console.log(data);
-            fnTrigger(data.op, (data.o2) ? data.o2 : data.o, data.ns.replace('cat.', ''));
-        }
-    });
+    var server = app.listen(3000);
 
     function fnTrigger(op, d, type) {
         console.log("Catalog Trigger --------------");

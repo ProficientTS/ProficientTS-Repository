@@ -16,7 +16,6 @@
         "ionic": "^3.0.0-rc.2",
         "jsonwebtoken": "^7.3.0",
         "kerberos": "0.0.23",
-        "mongo-oplog": "^1.0.1",
         "mongodb": "^2.2.29",
         "nodemailer": "^4.0.1",
         "underscore": "^1.8.3"
