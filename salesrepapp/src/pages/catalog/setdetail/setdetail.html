@@ -25,7 +25,7 @@
                     </select>
                 </div>
                 <div id="div-set-parts-preview-container">
-                    <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + partURL : g.file.dataDirectory + 'ProficientTS Test Folder/' + partURL }}">
+                    <img src="{{ g.Network===true ? g.server + partURL : g.file.dataDirectory + 'ProficientTS Test Folder/' + partURL }}">
                 </div>
                 <div id="div-set-parts-list-container">
                     <ion-list>
@@ -48,7 +48,7 @@
                 <div class="product-image">
                     <ion-slides class="image-slider" slidesPerView="2">
                         <ion-slide *ngFor="let i of img">
-                            <img src="{{ g.Network === true ? 'http://192.169.169.6:3000/filesystem/' + i.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + i.url }}" class="thumb-img" imageViewer/>
+                            <img src="{{ g.Network === true ? g.server + i.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + i.url }}" class="thumb-img" imageViewer/>
                         </ion-slide>
                     </ion-slides>
                 </div>

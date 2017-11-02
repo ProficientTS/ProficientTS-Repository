@@ -129,7 +129,7 @@ lang = [
 
   freshsync(){
     var that = this;
-    this.g.findQSSL(this.g.db.devicesync, {email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, {deviceID: 1}, 0, 0)
+    this.g.findQSSL(this.g.db.devicesync, {}, {deviceID: 1}, 0, 0)
       .then((doc: any) => {
         console.log(doc);
         if(doc.length == 0){
@@ -227,7 +227,7 @@ lang = [
 
   getupdates(){
     var that = this;
-    this.g.findQSSL(this.g.db.devicesync, {email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, {deviceID: 1}, 0, 0)
+    this.g.findQSSL(this.g.db.devicesync, {}, {deviceID: 1}, 0, 0)
       .then((doc: any) => {
         if(doc.length){
           that.ws.postCall('sync', {email: localStorage.getItem('email'), update: 'Y', deviceID: that.g.deviceId})
@@ -420,7 +420,7 @@ lang = [
    
   logOut(){
     console.log("logOut ========")
-    localStorage.clear();
+    localStorage.removeItem('token');
     this.app.getRootNav().setRoot(LoginPage);
   }
 

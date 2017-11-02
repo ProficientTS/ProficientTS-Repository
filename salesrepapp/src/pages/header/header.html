@@ -32,7 +32,7 @@
     <div id="div-video-full" *ngIf="playvideo">
         <ion-icon name="arrow-back" (click)="closeVid()"> Back</ion-icon>
         <video controls>
-            <source src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + videosrc : g.file.dataDirectory + 'ProficientTS Test Folder/' + videosrc }}" type="video/mp4">
+            <source src="{{ g.Network===true ? g.server + videosrc : g.file.dataDirectory + 'ProficientTS Test Folder/' + videosrc }}" type="video/mp4">
         </video>
     </div>
 </ion-header>

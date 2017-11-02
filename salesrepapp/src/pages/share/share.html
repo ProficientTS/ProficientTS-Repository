@@ -16,7 +16,7 @@
                     <ion-input [(ngModel)]="ccaddr" (keypress)="setCCAddr($event)"></ion-input>
                 </div>
                 <textarea placeholder="...type in your review" [(ngModel)]="review"></textarea>
-                <button class="ptsMarginR15p" (click)="sendMail()">
+                <button class="ptsMarginR15p" (click)="sendMail()" [disabled]='!sendBtn'>
                     Mail
                 </button>
             </div>

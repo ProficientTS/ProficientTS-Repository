@@ -92,7 +92,7 @@ headerIpt = {
     console.log(url);
     this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
       console.log(err);
-      this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url, '_system');
+      this.g.iab.create(this.g.server + url, '_system');
     })
   }
 

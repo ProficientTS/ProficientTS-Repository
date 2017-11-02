@@ -16,7 +16,7 @@
     <div *ngIf="!sync">
         <div class="ptsDMiddle">
             <select (change)="onChange($event.target.value)" #select>
-                <option value = "key">Keyword</option>
+                <option value = "key" [selected] = "type == 'key'">Keyword</option>
                 <option value = "part" >Part</option>
                 <option value = "set">Set</option>
                 <option value = "system">System</option>
@@ -82,7 +82,7 @@
                         </ion-card-content>
                     </div>
                     <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                        <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
+                        <img src="{{ g.Network===true ? g.server + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
                     </div>
                 </ion-card>
             </div>
@@ -96,7 +96,7 @@
                         </ion-card-content>
                     </div>
                     <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                        <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
+                        <img src="{{ g.Network===true ? g.server + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
                     </div>
                 </ion-card>
             </div>
@@ -110,7 +110,7 @@
                         </ion-card-content>
                     </div>
                     <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                        <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
+                        <img src="{{ g.Network===true ? g.server + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
                     </div>
                 </ion-card>
             </div>
@@ -128,7 +128,7 @@
                 </ion-card-content>
             </div>
             <div class="ptsW19pr ptsDipsIB ptsVerticalTop">
-                <img src="{{ g.Network===true ? 'http://192.169.169.6:3000/filesystem/' + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
+                <img src="{{ g.Network===true ? g.server + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" *ngIf="item.url">
             </div>
         </ion-card>
     </ion-list>

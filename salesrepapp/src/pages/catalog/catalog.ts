@@ -77,7 +77,7 @@ headerOpt: any;
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     var that = this;
-     this.g.findQSSL(this.g.db.devicesync, {email: localStorage.getItem('email'), deviceID: this.g.deviceId, voidfl : {$ne : 'Y'}}, {deviceID: 1}, 0, 0)
+     this.g.findQSSL(this.g.db.devicesync, {}, {deviceID: 1}, 0, 0)
       .then((docs: any) => {
         if(docs.length){
           this.sync = false;
@@ -99,16 +99,99 @@ headerOpt: any;
   }
 
   freshsync(){
-    var that = this;
-    that.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: that.g.deviceId})
-      .then((data: any) => {
-        if(data && data.msg == "InValid Credential"){
-          that.logOut();
-        }
+    this.g.removeQ(this.g.db.part, {}, (status, numRemoved) => {
+      if(status)
+        console.log("Part Reset Successful");
+      else{
+        console.log("Part Reset Failed");
+        console.log(numRemoved);
+      }
+      this.g.removeQ(this.g.db.set, {}, (status, numRemoved) => {
+        if(status)
+          console.log("Set Reset Successful");
         else{
-          that.syncService(data);
+          console.log("Set Reset Failed");
+          console.log(numRemoved);
         }
-      });
+        this.g.removeQ(this.g.db.system, {}, (status, numRemoved) => {
+          if(status)
+            console.log("System Reset Successful");
+          else{
+            console.log("System Reset Failed");
+            console.log(numRemoved);
+          }
+          this.g.removeQ(this.g.db.technique, {}, (status, numRemoved) => {
+            if(status)
+              console.log("technique Reset Successful");
+            else{
+              console.log("technique Reset Failed");
+              console.log(numRemoved);
+            }
+            this.g.removeQ(this.g.db.file, {}, (status, numRemoved) => {
+              if(status)
+                console.log("file Reset Successful");
+              else{
+                console.log("file Reset Failed");
+                console.log(numRemoved);
+              }
+              this.g.removeQ(this.g.db.fav, {}, (status, numRemoved) => {
+                if(status)
+                  console.log("fav Reset Successful");
+                else{
+                  console.log("fav Reset Failed");
+                  console.log(numRemoved);
+                }
+                this.g.removeQ(this.g.db.recent, {}, (status, numRemoved) => {
+                  if(status)
+                    console.log("recent Reset Successful");
+                  else{
+                    console.log("recent Reset Failed");
+                    console.log(numRemoved);
+                  }
+                  this.g.removeQ(this.g.db.share, {}, (status, numRemoved) => {
+                    if(status)
+                      console.log("share Reset Successful");
+                    else{
+                      console.log("share Reset Failed");
+                      console.log(numRemoved);
+                    }
+                    this.g.removeQ(this.g.db.devicesync, {}, (status, numRemoved) => {
+                      if(status)
+                        console.log("devicesync Reset Successful");
+                      else{
+                        console.log("devicesync Reset Failed");
+                        console.log(numRemoved);
+                      }
+                      if(this.g.platform.is('cordova')){
+                        this.g.file.removeRecursively(this.g.file.dataDirectory, 'ProficientTS Test Folder')
+                        .then((success: any) => {
+                          console.log("Directory Removed");
+                          console.log(success);
+                        })
+                        .catch((err: any) => {
+                          console.log("Error Removing Directory");
+                          console.log(err);
+                        })
+                      }
+                      this.ws.postCall('sync', {email: localStorage.getItem('email'), deviceID: this.g.deviceId})
+                      .then((data: any) => {
+                        if(data && data.msg == "InValid Credential"){
+                          this.logOut();
+                        }
+                        else{
+                          this.syncService(data);
+                        }
+                      });
+                    })
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
+    })
+    
     
   }
 
@@ -157,7 +240,7 @@ headerOpt: any;
                 else{
                   console.log("Insert Failed");
                 }
-                this.g.insertQ(this.g.db.devicesync, {fullsync: "Y", email: localStorage.getItem('email'), deviceID: that.g.deviceId}, (devicesyncstatus, devicesync) => {
+                this.g.insertQ(this.g.db.devicesync, {}, (devicesyncstatus, devicesync) => {
                   if(devicesyncstatus){
                     console.log("devicesyncs Inserted Successfully");
                     console.log(devicesync);
@@ -182,6 +265,8 @@ headerOpt: any;
   ionViewWillEnter(){
     console.log('ionViewWillEnter CatalogPage');
     this.listItem = [];
+    this.type = 'key';
+    this.placeH = 'Keyword';
     this.display = false;
     this.tab = false;
     this.txt = "";
@@ -234,7 +319,7 @@ headerOpt: any;
 
   logOut(){
     console.log("logOut ========")
-    localStorage.clear();
+    localStorage.removeItem('token');
     this.app.getRootNav().setRoot(LoginPage);
   }
 
@@ -861,7 +946,7 @@ headerOpt: any;
     if(this.tabs.doctab){
       this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
         console.log(err);
-        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url, '_system');
+        this.g.iab.create(this.g.server + url, '_system');
       })
     }
     else if(this.tabs.imgtab){
@@ -880,7 +965,7 @@ headerOpt: any;
       })
       .catch((err: any) => {
         console.log(err);
-        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url);
+        this.g.iab.create(this.g.server + url);
       })
     }
     else if(this.tabs.vidtab){

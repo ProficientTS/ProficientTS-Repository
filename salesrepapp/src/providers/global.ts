@@ -39,6 +39,7 @@ Lang: any = "en";
 fileTransfer: FileTransferObject;
 totalFileCnt: any = 0;
 // fileData: any = [];
+server: any = "https://proficienttsnode.herokuapp.com/filesystem/";
 fileCnt: any = 0;
   ngOnDestroy() {
     //Called once, before the instance is destroyed.
@@ -59,6 +60,7 @@ fileCnt: any = 0;
     public iab: InAppBrowser) {
     console.log('Hello Global Provider');
     console.log(Nedb);
+    console.log("this.network.type", this.network.type)
     this.Network = (this.network.type !== null) ? true : false;
     if(localStorage.getItem('i18n') === null){
       translate.setDefaultLang('de');
@@ -81,7 +83,7 @@ fileCnt: any = 0;
     this.db.fav = new Nedb({filename: './assets/database/favorites.db', autoload: true});
     this.db.recent = new Nedb({filename: './assets/database/recent.db', autoload: true});
     this.db.share = new Nedb({filename: './assets/database/share.db', autoload: true});
-    // this.Network = true
+    if(!this.platform.is('cordova')) this.Network = true; //defaulting browser opening as online for develpoment purspose
     this.uid.get()
     .then((uuid: any) => {console.log(uuid); this.deviceId = uuid;})
     .catch((error: any) => this.deviceId = 'APP_ID_NO_CORDOVA');
@@ -288,7 +290,7 @@ fileCnt: any = 0;
   download(path: any, callback: any) {
     // console.log(path);
     console.log(this.file.dataDirectory)
-    const url = 'http://192.169.169.6:3000/filesystem/' + path;
+    const url = this.server + path;
     this.fileTransfer.download(encodeURI(url), this.file.dataDirectory + 'ProficientTS Test Folder/' + path).then((entry) => {
       console.log('download complete: ' + entry.toURL());
       this.complete(callback);

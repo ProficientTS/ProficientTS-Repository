@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { CatalogPage } from '../catalog/catalog';
 import { WebserviceProvider } from '../../providers/webservice/webservice';
 
@@ -29,7 +29,7 @@ export class LoginPage {
     }
   ]
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
+  constructor(public navCtrl: NavController, public navParams: NavParams, private alertCntrl: AlertController,
   private ws: WebserviceProvider,
   private g: Global) {
   }
@@ -58,7 +58,8 @@ export class LoginPage {
   }
 
   clickLogin() {
-    if(this.g.Network || !this.g.platform.is('cordova')){
+     var accountID = localStorage.getItem('email');
+    if(this.g.Network){
       if(this.email && this.pwd){
         this.ws.postCall("auth/", {
             email: this.email.toLowerCase(),
@@ -70,6 +71,30 @@ export class LoginPage {
       else{
         this.msg = 'Please provide all Login details'
       }
+    }
+    else if (this.email == accountID){
+      let alert = this.alertCntrl.create({
+        title: 'Logging in Offline',
+        message: 'Are you sure you want to log in offline? You will be kicked out the next time you use a network required feature',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            }
+          },
+          {
+            text: 'Login anyway!',
+            handler: () => {
+              console.log('Buy clicked');
+              this.navCtrl.setRoot(CatalogPage);
+              this.msg = this.email = this.pwd = '';
+            }
+          }
+        ]
+      })
+      alert.present();
     }
     else{
       this.msg = 'Network Connection is required to Login!'

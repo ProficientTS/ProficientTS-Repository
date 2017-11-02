@@ -22,7 +22,7 @@ export class WebserviceProvider {
       if(obj.token === undefined || obj.token.length < 1){
         obj['token'] = localStorage.getItem('token');
       }
-      that.http.post('http://192.169.169.6:3000/' + url, obj)
+      that.http.post('https://proficienttsnode.herokuapp.com/' + url, obj)
       .map(res => res.json())
       .subscribe((data: any) => {
         if(data && data.msg == "Hello, we are {P}roficient. Please provide the right Credentials at the right Place ;)"){

@@ -26,6 +26,7 @@ shareD = {
   video: [],
   doc: []
 };
+sendBtn: boolean = true;
 options: DocumentViewerOptions = {
   title: 'Proficient Documents',
   openWith: {
@@ -113,7 +114,7 @@ review: any = "";
     if(type == "doc"){
       this.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options, undefined, undefined, undefined, (err) => {
         console.log(err);
-        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url, '_system');
+        this.g.iab.create(this.g.server + url, '_system');
       })
     }
     else if(type == "img"){
@@ -132,7 +133,7 @@ review: any = "";
       })
       .catch((err: any) => {
         console.log(err);
-        this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url);
+        this.g.iab.create(this.g.server + url);
       })
     }
     else if(type == "video"){
@@ -144,19 +145,21 @@ review: any = "";
     console.log(item);
     console.log(index);
     var that = this;
-    let typ = (type == "video") ? "vid" : type
-    console.log(typ)
-    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: item.url, title: item.title }, {$set: {share: false}}, function(rst){
-      console.log(rst);
-      if(rst){
-        that.shareD[type].splice(index, 1);
-      }
-    });
+    if(this.sendBtn){
+      let typ = (type == "video") ? "vid" : type
+      console.log(typ)
+      this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: item.url, title: item.title }, {$set: {share: false}}, function(rst){
+        console.log(rst);
+        if(rst){
+          that.shareD[type].splice(index, 1);
+        }
+      });
+    }
   }
 
   logOut(){
     console.log("logOut ========")
-    localStorage.clear();
+    localStorage.removeItem('token');
     this.app.getRootNav().setRoot(LoginPage);
   }
 
@@ -166,6 +169,8 @@ review: any = "";
       console.log("Provide To addr");
       return;
     }
+    this.hc.menu = true;
+    this.sendBtn = false;
     var shareData = JSON.parse(JSON.stringify(this.shareD));
     this.ws.postCall('sharemail', {
       data: shareData,
@@ -176,6 +181,8 @@ review: any = "";
     })
     .then((data: any) => {
       console.log(data);
+      this.hc.menu = false;
+      this.sendBtn = true;
       if(data && data.msg == "InValid Credential"){
         this.logOut();
       }
@@ -200,6 +207,9 @@ review: any = "";
       }
     }).catch((err: any) => {
       console.log(err);
+      this.hc.setMsg(50000003);
+      this.hc.menu = false;
+      this.sendBtn = true;
     });
   }
 

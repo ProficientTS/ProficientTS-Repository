@@ -104,7 +104,7 @@ headerIpt = {
     })
     .catch((err: any) => {
       console.log(err);
-      this.g.iab.create('http://192.169.169.6:3000/filesystem/' + url);
+      this.g.iab.create(this.g.server + url);
     })
   }
 

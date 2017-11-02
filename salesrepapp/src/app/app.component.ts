@@ -48,7 +48,9 @@ export class MyApp {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       // localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVzaGNvbEBwcm9maWNpZW50dHMuY29tIiwicGFzc3dvcmQiOiJKZXN1cyIsInRva2VuIjpudWxsLCJpYXQiOjE1MDc5NzA3NTksImV4cCI6MTUwODE0MzU1OX0.FGuamGAgCKTk_yTXg9Gd_TLe9kdF4fWHSOlXuUZz7Ok")
-      this.rootPage = (localStorage.getItem('token') !== null) ? CatalogPage : LoginPage;
+      setTimeout(()=>{
+        this.rootPage = (localStorage.getItem('token') !== null) ? CatalogPage : LoginPage;
+      }, 3000);
     });
   }
 

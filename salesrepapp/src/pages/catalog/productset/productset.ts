@@ -158,7 +158,7 @@ headerIpt = {
 
   logOut(){
     console.log("logOut ========")
-    localStorage.clear();
+    localStorage.removeItem('token');
     this.app.getRootNav().setRoot(LoginPage);
   }
 
