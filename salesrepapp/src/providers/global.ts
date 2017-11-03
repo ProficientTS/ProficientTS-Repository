@@ -35,6 +35,7 @@ connectSubscription: any;
 docVOptions: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
+reset: boolean = false;
 Lang: any = "en";
 fileTransfer: FileTransferObject;
 totalFileCnt: any = 0;

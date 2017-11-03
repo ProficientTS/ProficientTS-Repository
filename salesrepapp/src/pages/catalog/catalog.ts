@@ -79,10 +79,13 @@ headerOpt: any;
     var that = this;
      this.g.findQSSL(this.g.db.devicesync, {}, {deviceID: 1}, 0, 0)
       .then((docs: any) => {
-        if(docs.length){
+        if(docs.length && !this.g.reset){
           this.sync = false;
         }
         else{
+          if(this.g.reset){
+            this.g.reset = false;
+          }
           this.sync = true;
           this.hc.menu = true;
           this.hc.setMsg(10000002);
@@ -825,7 +828,6 @@ headerOpt: any;
           typ = 'set';
         }
       }
-      var that = this;
       var query = {voidfl : {$ne : 'Y'}};
       query[typ + '_id'] = item.ID;
       

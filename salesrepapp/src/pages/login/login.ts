@@ -65,7 +65,7 @@ export class LoginPage {
             email: this.email.toLowerCase(),
             password: this.pwd
         }).then(data => {
-          this.fnhandlesignin(data);
+          this.fnhandlesignin(data, accountID);
         });
       }
       else{
@@ -101,12 +101,15 @@ export class LoginPage {
     }
   }
 
-  fnhandlesignin(data) {
+  fnhandlesignin(data, oldAccntID) {
     console.log(data);
     if (data.success) {
       localStorage.setItem('token', data.token);
       console.log(data.data[0].email.split('@')[0])
       localStorage.setItem('email', data.data[0].email);
+      if(oldAccntID !== null && oldAccntID != data.data[0].email){ // Login as different user
+        this.g.reset = true;
+      }
       localStorage.setItem('user', data.data[0].email.split('@')[0]);
       this.navCtrl.setRoot(CatalogPage);
       this.msg = this.email = this.pwd = '';
