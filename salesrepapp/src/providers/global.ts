@@ -35,7 +35,9 @@ connectSubscription: any;
 docVOptions: DocumentViewerOptions = {
   title: 'Proficient Documents'
 };
+split: boolean = false;
 reset: boolean = false;
+userInfo:any;
 Lang: any = "en";
 fileTransfer: FileTransferObject;
 totalFileCnt: any = 0;
@@ -62,6 +64,9 @@ fileCnt: any = 0;
     console.log('Hello Global Provider');
     console.log(Nedb);
     console.log("this.network.type", this.network.type)
+    if(localStorage.getItem('userInfo') !== null){
+      this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+    }
     this.Network = (this.network.type !== null) ? true : false;
     if(localStorage.getItem('i18n') === null){
       translate.setDefaultLang('de');

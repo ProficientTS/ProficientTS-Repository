@@ -1,38 +1,64 @@
 <ion-header>
 
     <ion-navbar transparent no-border [ngClass]="{'force-back-button' : back}" class="ionnavbar">
-        <button ion-button icon-only menuToggle [ngClass]="{'force-menu-button' : menu, 'force-menu-button-show': !menu}">
+        <!-- <button ion-button icon-only menuToggle [ngClass]="{'force-menu-button' : menu, 'force-menu-button-show': !menu}">
             <ion-icon name="menu"></ion-icon>
-        </button>
+        </button> -->
         <ion-title>{{headerIpt.title? headerIpt.title : "Catalog"}}</ion-title>
         <ion-buttons end [ngClass]="{'force-menu-button' : menu}">
-            <button *ngIf="headerIpt.shareCnt !== undefined" ion-button icon-only (click)="openSharePage()">
+            <!-- <button *ngIf="headerIpt.shareCnt !== undefined" ion-button icon-only (click)="openSharePage()">
                 <ion-icon name="share-alt" ></ion-icon>  ({{headerIpt.shareCnt? headerIpt.shareCnt : 0}})
-            </button>
+            </button> -->
+            <div id="div-hdr-user-img" (click)="toggleUserMenu = !toggleUserMenu">
+                <img src="assets/image/user.png">
+            </div>
+
         </ion-buttons>
 
     </ion-navbar>
+    <div id="div-hdr-UserMenu" *ngIf="toggleUserMenu">
+        <ul>
+            <li>{{ g.userInfo?.username }}</li>
+            <li (click)="openSharePage()">To Share
+                <ion-icon name="share-alt"></ion-icon> ({{headerIpt.shareCnt? headerIpt.shareCnt : 0}})</li>
+            <li class="li-logout" (click)="logout()">Logout</li>
+        </ul>
+    </div>
     <div class="notification-bar" [ngStyle]="{backgroundColor: color, color: font}">{{msg}}</div>
 
     <div *ngIf="headerIpt.catalogfacility" class="catalog-facility-bar ptsDMiddle">
-        <input placeholder="Search by Criteria" class="search-text" (click)="goToCatalog('search')">
-        <div class="pts-button catalog-search-button" (click)="goToCatalog('product')">
+        <input type="text" class="search-text" (click)="goToCatalog('search', select.value)">
+        <select class="pts-button" #select>
+            <option value = "key">Keywords</option>
+            <option value = "part" >Part</option>
+            <option value = "set">Set</option>
+            <option value = "system">System</option>
+            <option value = "technique">Technique</option>
+        </select>
+        <div class="pts-button" (click)="goToCatalog('product')">
             Product
         </div>
-        <div class="pts-button catalog-search-button" (click)="goToCatalog('approach')">
+        <div class="pts-button" (click)="goToCatalog('technique')">
             Approach
         </div>
-        <div class="pts-button catalog-search-button" (click)="goToCatalog('favorites')">
+        <div class="pts-button" (click)="goToCatalog('favorites')">
             Favorites
         </div>
-        <div class="pts-button catalog-search-button" (click)="goToCatalog('recent')">
+        <div class="pts-button" (click)="goToCatalog('recent')">
             Recent
         </div>
     </div>
-    <div id="div-video-full" *ngIf="playvideo">
+    <!-- <div id="div-video-full" *ngIf="playvideo">
         <ion-icon name="arrow-back" (click)="closeVid()"> Back</ion-icon>
         <video controls>
             <source src="{{ g.Network===true ? g.server + videosrc : g.file.dataDirectory + 'ProficientTS Test Folder/' + videosrc }}" type="video/mp4">
         </video>
-    </div>
+    </div> -->
 </ion-header>
+
+<ng-template #initial>
+    <div id="div-hdr-user-initial">E</div>
+</ng-template>
+
+
+<!-- *ngIf="userimg; else initial"  -->

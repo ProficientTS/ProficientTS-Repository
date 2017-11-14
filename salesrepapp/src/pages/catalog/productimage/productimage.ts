@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Modal, ModalController } from 'ionic-angular';
 
 import { Global } from '../../../providers/global';
 
 import * as _ from 'underscore';
 
 import { HeaderComponent } from '../../header/header.component';
+import { ImgCntrlPage } from '../../imgCntrl/imgCntrl';
 
 @Component({
   selector: 'page-productimage',
@@ -27,7 +28,7 @@ headerIpt = {
   shareCnt: 0
 }
   constructor(public navCtrl: NavController, public navParams: NavParams,
-  private g: Global
+  private g: Global, private modalCtrl: ModalController
   ) {
     console.log('ProductImagePage IN----------------------')
     console.log(navParams.data);
@@ -74,6 +75,19 @@ headerIpt = {
     })
     .catch((err)=> console.log(err));
 
+    this.g.findQ(this.g.db.fav, {accountID: localStorage.getItem('email'), type: 'img', fav: true})
+    .then((favs: any) => {
+      console.log(favs);
+      for(var int = 0; int < favs.length; int++){
+        for(var j = 0; j < this.img.length; j++){
+          if(this.img[j].title == favs[int].title && this.img[j].url == favs[int].url){
+            this.img[j].fav = true;
+          }
+        }
+      }
+    })
+    .catch((err)=> console.log(err));
+
     this.g.findQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: 'img', share: true})
       .then((imgs: any) => {
         for(var i = 0; i < imgs.length; i++){
@@ -89,23 +103,37 @@ headerIpt = {
       });
   }
 
-  viewImg(url: string){
-    console.log(url);
-    let path: any = url.split('/');
-    path.pop();
-    path = path.join('/');
-    let filenm = url.split('/')[(url.split('/').length - 1)]
-    console.log(path);
-    console.log(filenm);
-    this.g.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
-    .then((dataURL:string) => { 
-      // console.log(dataURL);
-      this.g.photoViewer.show(dataURL)
-    })
-    .catch((err: any) => {
-      console.log(err);
-      this.g.iab.create(this.g.server + url);
-    })
+  // viewImg(url: string){
+  //   console.log(url);
+  //   let path: any = url.split('/');
+  //   path.pop();
+  //   path = path.join('/');
+  //   let filenm = url.split('/')[(url.split('/').length - 1)]
+  //   console.log(path);
+  //   console.log(filenm);
+  //   this.g.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
+  //   .then((dataURL:string) => { 
+  //     // console.log(dataURL);
+  //     this.g.photoViewer.show(dataURL)
+  //   })
+  //   .catch((err: any) => {
+  //     console.log(err);
+  //     this.g.iab.create(this.g.server + url);
+  //   })
+  // }
+
+  openImg(item: any){
+    console.log(item)
+    console.log(this.img)
+    let modal: Modal = this.modalCtrl.create(ImgCntrlPage, { data: this.img, item: item });
+    modal.onDidDismiss((data: any) => {
+      console.log("Modal Reply", data);
+    });
+    modal.present();
+    // this.g.iab.create(this.g.Network===true ? this.g.server + item.url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url);
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), title: item.title, type: 'img', url: item.url }, {$set: {time: Number(new Date())}}, function(rst){
+      console.log(rst);
+    });
   }
 
   shareImg(item: any){
@@ -126,20 +154,51 @@ headerIpt = {
     });
   }
 
-  fnFav(fav: boolean){
-    var that = this;
-    console.log(this.data)
-    var url = "";
-    if(this.data && this.data.img && this.data.img.length){
-      url = this.data.img[0].url;
+  setFavorite(type: string, item: any, index: number, key: string){
+    var that = this, query = {};
+
+    if(type == 'system'){
+      var url = "";
+      if(this.data && this.data.img && this.data.img.length){
+        url = this.data.img[0].url;
+      }
+      query = {accountID: localStorage.getItem('email'), ID: this.data[type + '_id'], Name: this.data[type + '_nm'], type: type, url: url}
     }
-    this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
+    else{
+      query = {accountID: localStorage.getItem('email'), title: item.title, type: type, url: item.url }
+    }
+    console.log(query);
+    if(item.fav === undefined){
+      item.fav = false;
+    }
+    this.g.upsertQ(this.g.db.fav, query, {$set: { fav : !item.fav}}, (rst) => {
       console.log(rst);
       if(rst){
-        that.fav = !that.fav;
-        that.hc.setMsg((that.fav) ? 20000003 : 20000004);
+        item.fav = !item.fav;
+        if(index){
+          this.typeJsn[key][index].fav = item.fav;
+        }else{
+          that.fav = item.fav;
+        }
+        this.hc.setMsg((item.fav) ? 20000003 : 20000004);
       }
     })
   }
+
+  // fnFav(fav: boolean){
+  //   var that = this;
+  //   console.log(this.data)
+  //   var url = "";
+  //   if(this.data && this.data.img && this.data.img.length){
+  //     url = this.data.img[0].url;
+  //   }
+  //   this.g.upsertQ(this.g.db.fav, {accountID: localStorage.getItem('email'), ID: this.data.system_id, Name: this.data.system_nm, type: 'system', url: url }, {$set: { fav : fav}}, function(rst){
+  //     console.log(rst);
+  //     if(rst){
+  //       that.fav = !that.fav;
+  //       that.hc.setMsg((that.fav) ? 20000003 : 20000004);
+  //     }
+  //   })
+  // }
 
 }

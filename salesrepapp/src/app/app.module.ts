@@ -3,10 +3,12 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { HttpModule, Http } from '@angular/http';
 import { HttpClient, HttpClientModule  } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MyApp } from './app.component';
 import { CatalogPage } from '../pages/catalog/catalog';
 import { ModalPage } from '../pages/modal/modal';
+import { ImgCntrlPage } from '../pages/imgCntrl/imgCntrl';
 import { SharePage } from '../pages/share/share';
 import { SettingsPage } from '../pages/settings/settings';
 import { LoginPage } from '../pages/login/login';
@@ -37,6 +39,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+import { ZoomAreaModule } from 'ionic2-zoom-area';
+
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
 export function HttpLoaderFactory(http: HttpClient) {
@@ -60,12 +64,15 @@ export function HttpLoaderFactory(http: HttpClient) {
     SetDetailPage,
     SharePage,
     HeaderComponent,
-    ModalPage
+    ModalPage,
+    ImgCntrlPage
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     HttpModule,
+    BrowserAnimationsModule,
+    ZoomAreaModule.forRoot(),
     IonicModule.forRoot(MyApp, {
       tabsHideOnSubPages:true
     }),
@@ -94,7 +101,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     SetDetailPage,
     SharePage,
     HeaderComponent,
-    ModalPage
+    ModalPage,
+    ImgCntrlPage
   ],
   providers: [
     StatusBar,

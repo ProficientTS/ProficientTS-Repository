@@ -37,9 +37,11 @@ headerIpt = {
     this.title = this.data.system_nm;
     this.desc = this.data.desc;
     this.img = this.data.img;
+    
   }
 
   ngOnInit() {
+    console.log(this.hc)
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     var that = this;

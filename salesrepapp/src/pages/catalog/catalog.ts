@@ -19,45 +19,45 @@ import { File, DirectoryEntry } from '@ionic-native/file';
   templateUrl: 'catalog.html',
 })
 export class CatalogPage implements OnInit {
-   @ViewChild('input') myInput;
    @ViewChild(HeaderComponent) hc: HeaderComponent;
 listItem = [];
+templist = [];
 display: boolean = false;
 type = "key";
+seltype: any = "key";
 tab = false;
 sync: boolean = false;
 headerIpt = {
-  catalogfacility: false,
   shareCnt: 0
 }
+mainTabs: any = {
+  system: false,
+  technique: false,
+  fav: false,
+  rec: false
+}
 tabs = {
-  systab: false,
+  systemtab: false,
   doctab: false,
   parttab: false,
   settab: false,
   techtab: false,
   vidtab: false,
-  imgtab: false,
-  favtab: false,
-  rectab: false
+  imgtab: false
 };
 txt = "";
-keyval:any;
+srhtxt = "";
+key:any;
+fav:any = {};
+rec: any = {};
 nomedia = true;
-syslen = 0;
+systemlen = 0;
 partlen = 0;
 setlen = 0;
 techlen = 0;
 imglen = 0;
 vidlen = 0;
 doclen = 0;
-favlen = 0;
-reclen = 0;
-placeH = "Keyword";
-typList = false;
-typListSys = [];
-typListSet = [];
-typListPrt = [];
 headerOpt: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, 
@@ -87,7 +87,6 @@ headerOpt: any;
             this.g.reset = false;
           }
           this.sync = true;
-          this.hc.menu = true;
           this.hc.setMsg(10000002);
           this.freshsync();
         }
@@ -97,7 +96,6 @@ headerOpt: any;
         console.log("Create Directory at Settings Page 1st")
         console.log(err);
         this.sync = true;
-        this.hc.menu = true;
       });
   }
 
@@ -252,7 +250,6 @@ headerOpt: any;
                     console.log("Insert Failed");
                   }
                   this.sync = false;
-                  this.hc.menu = false;
                   this.hc.setMsg(20000002);
                   if(this.platform.is('cordova'))
                     this.g.FileSync();
@@ -268,16 +265,14 @@ headerOpt: any;
   ionViewWillEnter(){
     console.log('ionViewWillEnter CatalogPage');
     this.listItem = [];
+    this.templist = [];
     this.type = 'key';
-    this.placeH = 'Keyword';
+    this.seltype = 'key';
     this.display = false;
     this.tab = false;
     this.txt = "";
     this.nomedia = true;
-    this.typList = false;
-    this.typListSys = [];
-    this.typListSet = [];
-    this.typListPrt = [];
+    this.setMainTab('');
   }
 
   ionViewCanEnter(){
@@ -295,29 +290,47 @@ headerOpt: any;
       typ = this.headerOpt.type
     }
     switch(typ){
-      case 'default':
-          console.log("Renderer setF")
-          this.myInput.setFocus();
-      break;
       case 'product':
+        this.setMainTab('system');
         this.showProduct();
       break;
-      case 'approach':
+      case 'technique':
+        this.setMainTab('technique');
         this.showTechniques();
       break;
       case 'favorites':
+        this.setMainTab('fav');
         this.showFavs();
       break;
       case 'recent':
+        this.setMainTab('rec');
         this.showRecents();
       break;
       case 'techsys':
+        this.setMainTab('');
         this.type = "technique";
         this.tab = true;
         this.itemTapped({id: this.headerOpt.hdrData});
       break;
+      case 'search':
+      this.setMainTab('');
+        this.type = this.headerOpt.seltype;
+        this.seltype = this.type;
+      break;
+      case '':
+        this.setMainTab('fav');
+        this.showFavs();
+      break;
     }
     console.log(typ);
+  }
+
+  sysTech(ID: any){
+    console.log(ID)
+    this.setMainTab('');
+    this.type = "technique";
+    this.tab = true;
+    this.itemTapped({id: ID});
   }
 
   logOut(){
@@ -330,34 +343,49 @@ headerOpt: any;
     var that = this;
     this.type = "system";
     this.display = true;
+    this.nomedia = true;
     this.tab = true;
-    this.typList = false;
-    this.setTab('systab');
+    this.setTab('systemtab');
+    this.setMainTab('system');
     this.g.findQSSL(this.g.db.system, {voidfl : {$ne : 'Y'}}, {system_id: 1}, 0, 0)
       .then((docs: any) => {
           console.log(docs);
           var len = docs.length;
           if(len){
-            _.each(docs, (element, i) => {
-              if(element[this.g.Lang]){
-                for(var key in element[this.g.Lang]){
-                  element[key] = element[this.g.Lang][key];
-                }
-              }
-              element["Name"] = element.system_nm;
-              element["ID"] = element.system_id;
-              if(element.img.length){
-                element["url"] = element.img[0].url;
-              }
-              if(i == (len-1)){
-                this.listItem = docs;
-                this.syslen = docs.length;
-              }
-            });
+            this.g.findQSSL(this.g.db.fav, {fav: true, type: this.type}, { type: 1 }, 0, 0)
+              .then((favs: any) => {
+                console.log("Favorites", favs)
+                _.each(docs, (element, i) => {
+                  if(element[this.g.Lang]){
+                    for(var key in element[this.g.Lang]){
+                      element[key] = element[this.g.Lang][key];
+                    }
+                  }
+                  element["Name"] = element.system_nm;
+                  if(element.img.length){
+                    element["url"] = element.img[0].url;
+                  }
+                  if(i == (len-1)){
+                    for(var int = 0; int < favs.length; int++){
+                      for(var j = 0; j < docs.length; j++){
+                        if(docs[j].ID == favs[int].ID && docs[j].Name == favs[int].Name){
+                          docs[j].fav = true;
+                        }
+                      }
+                    }
+                    console.log(docs)
+                    this.listItem = docs;
+                    this.templist = this.listItem;
+                    this.systemlen = docs.length;
+                  }
+                });
+              })
+              .catch((err) => console.error(err));
           }
           else{
             this.listItem = [];
-            this.syslen = 0;
+            this.templist = this.listItem;
+            this.systemlen = 0;
           }
           
         }) // here you will get it
@@ -373,29 +401,42 @@ headerOpt: any;
     
   }
 
+  setMainTab(tab: any){
+    
+    Object.keys(this.mainTabs).forEach((key) => {
+      this.mainTabs[key] = false;
+    })
+    if(tab && tab.length)
+      this.mainTabs[tab] = true;
+    
+  }
+
   showTechniques() {
     var that = this;
     this.display = true;
     this.type = "technique";
     this.tab = true;
     this.setTab('techtab');
-    this.typList = false;
+    this.setMainTab('technique');
+    this.nomedia = true;
     this.g.findQSSL(this.g.db.technique, {voidfl : {$ne : 'Y'}}, {technique_nm: 1}, 0, 0)
       .then((docs: any) => {
           console.log(docs);
           var len = docs.length;
           if(len){
-            _.each(docs, function(element, i){
+            _.each(docs, (element, i)=>{
               element["Name"] = element.technique_nm;
               element["id"] = element.technique_id;
               if(i == (len-1)){
                 that.listItem = docs;
+                this.templist = this.listItem;
                 that.techlen = docs.length;
               }
             });
           }
           else{
             that.listItem = [];
+            this.templist = this.listItem;
             that.techlen = 0;
           }
           
@@ -410,7 +451,7 @@ headerOpt: any;
       let typ = this.type;
       if(typ == "key"){
         // selected Tab
-        if(this.tabs.systab){
+        if(this.tabs.systemtab){
           typ = 'system';
         }
         else if(this.tabs.parttab){
@@ -445,9 +486,9 @@ headerOpt: any;
     console.log(this.txt);
     console.log(this.type)
     var that = this;
-    this.typList = false;
     this.txt = this.txt.trim();
     if(this.txt.length >= 3){
+      this.setMainTab('');
       this.display = true;
       this.tab = true;
       console.log(typ)
@@ -469,10 +510,10 @@ headerOpt: any;
                   }
                 }
                 if(system[j].img.length){
-                  sys.push({Name: system[j].system_nm, ID: system[j].system_id, url: system[j].img[0].url});
+                  sys.push({Name: system[j].system_nm, ID: system[j].system_id, url: system[j].img[0].url, technique: system[j].technique});
                 }
                 else{
-                  sys.push({Name: system[j].system_nm, ID: system[j].system_id});
+                  sys.push({Name: system[j].system_nm, ID: system[j].system_id, technique: system[j].technique});
                 }
                 
             }
@@ -568,6 +609,11 @@ headerOpt: any;
             var len = docs.length;
             if(len){
               _.each(docs, function(element, i){
+                if(element[that.g.Lang]){
+                  for(var key in element[that.g.Lang]){
+                    element[key] = element[that.g.Lang][key];
+                  }
+                }
                 element["Name"] = element[that.type + '_nm'];
                 if(that.type != 'technique')
                   element["ID"] = element[that.type + '_id'];
@@ -583,6 +629,7 @@ headerOpt: any;
             }
             else{
               that.listItem = [];
+              this.templist = this.listItem;
               switch(this.type){
                 case 'part':
                   this.setTab('parttab');
@@ -593,8 +640,8 @@ headerOpt: any;
                   this.setlen = 0;
                 break;
                 case 'system':
-                  this.setTab('systab');
-                  this.syslen = 0;
+                  this.setTab('systemtab');
+                  this.systemlen = 0;
                 break;
                 case 'technique':
                   this.setTab('techtab');
@@ -609,9 +656,12 @@ headerOpt: any;
     }
     else{
       this.listItem = [];
+      this.templist = this.listItem;
       this.display = false;
       this.tab = false;
       this.nomedia = true;
+      if(this.txt.length < 1)
+        this.showFavs();
     }
   }
 
@@ -621,6 +671,7 @@ headerOpt: any;
     console.log(data.data);
     console.log(data.length)
     console.log(this.display)
+    
     if(data.data){
       console.log(0)
       if(this.type == "key"){
@@ -645,83 +696,111 @@ headerOpt: any;
               }
             }
           }
-
-          // if(that.g.Network){
-          //   if(data.data.system.length){
-          //     _.each(data.data.system, function(element, i){
-          //         if(element.img.length){
-          //           element["url"] = element.img[0].url;
-          //         }
-          //     });
-          //   }
-          //   if(data.data.set.length){
-          //     _.each(data.data.set, function(element, i){
-          //         if(element.img.length){
-          //           element["url"] = element.img[0].url;
-          //         }
-          //     });
-          //   }
-          //   if(data.data.part.length){
-          //     _.each(data.data.part, function(element, i){
-          //         if(element.img.length){
-          //           element["url"] = element.img[0].url;
-          //         }
-          //     });
-          //   }
-          // }
-          console.log(data.data);
-          that.keyval = data.data;
-          that.keyval.system = data.data.system;
-          that.keyval.doc = data.data.doc;
-          that.keyval.img = data.data.img;
-          that.keyval.video = data.data.video;
-          that.keyval.technique = [];
-          that.keyval.set = data.data.set;
-          that.keyval.part = data.data.part;
-          that.listItem = data.data.system;
-          that.syslen = data.data.system.length;
-          that.doclen = data.data.doc.length;
-          that.imglen = data.data.img.length;
-          that.vidlen = data.data.video.length;
-          that.partlen = data.data.part.length;
-          that.setlen = data.data.set.length;
-          that.setTab('systab');
+          this.g.findQSSL(this.g.db.fav, {fav: true}, { type: 1 }, 0, 0)
+          .then((favs: any) => {
+            console.log("Favorites", favs)
+            for(var int = 0; int < favs.length; int++){
+              for(var j = 0; j < data.data.img.length; j++){
+                if(data.data.img[j].title == favs[int].title && data.data.img[j].url == favs[int].url && favs[int].type == "img"){
+                  data.data.img[j].fav = true;
+                }
+              }
+              for(var k = 0; k < data.data.video.length; k++){
+                if(data.data.video[k].title == favs[int].title && data.data.video[k].url == favs[int].url && favs[int].type == "vid"){
+                  data.data.video[k].fav = true;
+                }
+              }
+              for(var l = 0; l < data.data.doc.length; l++){ 
+                if(data.data.doc[l].title == favs[int].title && data.data.doc[l].url == favs[int].url && favs[int].type == "doc"){
+                  data.data.doc[l].fav = true;
+                }
+              }
+              for(var m = 0; m < data.data.system.length; m++){ 
+                if(data.data.system[m].ID == favs[int].ID && favs[int].type == "system"){
+                  data.data.system[m].fav = true;
+                }
+              }
+              for(var n = 0; n < data.data.set.length; n++){ 
+                if(data.data.set[n].ID == favs[int].ID && favs[int].type == "set"){
+                  data.data.set[n].fav = true;
+                }
+              }
+              for(var o = 0; o < data.data.part.length; o++){ 
+                if(data.data.part[o].ID == favs[int].ID && favs[int].type == "part"){
+                  data.data.part[o].fav = true;
+                }
+              }
+            }
+            console.log(data.data);
+            that.key = data.data;
+            that.key.system = data.data.system;
+            that.key.doc = data.data.doc;
+            that.key.img = data.data.img;
+            that.key.video = data.data.video;
+            that.key.technique = [];
+            that.key.set = data.data.set;
+            that.key.part = data.data.part;
+            that.listItem = data.data.system;
+            this.templist = this.listItem;
+            that.systemlen = data.data.system.length;
+            that.doclen = data.data.doc.length;
+            that.imglen = data.data.img.length;
+            that.vidlen = data.data.video.length;
+            that.partlen = data.data.part.length;
+            that.setlen = data.data.set.length;
+            that.setTab('systemtab');
+          })
+          .catch((err) => console.error(err));
           
         })
         .catch((err)=> console.log(err));
 
       }
-      else{
-        if(data.data.length && this.type != "technique")
-          _.each(data.data, function(element, i){
-              if(element.img.length){
-                element["url"] = element.img[0].url;
-              }
-          });
-        this.listItem = data.data;
-        switch(this.type){
-          case 'part':
-            this.setTab('parttab');
-            this.partlen = data.data.length;
-          break;
-          case 'set':
-            this.setTab('settab');
-            this.setlen = data.data.length;
-          break;
-          case 'system':
-            this.setTab('systab');
-            this.syslen = data.data.length;
-          break;
-          case 'technique':
-            this.setTab('techtab');
-            this.techlen = data.data.length;
-          break;
-        }
-      }
+      // else{
+      //   if(data.data.length && this.type != "technique")
+      //     _.each(data.data, function(element, i){
+      //         if(element.img.length){
+      //           element["url"] = element.img[0].url;
+      //         }
+      //     });
+      //   this.listItem = data.data;
+      //   switch(this.type){
+      //     case 'part':
+      //       this.setTab('parttab');
+      //       this.partlen = data.data.length;
+      //     break;
+      //     case 'set':
+      //       this.setTab('settab');
+      //       this.setlen = data.data.length;
+      //     break;
+      //     case 'system':
+      //       this.setTab('systemtab');
+      //       this.systemlen = data.data.length;
+      //     break;
+      //     case 'technique':
+      //       this.setTab('techtab');
+      //       this.techlen = data.data.length;
+      //     break;
+      //   }
+      // }
     }
     else if(data.length){
       console.log(1);
-      this.listItem = data;
+      if(this.type != "technique")
+      this.g.findQSSL(this.g.db.fav, {fav: true, type: this.type}, { type: 1 }, 0, 0)
+      .then((favs: any) => {
+        console.log("Favorites", favs)
+        for(var int = 0; int < favs.length; int++){
+          for(var j = 0; j < data.length; j++){
+            if(data[j].ID == favs[int].ID && data[j].Name == favs[int].Name){
+              data[j].fav = true;
+            }
+          }
+        }
+        this.listItem = data;
+        this.templist = this.listItem;
+      })
+      .catch((err) => console.error(err));
       switch(this.type){
         case 'part':
           this.setTab('parttab');
@@ -732,11 +811,13 @@ headerOpt: any;
           this.setlen = data.length;
         break;
         case 'system':
-          this.setTab('systab');
-          this.syslen = data.length;
+          this.setTab('systemtab');
+          this.systemlen = data.length;
         break;
         case 'technique':
           this.setTab('techtab');
+          this.listItem = data;
+          this.templist = this.listItem;
           this.techlen = data.length;
         break;
       }
@@ -744,6 +825,7 @@ headerOpt: any;
     else{
       console.log(2)
       this.listItem = [];
+      this.templist = this.listItem;
       switch(this.type){
           case 'part':
             this.setTab('parttab');
@@ -754,8 +836,8 @@ headerOpt: any;
             this.setlen = 0;
           break;
           case 'system':
-            this.setTab('systab');
-            this.syslen = 0;
+            this.setTab('systemtab');
+            this.systemlen = 0;
           break;
           case 'technique':
             this.setTab('techtab');
@@ -770,12 +852,12 @@ headerOpt: any;
     console.log(item)
     console.log(this.type)
     console.log(item.type);
-    if(item.type && (this.tabs.favtab || this.tabs.rectab)){ // Recent and Favorites
+    if(item.type){ // Recent and Favorites
       this.type = item.type;
     }
     var that = this;
     if(this.type === "technique" && item.ID === undefined){
-      this.setTab('systab');
+      this.setTab('systemtab');
       this.type = 'system';
       var vector = {};
       vector[this.g.Lang + '.technique.technique_id'] = {$in: [item.id]}
@@ -785,7 +867,7 @@ headerOpt: any;
             console.log(docs);
             var len = docs.length;
             if(len){
-              _.each(docs, function(element, i){
+              _.each(docs, (element, i)=>{
                 if(element[that.g.Lang]){
                   for(var key in element[that.g.Lang]){
                     element[key] = element[that.g.Lang][key];
@@ -798,13 +880,15 @@ headerOpt: any;
                 }
                 if(i == (len-1)){
                   that.listItem = docs;
-                  that.syslen = docs.length;
+                  this.templist = this.listItem;
+                  that.systemlen = docs.length;
                 }
               });
             }
             else{
               that.listItem = [];
-              that.syslen = 0;
+              this.templist = this.listItem;
+              that.systemlen = 0;
             }
             
           }) // here you will get it
@@ -818,7 +902,7 @@ headerOpt: any;
       let typ = this.type;
       if(typ == "key"){
         // selected Tab
-        if(this.tabs.systab){
+        if(this.tabs.systemtab){
           typ = 'system';
         }
         else if(this.tabs.parttab){
@@ -862,55 +946,138 @@ headerOpt: any;
   
 
   showFavs(){
-    var that = this;
     this.type = "fav";
     this.tab = true;
-    this.setTab('favtab');
+    this.nomedia = true;
+    this.setMainTab('fav');
     this.g.findQSSL(this.g.db.fav, {accountID: localStorage.getItem('email'), fav: true}, {type: -1}, 0, 0)
       .then((docs: any) => {
         console.log(docs);
-        that.typList = true;
-        that.listItem = [];
-        that.display = false;
-        that.typListSys = _.filter(docs, (v) => {
-          return v.type == "system";
-        });
-        that.typListSet = _.filter(docs, (v) => {
-          return v.type == "set";
-        });
-        that.typListPrt = _.filter(docs, (v) => {
-          return v.type == "part";
-        });
-
-        that.favlen = docs.length;
+        this.listItem = [];
+        this.templist = this.listItem;
+        this.fav.system = _.filter(docs, (v) => { return v.type == 'system' });
+        this.fav.doc = _.filter(docs, (v) => { return v.type == 'doc' });
+        this.fav.img = _.filter(docs, (v) => { return v.type == 'img' });
+        this.fav.video = _.filter(docs, (v) => { return v.type == 'vid' });
+        this.fav.set = _.filter(docs, (v) => { return v.type == 'set' });
+        this.fav.part = _.filter(docs, (v) => { return v.type == 'part' });
+        this.listItem = this.fav.system;
+        this.templist = this.listItem;
+        this.systemlen = this.fav.system.length;
+        this.doclen = this.fav.doc.length;
+        this.imglen = this.fav.img.length;
+        this.vidlen = this.fav.video.length;
+        this.partlen = this.fav.part.length;
+        this.setlen = this.fav.set.length;
+        this.setTab('systemtab');
       }) // here you will get it
       .catch((err) => console.error(err));
   }
   
   showRecents(){
-    var that = this;
     this.type = "rec";
     this.tab = true;
-    this.setTab('rectab');
-    this.g.findQSSL(this.g.db.recent, {accountID: localStorage.getItem('email')}, {time: -1}, 0, 5)
+    this.nomedia = true;
+    this.setMainTab('rec');
+    this.g.findQSSL(this.g.db.recent, {accountID: localStorage.getItem('email')}, {time: -1, type: 1}, 0, 0)
       .then((docs: any) => {
         console.log(docs);
-        that.typList = true;
-        that.listItem = [];
-        that.display = false;
-        that.typListSys = _.filter(docs, (v) => {
-          return v.type == "system";
-        });
-        that.typListSet = _.filter(docs, (v) => {
-          return v.type == "set";
-        });
-        that.typListPrt = _.filter(docs, (v) => {
-          return v.type == "part";
-        });
-        
-        that.reclen = docs.length;
+        this.g.findQSSL(this.g.db.fav, {fav: true}, { type: 1 }, 0, 0)
+        .then((favs: any) => {
+          console.log("Favorites", favs);
+          this.listItem = [];
+          this.templist = this.listItem;
+          this.rec.system = _.filter(docs, (v) => { return v.type == 'system' });
+          // this.rec.system = _.sortBy(this.rec.system, 'Name');
+          this.rec.doc = _.filter(docs, (v) => { return v.type == 'doc' });
+          this.rec.img = _.filter(docs, (v) => { return v.type == 'img' });
+          this.rec.video = _.filter(docs, (v) => { return v.type == 'vid' });
+          this.rec.set = _.filter(docs, (v) => { return v.type == 'set' });
+          this.rec.part = _.filter(docs, (v) => { return v.type == 'part' });
+          for(var int = 0; int < favs.length; int++){
+            for(var j = 0; j < this.rec.img.length; j++){
+              if(this.rec.img[j].title == favs[int].title && this.rec.img[j].url == favs[int].url && favs[int].type == "img"){
+                this.rec.img[j].fav = true;
+              }
+            }
+            for(var k = 0; k < this.rec.video.length; k++){
+              if(this.rec.video[k].title == favs[int].title && this.rec.video[k].url == favs[int].url && favs[int].type == "vid"){
+                this.rec.video[k].fav = true;
+              }
+            }
+            for(var l = 0; l < this.rec.doc.length; l++){ 
+              if(this.rec.doc[l].title == favs[int].title && this.rec.doc[l].url == favs[int].url && favs[int].type == "doc"){
+                this.rec.doc[l].fav = true;
+              }
+            }
+            for(var m = 0; m < this.rec.system.length; m++){ 
+              if(this.rec.system[m].ID == favs[int].ID && favs[int].type == "system"){
+                this.rec.system[m].fav = true;
+              }
+            }
+            for(var n = 0; n < this.rec.set.length; n++){ 
+              if(this.rec.set[n].ID == favs[int].ID && favs[int].type == "set"){
+                this.rec.set[n].fav = true;
+              }
+            }
+            for(var o = 0; o < this.rec.part.length; o++){ 
+              if(this.rec.part[o].ID == favs[int].ID && favs[int].type == "part"){
+                this.rec.part[o].fav = true;
+              }
+            }
+          }
+          
+          this.listItem = this.rec.system;
+          this.templist = this.listItem;
+          this.systemlen = this.rec.system.length;
+          this.doclen = this.rec.doc.length;
+          this.imglen = this.rec.img.length;
+          this.vidlen = this.rec.video.length;
+          this.partlen = this.rec.part.length;
+          this.setlen = this.rec.set.length;
+          this.setTab('systemtab');
+        }) // here you will get it
+        .catch((err) => console.error(err));
       }) // here you will get it
       .catch((err) => console.error(err));
+  }
+
+  setFavorite(item: any, index: number){
+    console.log(item);
+    console.log(index);
+    var selTab = '', type = '', query = {};
+    for(var key in this.tabs){
+      if(this.tabs[key] === true)
+      selTab = key
+    }
+    console.log(selTab);
+    type = selTab.replace('tab', '');
+    console.log(type);
+    if(this.nomedia){
+      query = {accountID: localStorage.getItem('email'), ID: (item.ID) ? item.ID : item[type + '_id'], Name: (item.Name) ? item.Name : item[type + '_nm'], type: type, url: (item && item.img && item.img.length) ?  item.img[0].url : (item.url)? item.url: ''}
+    }
+    else{
+      query = {accountID: localStorage.getItem('email'), title: item.title, type: type, url: item.url }
+    }
+    console.log(query);
+    if(item.fav === undefined){
+      item.fav = false;
+    }
+    console.log(!item.fav)
+    this.g.upsertQ(this.g.db.fav, query, {$set: { fav : !item.fav}}, (rst) => {
+      console.log(rst);
+      if(rst){
+        item.fav = !item.fav;
+        this.listItem[index].fav = item.fav;
+        this.templist = this.listItem;
+        if(this.type == "fav"&& !item.fav){
+          this.listItem = _.filter(this.listItem, (v, i) => { return i != index });
+          this.templist = this.listItem;
+          this[type + 'len'] -= 1; 
+        }
+        this.hc.setMsg((item.fav) ? 20000003 : 20000004);
+      }
+    })
   }
 
   selectTab(val: any, tab: any){
@@ -922,59 +1089,77 @@ headerOpt: any;
       this.nomedia = true;
     }
 
-    if(this.type == "key"){
-      this.listItem = this.keyval[val];
+    if(this.type == "key" || this.type == "fav" || this.type == "rec"){
+      this.listItem = this[this.type][val];
+      this.templist = this.listItem;
     }
-
+    console.log(this.listItem)
     this.setTab(tab);
 
   }
 
   onChange(val: any){
     console.log(val);
-    this.placeH = (val == "key") ? "Keyword" : val.split("")[0].toUpperCase() + val.slice(1);
     this.type = val;
+    this.seltype = val;
     this.tab = false;
     this.listItem = [];
+    this.templist = this.listItem;
     this.display = false;
     this.txt = "";
     this.nomedia = true;
-    this.typList = false;
+    this.setMainTab('');
   }
 
-  viewMedia(url : string){
-    console.log(url);
-    console.log(this.g.file.dataDirectory  + 'www/'+ url);
-    if(this.tabs.doctab){
-      this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
-        console.log(err);
-        this.g.iab.create(this.g.server + url, '_system');
-      })
+  viewMedia(item : any, index: number){
+    console.log(item);
+    // console.log(this.g.file.dataDirectory  + 'www/'+ url);
+    this.g.iab.create(this.g.Network===true ? this.g.server + item.url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url, '_system');
+    // if(this.tabs.doctab){
+    //   this.g.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.g.docVOptions, undefined, undefined, undefined, (err) => {
+    //     console.log(err);
+    //     this.g.iab.create(this.g.server + url, '_system');
+    //   })
+    // }
+    // else if(this.tabs.imgtab){
+    //   let path: any = url.split('/');
+    //   path.pop();
+    //   path = path.join('/');
+    //   let filenm = url.split('/')[(url.split('/').length - 1)]
+    //   console.log("Image ----------")
+    //   console.log(path);
+    //   console.log(filenm);
+    //   this.g.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
+    //   .then((dataURL:string) => { 
+    //     console.log("dataURL -------------");
+    //     // console.log(dataURL);
+    //     this.g.photoViewer.show(dataURL)
+    //   })
+    //   .catch((err: any) => {
+    //     console.log(err);
+    //     this.g.iab.create(this.g.server + url);
+    //   })
+    // }
+    // else if(this.tabs.vidtab){
+    //   console.log("view")
+    //   this.hc.playVideo(url);
+    // }
+    var type = '';
+    for(var key in this.tabs){
+      if(this.tabs[key] === true)
+      type = key
     }
-    else if(this.tabs.imgtab){
-      let path: any = url.split('/');
-      path.pop();
-      path = path.join('/');
-      let filenm = url.split('/')[(url.split('/').length - 1)]
-      console.log("Image ----------")
-      console.log(path);
-      console.log(filenm);
-      this.g.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
-      .then((dataURL:string) => { 
-        console.log("dataURL -------------");
-        // console.log(dataURL);
-        this.g.photoViewer.show(dataURL)
-      })
-      .catch((err: any) => {
-        console.log(err);
-        this.g.iab.create(this.g.server + url);
-      })
+    console.log(type);
+    type = type.replace('tab', '');
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), title: item.title, type: type, url: item.url }, {$set: {time: Number(new Date())}}, function(rst){
+      console.log(rst);
+    });
+    if(this.type == "rec"){
+      var arr1 = _.filter(this.listItem, (v, i) => { return i == index});
+      var arr2 = _.filter(this.listItem, (v, i) => { return i != index});
+      this.listItem = arr1.concat(arr2);
+      this.templist = this.listItem;
     }
-    else if(this.tabs.vidtab){
-      console.log("view")
-      this.hc.playVideo(url);
-    }
-    
   }
 
   shareMedia(item: any, index: any){
@@ -996,13 +1181,51 @@ headerOpt: any;
     let share = (item.share === undefined) ? true : !item.share;
     console.log(index);
     console.log(this.listItem)
-    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: item.url, title: item.title }, {$set: {share: share}}, function(rst){
+    this.g.upsertQ(this.g.db.share, {accountID: localStorage.getItem('email'), type: typ, url: item.url, title: item.title }, {$set: {share: share}}, (rst)=>{
       console.log(rst);
       if(rst){
         that.listItem[index].share = share;
+        this.templist = this.listItem;
         that.headerIpt.shareCnt = (share) ? ++that.headerIpt.shareCnt : --that.headerIpt.shareCnt;
       }
     });
+  }
+
+  searchFilter(){
+    if(this.srhtxt.length > 2){
+      let searchKeys = [];
+      if(this.tabs.parttab){
+        searchKeys = ['part_id', 'part_nm'];
+      }
+      else if(this.tabs.settab){
+        searchKeys = ['set_id', 'set_nm'];
+      }
+      else if(this.tabs.systemtab){
+        searchKeys = ['system_id', 'system_nm', 'technique'];
+      } 
+      this.listItem = _.filter(this.templist, (v, i) => {
+        let searchTxt = "";
+        for(var key in v){
+          if(_.contains(searchKeys, key)){
+            if(key == "technique"){
+              for(var k =0; k< v[key].length; k++){
+                searchTxt = searchTxt + " " + v[key][k].technique_nm.toString().toLowerCase();
+              }
+            }
+            else{
+              searchTxt = searchTxt + " " + v[key].toString().toLowerCase();
+            }
+          }
+        }
+        console.log(searchTxt)
+        let exp = this.srhtxt.toLowerCase();
+        return searchTxt.indexOf(exp) !=-1;
+      });
+      console.log(this.listItem);
+    }
+    else{
+      this.listItem = this.templist;
+    }
   }
 
 }

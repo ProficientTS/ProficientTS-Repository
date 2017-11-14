@@ -1,3 +1,86 @@
 page-settings {
-
+    #div-main-settings {
+        width: 58%;
+        border-right: 1px solid;
+        opacity: 0.8;
+        height: 600px;
+        padding: 10px;
+        display: inline-block;
+    }
+    #div-user-settings {
+        color: #444444;
+        display: inline-block;
+        width: 40%;
+        padding: 10px;
+        vertical-align: top;
+        #div-user-tools {
+            height: 25px;
+            ion-icon {
+                float: right;
+                margin-right: 10px;
+                font-size: 1.5em;
+            }
+        }
+        #div-user-settings-img {
+            text-align: center;
+            img {
+                width: 125px;
+                height: 125px;
+                border-radius: 50%;
+                margin-top: 20px;
+            }
+            #div-user-nm {
+                padding: 10px;
+                font-size: 1.2em;
+                font-weight: bolder;
+            }
+        }
+        #div-user-info {
+            font-size: 1.2em;
+            margin-top: 30px;
+            .fa-envelope-o {
+                vertical-align: top;
+            }
+            div {
+                padding: 5px;
+            }
+        }
+    }
+    .pts-button-circle {
+        display: inline-block;
+        background-color: #0566a2;
+        color: white;
+        padding: 35px 10px;
+        border-radius: 50%;
+        width: 26%;
+        border: 7px solid #ececec;
+        text-align: center;
+        word-break: break-word;
+        height: 125px;
+        vertical-align: top;
+        margin-left: 15px;
+        font-size: 1.2em;
+    }
+    #div-lang {
+        margin-top: 30px;
+        padding: 25px;
+        font-weight: bolder;
+        text-align: center;
+        select {
+            width: 70%;
+            border-radius: 3px;
+            background-color: #eeeeee;
+            border: 1px solid;
+        }
+    }
+    #div-logout {
+        background-color: #444444;
+        color: white;
+        width: 100px;
+        text-align: center;
+        margin: auto;
+        padding: 5px;
+        border-radius: 3px;
+        margin-top: 100px;
+    }
 }

@@ -5,6 +5,7 @@ import { Global } from '../../providers/global';
 
 import { CatalogPage } from '../catalog/catalog';
 import { SharePage } from '../share/share';
+import { LoginPage } from '../login/login';
 
 import * as _ from 'underscore';
 
@@ -21,13 +22,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 tabBarElement: any;
 msg = "";
 back: boolean = false;
-playvideo = false;
-videosrc = "";
+// playvideo = false;
+// videosrc = "";
 catalogfacility: false;
 color: string = "#dddddd";
 font: string = "black";
 timeOut: any = 0;
 menu: boolean = false;
+toggleUserMenu: boolean = false;
   constructor(public navCtrl: NavController, public navParams: NavParams,
   private g: Global, private app: App) {
     console.log(this.headerIpt);
@@ -172,30 +174,40 @@ menu: boolean = false;
     console.log('ionViewDidEnter LoginPage');
   }
 
-  goToCatalog(val: any){
-    this.navCtrl.push(CatalogPage, {
+  goToCatalog(val: any, seltype: any){
+    console.log(seltype);
+    var obj = {
       header: {
         type: val
       }
-    });
+    };
+    if(seltype){
+      obj.header['seltype'] = seltype;
+    }
+    this.navCtrl.push(CatalogPage, obj);
   }
 
   openSharePage(){
     this.app.getRootNav().setRoot(SharePage);
   }
-  
-  closeVid(){
-    this.videosrc = "";
-    this.playvideo = false;
-    if(this.tabBarElement !== null)
-      this.tabBarElement.style.display = 'flex';
-  }
 
-  playVideo(url: any){
-    console.log(url);
-    this.videosrc = url;
-    this.playvideo = true;
-    if(this.tabBarElement !== null)
-      this.tabBarElement.style.display = 'none';
+  logout(){
+    localStorage.removeItem('token');
+    this.app.getRootNav().setRoot(LoginPage);
   }
+  
+  // closeVid(){
+  //   this.videosrc = "";
+  //   this.playvideo = false;
+  //   if(this.tabBarElement !== null)
+  //     this.tabBarElement.style.display = 'flex';
+  // }
+
+  // playVideo(url: any){
+  //   console.log(url);
+  //   this.videosrc = url;
+  //   this.playvideo = true;
+  //   if(this.tabBarElement !== null)
+  //     this.tabBarElement.style.display = 'none';
+  // }
 }

@@ -2,15 +2,21 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
-        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
-        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
+        <ion-icon *ngIf='fav === true' class="fav-icon fa fa-heart" (click)="setFavorite('system', false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' class="fav-icon fa fa-heart-o" (click)="setFavorite('system', true)"></ion-icon>
         <div *ngIf="videoType.length; else nodata">
             <div *ngFor="let key of videoType" class="div-document">
                 <div class="div-document-type">{{key}}</div>
-                <ul class="ul-document" *ngFor="let val of typeJsn[key]">
+                <ul class="ul-document" *ngFor="let val of typeJsn[key]; let i = index;">
                     <li class="li-document-title">{{val.title}}</li>
+                    <li class="li-document-fav" (click)="setFavorite('vid', val, i, key)">
+                        <div *ngIf="val.fav == true; else unfav">
+                            <ion-icon class="fa fa-heart"></ion-icon>
+                            <div>Unfavorite</div>
+                        </div>
+                    </li>
                     <li class="li-document-view">
-                        <div (click)="viewVideo(val.url)">View</div>
+                        <div (click)="viewVideo(val)">View</div>
                         <div>----</div>
                     </li>
                     <li class="li-document-share">
@@ -29,4 +35,11 @@
 
 <ng-template #nodata>
     <div>No data Found</div>
+</ng-template>
+
+<ng-template #unfav>
+    <div>
+        <ion-icon class="fa fa-heart-o"></ion-icon>
+        <div>Favorite</div>
+    </div>
 </ng-template>

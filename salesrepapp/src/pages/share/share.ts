@@ -35,14 +35,15 @@ options: DocumentViewerOptions = {
 };
 headerIpt = {
   // catalogfacility: true,
-  // shareCnt: 0,
-  title: "Review Page"
+  shareCnt: 0,
+  // title: "Review Page"
 };
 toArr: any = [];
 ccArr: any = [];
 toaddr: any = "";
 ccaddr: any = "";
 review: any = "";
+share: boolean = true;
   constructor(public navCtrl: NavController,
   private ws: WebserviceProvider,
   private g: Global,
@@ -108,37 +109,41 @@ review: any = "";
     this.ccArr.splice(this.ccArr.indexOf(val), 1);
   }
 
-  viewMedia(type: any, url: any){
+  viewMedia(type: any, item: any){
     console.log(type);
-    console.log(url);
-    if(type == "doc"){
-      this.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options, undefined, undefined, undefined, (err) => {
-        console.log(err);
-        this.g.iab.create(this.g.server + url, '_system');
-      })
-    }
-    else if(type == "img"){
-      let path: any = url.split('/');
-      path.pop();
-      path = path.join('/');
-      let filenm = url.split('/')[(url.split('/').length - 1)]
-      console.log("Image ----------")
-      console.log(path);
-      console.log(filenm);
-      this.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
-      .then((dataURL:string) => { 
-        console.log("dataURL -------------");
-        // console.log(dataURL);
-        this.photoViewer.show(dataURL)
-      })
-      .catch((err: any) => {
-        console.log(err);
-        this.g.iab.create(this.g.server + url);
-      })
-    }
-    else if(type == "video"){
-      this.hc.playVideo(url);
-    }
+    // console.log(url);
+    // if(type == "doc"){
+    //   this.document.viewDocument(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + url, 'application/pdf', this.options, undefined, undefined, undefined, (err) => {
+    //     console.log(err);
+    //     this.g.iab.create(this.g.server + url, '_system');
+    //   })
+    // }
+    // else if(type == "img"){
+    //   let path: any = url.split('/');
+    //   path.pop();
+    //   path = path.join('/');
+    //   let filenm = url.split('/')[(url.split('/').length - 1)]
+    //   console.log("Image ----------")
+    //   console.log(path);
+    //   console.log(filenm);
+    //   this.file.readAsDataURL(this.g.file.dataDirectory + 'ProficientTS Test Folder/' + path, filenm)
+    //   .then((dataURL:string) => { 
+    //     console.log("dataURL -------------");
+    //     // console.log(dataURL);
+    //     this.photoViewer.show(dataURL)
+    //   })
+    //   .catch((err: any) => {
+    //     console.log(err);
+    //     this.g.iab.create(this.g.server + url);
+    //   })
+    // }
+    // else if(type == "video"){
+    //   this.hc.playVideo(url);
+    // }
+    this.g.iab.create(this.g.Network===true ? this.g.server + item.url : this.g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url);
+    this.g.upsertQ(this.g.db.recent, {accountID: localStorage.getItem('email'), title: item.title, type: type, url: item.url }, {$set: {time: Number(new Date())}}, function(rst){
+      console.log(rst);
+    });
   }
 
   removeMedia(type: any, item: any, index: any){
@@ -169,7 +174,6 @@ review: any = "";
       console.log("Provide To addr");
       return;
     }
-    this.hc.menu = true;
     this.sendBtn = false;
     var shareData = JSON.parse(JSON.stringify(this.shareD));
     this.ws.postCall('sharemail', {
@@ -181,7 +185,6 @@ review: any = "";
     })
     .then((data: any) => {
       console.log(data);
-      this.hc.menu = false;
       this.sendBtn = true;
       if(data && data.msg == "InValid Credential"){
         this.logOut();
@@ -208,7 +211,6 @@ review: any = "";
     }).catch((err: any) => {
       console.log(err);
       this.hc.setMsg(50000003);
-      this.hc.menu = false;
       this.sendBtn = true;
     });
   }

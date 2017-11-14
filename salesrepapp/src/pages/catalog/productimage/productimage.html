@@ -2,18 +2,24 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
-        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
-        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
+        <ion-icon *ngIf='fav === true' class="fav-icon fa fa-heart" (click)="setFavorite('system', false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' class="fav-icon fa fa-heart-o" (click)="setFavorite('system', true)"></ion-icon>
         <div *ngIf="imgType.length; else nodata">
             <div *ngFor="let key of imgType" class="div-image">
                 <div class="div-image-type">{{key}}</div>
-                <div class="div-outer" *ngFor="let val of typeJsn[key]">
-                    <div class="div-image-item">
-                        <img src="{{ g.Network===true ? g.server + val.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + val.url }}" alt="" (click)="viewImg(val.url)">
+                <div class="div-outer" *ngFor="let val of typeJsn[key]; let i = index;">
+                    <div class="div-image-item ptsDipsIB ptsW80pr">
+                        <img src="{{ g.Network===true ? g.server + val.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + val.url }}" alt="" (click)="openImg(val)">
                     </div>
-                    <div class="li-document-share">
-                        <div (click)="shareImg(val)"><span *ngIf="val.share != true; else shared">Share</span></div>
-                        <div>----</div>
+                    <div class="ptsDipsIB">
+                        <ul>
+                            <li (click)="shareImg(val)">
+                                <ion-icon class="fa fa-share-alt" *ngIf="val.share != true; else shared"></ion-icon>
+                            </li>
+                            <li (click)="setFavorite('img', val, i, key)">
+                                <ion-icon *ngIf="val.fav == true; else unfav" class="fa fa-heart"></ion-icon>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -22,9 +28,13 @@
 </ion-content>
 
 <ng-template #shared>
-    <span>Shared</span>
+    <ion-icon class="fa fa-share-alt-square"></ion-icon>
 </ng-template>
 
 <ng-template #nodata>
     <div>No data Found</div>
+</ng-template>
+
+<ng-template #unfav>
+    <ion-icon class="fa fa-heart-o"></ion-icon>
 </ng-template>

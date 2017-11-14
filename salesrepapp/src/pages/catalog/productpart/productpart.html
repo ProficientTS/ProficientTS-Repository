@@ -2,8 +2,8 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
-        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
-        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
+        <ion-icon *ngIf='fav === true' class="fav-icon fa fa-heart" (click)="fnFav(false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' class="fav-icon fa fa-heart-o" (click)="fnFav(true)"></ion-icon>
         <div class="div-document">
             <div class="div-document-type">
                 <ion-input type="text" placeholder="Search" class="" [(ngModel)]="txt" autofocus (input)="searchItem()"></ion-input>

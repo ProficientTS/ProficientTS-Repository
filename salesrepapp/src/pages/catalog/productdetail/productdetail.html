@@ -2,8 +2,8 @@
 <ion-content padding class="productpage">
     <div class="modulepage">
         <div class="product-title">{{title}}</div>
-        <ion-icon *ngIf='fav === true' name="star" class="fav-icon" (click)="fnFav(false)"></ion-icon>
-        <ion-icon *ngIf='fav === false' name="star-outline" class="fav-icon" (click)="fnFav(true)"></ion-icon>
+        <ion-icon *ngIf='fav === true' class="fav-icon fa fa-heart" (click)="fnFav(false)"></ion-icon>
+        <ion-icon *ngIf='fav === false' class="fav-icon fa fa-heart-o" (click)="fnFav(true)"></ion-icon>
         <div>
             <button class="ptsMarginR15p ptsFloatR ptsPad10p ptsBorderR3p" (click)="showTechnique()">
                 Techniques Used ({{data.technique.length}})

@@ -1,6 +1,4 @@
 // http://ionicframework.com/docs/v2/theming/
-
-
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
@@ -14,12 +12,80 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
-
 ion-content {
     font-size: 16px;
+    margin-top: 110px;
+    border-left: 3px solid #dddddd;
+    .scroll-content {
+        overflow-x: unset;
+        overflow-y: unset;
+    }
 }
 
-b{
+ion-header {
+    background-color: #136ea6;
+}
+
+input[type="text"] {
+    border: 1px solid #ccc;
+}
+
+.split-pane-visible>.split-pane-side[side=left] {
+    min-width: 130px;
+    max-width: 130px;
+}
+
+.ptsPad0 {
+    padding: 0!important;
+}
+
+ion-menu {
+    border: 0!important;
+    .ptsSelMenu {
+        background-color: #dddddd !important;
+        color: #444444!important;
+    }
+    ion-header {
+        height: 85px;
+        color: white;
+        text-align: center;
+        background-color: #3784b3;
+    }
+    ion-content {
+        border-left: none;
+        margin-top: 0;
+        background-color: #444444!important;
+        ion-list button {
+            color: #dddddd !important;
+            font-size: 1em!important;
+            text-align: center!important;
+            padding: 0!important;
+            background-color: #444444!important;
+            border: 0!important;
+            height: 90px!important;
+            div {
+                width: 100%!important;
+                padding: 0!important;
+            }
+            ion-icon {
+                font-size: 1.5em!important;
+            }
+        }
+    }
+    #div-menu-cmp-logo {
+        margin-top: 10px;
+        font-size: 1.5em;
+    }
+    #div-menu-cmp-title {
+        margin-top: 5px;
+    }
+    .item-inner {
+        background-image: none!important;
+        border: 0!important;
+    }
+}
+
+b {
     font-weight: bold;
 }
 
@@ -37,6 +103,8 @@ input[type="password"] {
     font-size: 16px;
     padding: 0.75em 0.25em;
     text-align: center;
+    display: inline-block;
+    width: 120px;
 }
 
 .pts-navbar ion-navbar {
@@ -45,15 +113,14 @@ input[type="password"] {
 
 .pts-navbar,
 .pts-navbar a,
-.pts-navbar button
- {
+.pts-navbar button {
     color: #fff;
     font-size: 16px;
 }
 
 .pts-navbar ion-icon {
     font-size: 1.75em;
-    padding: 0.35em 0.25em 0.25em 0.25em;    
+    padding: 0.35em 0.25em 0.25em 0.25em;
 }
 
 .productpage :-ms-input-placeholder,
@@ -63,55 +130,67 @@ input[type="password"] {
     font-weight: normal;
 }
 
-.ptsW20pr{
+.ptsW20pr {
     width: 20%;
 }
 
-.ptsW19pr{
+.ptsW19pr {
     width: 19%;
 }
 
-.ptsW18pr{
+.ptsW18pr {
     width: 18%;
 }
 
-.ptsW60pr{
+.ptsW60pr {
     width: 60%;
 }
 
-.ptsW10pr{
+.ptsW10pr {
     width: 10%;
 }
 
-.ptsW23pr{
+.ptsW23pr {
     width: 23%;
 }
 
-.ptsW8pr{
+.ptsW28pr {
+    width: 28%;
+}
+
+.ptsW35pr {
+    width: 35%;
+}
+
+.ptsW8pr {
     width: 8%;
 }
 
-.ptsW45pr{
+.ptsW45pr {
     width: 45%;
 }
 
-.ptsW80pr{
+.ptsW70pr {
+    width: 70%;
+}
+
+.ptsW80pr {
     width: 80%;
 }
 
-.ptsTextCenter{
+.ptsTextCenter {
     text-align: center;
 }
 
-.ptsPadTB5p{
+.ptsPadTB5p {
     padding: 5px 0;
 }
 
-.ptsPad10p{
+.ptsPad10p {
     padding: 10px;
 }
 
-.ptsDipsIB{
+.ptsDipsIB {
     display: inline-block;
 }
 
@@ -120,13 +199,16 @@ input[type="password"] {
     display: inline;
     font-size: 2em;
     padding: 5px;
+    color: #7b0512;
+    margin-top: 12px;
+    font-size: 1.5em;
 }
 
-.ptsFloatR{
+.ptsFloatR {
     float: right;
 }
 
-.ptsDMiddle{
+.ptsDMiddle {
     width: 100%;
     margin: auto;
     text-align: center;
@@ -136,11 +218,11 @@ input[type="password"] {
     margin-top: 20px;
 }
 
-.ptsVerticalTop{
+.ptsVerticalTop {
     vertical-align: top;
 }
 
-.ptsSpanItem{
+.ptsSpanItem {
     background-color: grey;
     padding: 5px;
     color: white;
@@ -152,21 +234,52 @@ input[type="password"] {
 }
 
 .force-back-button .back-button {
-  display: inline-block;
+    display: inline-block;
 }
 
 .ionnavbar .back-button-text {
     display: none;
 }
 
-.force-menu-button{
+.force-menu-button {
     display: none;
 }
 
-.force-menu-button-show{
+.force-menu-button-show {
     display: inline-block!important;
 }
 
-.ptsBorderR3p{
+.ptsBorderR3p {
     border-radius: 3px;
+}
+
+.div-fav {
+    display: inline-block;
+    color: #7b0512;
+    font-size: 1.5em;
+    padding: 15px;
+}
+
+.fa-heart,
+.fa-heart-o {
+    color: #7b0512;
+    font-size: 1.5em;
+}
+
+.fa-share-alt,
+.fa-share-alt-square {
+    color: #1c713e;
+}
+
+.fa {
+    font-size: 1.5em!important;
+}
+
+.small-span {
+    background-color: #444444;
+    color: #cccccc;
+    padding: 5px;
+    font-size: 0.8em;
+    border-radius: 3px;
+    margin-right: 5px;
 }

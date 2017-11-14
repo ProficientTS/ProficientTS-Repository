@@ -43,6 +43,7 @@ export class LoginPage {
 
   ionViewWillEnter(){
     console.log('ionViewWillEnter LoginPage');
+    this.g.split = false;
   }
 
   ionViewCanEnter(){
@@ -88,6 +89,7 @@ export class LoginPage {
             text: 'Login anyway!',
             handler: () => {
               console.log('Buy clicked');
+              this.g.split = true;
               this.navCtrl.setRoot(CatalogPage);
               this.msg = this.email = this.pwd = '';
             }
@@ -111,6 +113,9 @@ export class LoginPage {
         this.g.reset = true;
       }
       localStorage.setItem('user', data.data[0].email.split('@')[0]);
+      localStorage.setItem('userInfo', JSON.stringify(data.data[0]));
+      this.g.userInfo = data.data[0];
+      this.g.split = true;
       this.navCtrl.setRoot(CatalogPage);
       this.msg = this.email = this.pwd = '';
     }

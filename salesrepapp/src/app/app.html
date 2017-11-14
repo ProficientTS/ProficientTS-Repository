@@ -1,19 +1,20 @@
-<ion-menu [content]="content" [swipeEnabled]="false">
-    <ion-header>
-        <ion-toolbar>
-            <ion-title>Menu</ion-title>
-        </ion-toolbar>
-    </ion-header>
+<ion-split-pane [when]="g.split">
+    <ion-menu type="overlay" [content]="content" [swipeEnabled]="false">
+        <ion-header>
+            <div id="div-menu-cmp-logo">&#123;P&#125;</div>
+            <div id="div-menu-cmp-title">Proficient</div>
+        </ion-header>
 
-    <ion-content>
-        <ion-list>
-            <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
-      </button>
-        </ion-list>
-    </ion-content>
+        <ion-content>
+            <ion-list>
+                <button ion-item *ngFor="let p of pages; let i = index;" (click)="openPage(p, i)" [ngClass]="{'ptsSelMenu': p.selected}">
+                        <ion-icon class="{{p.icon}}"></ion-icon><br>
+            {{p.title}}
+          </button>
+            </ion-list>
+        </ion-content>
 
-</ion-menu>
-
-<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
-<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+    </ion-menu>
+    <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+    <ion-nav [root]="rootPage" main #content swipeBackEnabled="false"></ion-nav>
+</ion-split-pane>

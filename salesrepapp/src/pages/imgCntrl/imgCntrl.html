@@ -1,0 +1,32 @@
+<ion-content fullscreen padding class="storyContent">
+    <div id="div-imgCntrl-hdr">
+        <div id="div-imgCntrl-hdr-type">{{item.type}}</div>
+        <div id="div-imgCntrl-hdr-title">{{item.title}}</div>
+    </div>
+    <button (click)="closeModal()">Done</button>
+    <ion-grid>
+        <ion-row>
+            <ion-col>
+                <zoom-area [(controls)]="showControls">
+                    <img src="{{ g.Network===true ? g.server + item.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + item.url }}" />
+                </zoom-area>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <div>
+        <ion-slides slidesPerView="3" spaceBetween="5" *ngIf="img.length > 1; else noImg">
+            <ion-slide *ngFor="let pic of img" (click)="selectedItem(pic)">
+                <img src="{{ g.Network===true ? g.server + pic.url : g.file.dataDirectory + 'ProficientTS Test Folder/' + pic.url }}" imageViewer>
+            </ion-slide>
+        </ion-slides>
+    </div>
+
+</ion-content>
+<ng-template #noImg>
+    <ion-list>
+        <ion-card>
+            <ion-card-header>No Images Found</ion-card-header>
+        </ion-card>
+    </ion-list>
+</ng-template>

@@ -1,41 +1,47 @@
 <pts-header [headerIpt]="headerIpt"></pts-header>
 
 <ion-content padding>
-    <div>
-        <ul class="ptsDMiddle">
-            <li>
-                <div id="btn-freshsync" class="pts-button catalog-search-button" (click)="freshsync()">
-                    Fresh Sync
-                </div>
-                <div id="btn-getupdates" class="pts-button catalog-search-button" (click)="getupdates()">
-                    Get Updates
-                </div>
-                <div id="btn-resetdata" class="pts-button catalog-search-button" (click)="resetdata()">
-                    Reset Data
-                </div>
-                <div id="btn-logout" class="pts-button catalog-search-button" (click)="logOut()">
-                    Log Out
-                </div>
-                <div id="btn-download" class="pts-button catalog-search-button" (click)="downloadFiles()">
-                    Download All Files
-                </div>
-                <!--<div id="btn-createdir" class="pts-button catalog-search-button" (click)="g.abortDownload()">
-                    Abort
-                </div>-->
-                <!--<div id="btn-createdir" class="pts-button catalog-search-button" (click)="createdir()">
-                    Create Directory
-                </div>
-                <div id="btn-deletedir" class="pts-button catalog-search-button" (click)="deletedir()">
-                    Delete Directory
-                </div>-->
-            </li>
-        </ul>
+    <div id="div-main-settings">
+        <div>
+            <div id="btn-freshsync" class="pts-button-circle" (click)="freshsync()">
+                Initial Setup
+            </div>
+            <div id="btn-getupdates" class="pts-button-circle" (click)="getupdates()">
+                Get Updates
+            </div>
+            <div id="btn-resetdata" class="pts-button-circle" (click)="resetdata()">
+                Factory Reset
+            </div>
+        </div>
+        <div id="div-lang">
+            Set Language <select (change)="selectLang($event.target.value)">
+                <option *ngFor="let l of lang" value="{{ l.val }}" [selected]="g.Lang === l.val">
+                    {{ l.desc }}
+                </option>
+            </select>
+        </div>
     </div>
-    <div>
-        <select (change)="selectLang($event.target.value)"> Select Language
-            <option *ngFor="let l of lang" value="{{ l.val }}" [selected]="g.Lang === l.val">
-                {{ l.desc }}
-            </option>
-        </select>
+    <div id="div-user-settings">
+        <div id="div-user-tools">
+            <ion-icon class="fa fa-repeat"></ion-icon>
+            <ion-icon class="fa fa-floppy-o"></ion-icon>
+            <ion-icon class="fa fa-pencil"></ion-icon>
+        </div>
+        <div id="div-user-settings-img">
+            <img src="assets/image/{{ g.userInfo.url? g.userInfo.url : 'user.png' }}">
+            <div id="div-user-nm">{{ g.userInfo?.username }}</div>
+            <div>{{ g.userInfo?.designation }}</div>
+        </div>
+        <div id="div-user-info">
+            <div *ngIf="g.userInfo.phone">
+                <ion-icon class="fa fa-phone"></ion-icon>&nbsp;{{ g.userInfo?.phone }}</div>
+            <div *ngIf="g.userInfo.email">
+                <ion-icon class="fa fa-at"></ion-icon>&nbsp;{{ g.userInfo?.email }}</div>
+            <div *ngIf="g.userInfo.address">
+                <ion-icon class="fa fa-envelope-o"></ion-icon>&nbsp;
+                <div class="ptsDipsIB ptsPad0">{{ g.userInfo?.address["street 1"] }} <br> {{ g.userInfo?.address.city }}<br> {{ g.userInfo?.address["state-alt"] }} {{ g.userInfo?.address.zip }}<br> {{ g.userInfo?.address.country }}</div>
+            </div>
+        </div>
+        <div id="div-logout" (click)="logOut()">Logout</div>
     </div>
 </ion-content>

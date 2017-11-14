@@ -1,63 +1,69 @@
 <pts-header [headerIpt]="headerIpt"></pts-header>
 
 <ion-content padding>
-    <ion-list>
-        <ion-list *ngIf="shareD.img.length == 0 && shareD.video.length == 0 && shareD.doc.length == 0">
-            <ion-card>
-                <ion-card-header>No Data Found</ion-card-header>
-            </ion-card>
-        </ion-list>
-        <div *ngIf="shareD.img.length || shareD.video.length || shareD.doc.length">
+    <ion-list *ngIf="shareD.img.length || shareD.video.length || shareD.doc.length; else nodata">
+        <div>
             <div id="div-share-mail">
-                <div>To: <span *ngFor="let item of toArr">{{item}} <ion-icon name="remove-circle" (click) = "removeToAddr(item)"></ion-icon></span>
+                <div>To: <span *ngFor="let item of toArr">{{item}} <ion-icon class="fa fa-times" (click) = "removeToAddr(item)"></ion-icon></span>
                     <ion-input [(ngModel)]="toaddr" autofocus (keypress)="setToAddr($event)"></ion-input>
                 </div>
-                <div>CC: <span *ngFor="let item of ccArr">{{item}} <ion-icon name="remove-circle" (click) = "removeCCAddr(item)"></ion-icon></span>
+                <div>CC: <span *ngFor="let item of ccArr">{{item}} <ion-icon class="fa fa-times" (click) = "removeCCAddr(item)"></ion-icon></span>
                     <ion-input [(ngModel)]="ccaddr" (keypress)="setCCAddr($event)"></ion-input>
                 </div>
-                <textarea placeholder="...type in your review" [(ngModel)]="review"></textarea>
-                <button class="ptsMarginR15p" (click)="sendMail()" [disabled]='!sendBtn'>
-                    Mail
-                </button>
             </div>
-            <div>To share ({{shareD.img.length + shareD.video.length + shareD.doc.length}})</div>
+            <div class="pts-button catalog-search-button" [ngClass]="{selectedTab: share === true}" (click)="share = true">
+                Share Files {{shareD.img.length + shareD.video.length + shareD.doc.length}}
+            </div>
+            <div class="pts-button catalog-search-button" [ngClass]="{selectedTab: share !== true}" (click)="share = false">
+                Message
+            </div>
             <hr>
         </div>
-        <div *ngIf="shareD.img.length">
-            <div>Pictures ({{shareD.img.length}})</div>
-            <ion-card *ngFor="let item of shareD.img; let i = index">
-                <div class="ptsDipsIB ptsVerticalTop">
-                    <ion-card-header>{{item.title}}</ion-card-header>
-                    <ion-card-content>
-                        <span (click)="viewMedia('img', item.url)">View</span>
-                        <ion-icon name="remove-circle" (click)="removeMedia('img', item, i)"></ion-icon>
+        <div class="div-content" *ngIf="share">
+            <div *ngIf="shareD.img.length">
+                <div class="div-title">Picture</div>
+                <ion-card *ngFor="let item of shareD.img; let i = index">
+                    <ion-card-header class="ptsDipsIB ptsVerticalTop ptsW70pr">{{item.title}}</ion-card-header>
+                    <ion-card-content class="ptsDipsIB ptsVerticalTop">
+                        <ion-icon class="fa fa-binoculars" (click)="viewMedia('img', item)">View</ion-icon>
+                        <ion-icon class="fa fa-times" (click)="removeMedia('img', item, i)">Unshare</ion-icon>
                     </ion-card-content>
-                </div>
-            </ion-card>
-        </div>
-        <div *ngIf="shareD.video.length">
-            <div>Videos ({{shareD.video.length}})</div>
-            <ion-card *ngFor="let item of shareD.video; let i = index">
-                <div class="ptsDipsIB ptsVerticalTop">
-                    <ion-card-header>{{item.title}}</ion-card-header>
-                    <ion-card-content>
-                        <span (click)="viewMedia('video', item.url)">View</span>
-                        <ion-icon name="remove-circle" (click)="removeMedia('video', item, i)"></ion-icon>
+                </ion-card>
+            </div>
+            <div *ngIf="shareD.video.length">
+                <div class="div-title">Video</div>
+                <ion-card *ngFor="let item of shareD.video; let i = index">
+                    <ion-card-header class="ptsDipsIB ptsVerticalTop ptsW70pr">{{item.title}}</ion-card-header>
+                    <ion-card-content class="ptsDipsIB ptsVerticalTop">
+                        <ion-icon class="fa fa-binoculars" (click)="viewMedia('vid', item)">View</ion-icon>
+                        <ion-icon class="fa fa-times" (click)="removeMedia('vid', item, i)">Unshare</ion-icon>
                     </ion-card-content>
-                </div>
-            </ion-card>
-        </div>
-        <div *ngIf="shareD.doc.length">
-            <div>Documents ({{shareD.doc.length}})</div>
-            <ion-card *ngFor="let item of shareD.doc; let i = index">
-                <div class="ptsDipsIB ptsVerticalTop">
-                    <ion-card-header>{{item.title}}</ion-card-header>
-                    <ion-card-content>
-                        <span (click)="viewMedia('doc', item.url)">View</span>
-                        <ion-icon name="remove-circle" (click)="removeMedia('doc', item, i)"></ion-icon>
+                </ion-card>
+            </div>
+            <div *ngIf="shareD.doc.length">
+                <div class="div-title">Document</div>
+                <ion-card *ngFor="let item of shareD.doc; let i = index">
+                    <ion-card-header class="ptsDipsIB ptsVerticalTop ptsW70pr">{{item.title}}</ion-card-header>
+                    <ion-card-content class="ptsDipsIB ptsVerticalTop">
+                        <ion-icon class="fa fa-binoculars" (click)="viewMedia('doc', item)">View</ion-icon>
+                        <ion-icon class="fa fa-times" (click)="removeMedia('doc', item, i)">Unshare</ion-icon>
                     </ion-card-content>
-                </div>
-            </ion-card>
+                </ion-card>
+            </div>
         </div>
+        <div *ngIf="!share">
+            <textarea [(ngModel)]="review"></textarea>
+        </div>
+        <button (click)="sendMail()" [disabled]='!sendBtn'>
+            Send
+        </button>
     </ion-list>
 </ion-content>
+
+<ng-template #nodata>
+    <ion-list>
+        <ion-card>
+            <ion-card-header>No Data Found</ion-card-header>
+        </ion-card>
+    </ion-list>
+</ng-template>
